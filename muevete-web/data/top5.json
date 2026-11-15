@@ -1,7 +1,0 @@
-[
-  { "puesto": 1, "nombre": "Isaac Alonso",     "foto": "", "tendencia": "",     "perfil": "" },
-  { "puesto": 2, "nombre": "Diego Luque",      "foto": "", "tendencia": "",     "perfil": "" },
-  { "puesto": 3, "nombre": "Alvaro Rodriguez", "foto": "", "tendencia": "sube", "perfil": "" },
-  { "puesto": 4, "nombre": "Anthony Rosas",    "foto": "", "tendencia": "baja", "perfil": "" },
-  { "puesto": 5, "nombre": "Favio Noce",       "foto": "", "tendencia": "baja", "perfil": "" }
-]
