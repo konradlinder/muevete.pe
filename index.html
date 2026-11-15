@@ -12,7 +12,7 @@
 <meta property="og:image" content="img/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;1,600&family=Roboto:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;1,600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* ===== Línea gráfica muévete.pe (valores tomados del sitio actual) ===== */
 :root{
@@ -131,7 +131,9 @@ body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bot
 .trio{display:grid;grid-template-columns:490px 412px 1fr;column-gap:0;margin-top:19px;align-items:start}
 .col-fechas{padding:24px 0 0 133px}
 .col-top{padding:24px 0 0 46px}
-.col-foto{height:399px}
+.col-foto{height:270px;margin:24px 0 0 24px}
+@media (min-width:1367px){.col-foto{margin-right:calc((1366px - 100vw) / 2)}}
+html{overflow-x:clip}
 .col-foto img{width:100%;height:100%;object-fit:cover;object-position:28% 70%}
 h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
 .lista{display:grid;gap:4px;width:313px}
@@ -177,7 +179,7 @@ footer a:hover{color:var(--amarillo)}
 @media (max-width:1180px){
   .trio{grid-template-columns:1fr 1fr;row-gap:40px;padding:0 30px}
   .col-fechas,.col-top{padding:24px 0 0 !important;justify-self:center}
-  .col-foto{grid-column:1/-1;height:420px;margin:0 -30px}
+  .col-foto{grid-column:1/-1;height:360px;margin:0 -30px}
 }
 @media (max-width:980px){
   .panel{display:none}
@@ -196,9 +198,23 @@ footer a:hover{color:var(--amarillo)}
   .trio{grid-template-columns:1fr;padding:0 20px}
   .col-fechas,.col-top{justify-self:center}
   .col-foto{margin:0 -20px;height:300px}
-  footer{grid-template-columns:1fr;gap:30px;padding:20px 24px 100px;text-align:center}
-  .f-links,.f-admin{justify-items:center;text-align:center}
-  .spons{flex-wrap:wrap}
+  .foot-logo{padding-top:44px}
+  .foot-logo > div{width:170px}
+  footer{grid-template-columns:1fr 1fr;column-gap:12px;row-gap:44px;padding:44px 12px calc(24px + env(safe-area-inset-bottom,0px));font-size:15px}
+  .spons{grid-column:1 / -1;grid-row:1;justify-content:space-between;gap:10px;padding:0 6px}
+  .spons a{height:50px}
+  .spons a img{height:46px;max-width:31vw}
+  .spons a:nth-child(3) img{height:34px}
+  .f-links{grid-column:1;grid-row:2;gap:8px;justify-items:start;text-align:left}
+  .f-links .sep{height:10px}
+  footer{font-weight:400}
+  .f-links > :nth-child(1){order:3}
+  .f-links > :nth-child(2){order:1}
+  .f-links > :nth-child(3){order:2}
+  .f-links > :nth-child(4){order:4}
+  .f-links > :nth-child(5){order:5}
+  .f-admin{grid-column:2;grid-row:2;gap:8px;justify-items:end;text-align:right}
+  .f-admin .copy{margin-top:10px}
   .wa{right:20px;top:calc(var(--heroH,100lvh) - 73px - var(--barras) - env(safe-area-inset-bottom,0px))}
   body.fijo .wa{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 }
