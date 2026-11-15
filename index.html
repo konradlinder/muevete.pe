@@ -50,14 +50,18 @@ img,video{display:block;max-width:100%}
 body.fijo .right{position:fixed;animation:entraMenu .25s ease}
 @keyframes entraMenu{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
 :root{--barras:calc(100lvh - 100svh)}
-.menu{display:flex;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
 .menu a.on{background:var(--azul);color:var(--amarillo)}
-.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 15px;font-size:16px;letter-spacing:.02em;color:#fff}
+.menu a:first-child{padding-left:32px}
+.menu a:last-child{padding-right:32px}
+.cuenta{padding:0 22px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 15px;font-size:16px;letter-spacing:.02em;color:#fff}
 .cuenta svg{width:24px;height:24px}
 .cuenta:hover{color:var(--amarillo)}
-.burger{display:none;background:var(--azul-menu);border:0;border-radius:5px;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
 .burger svg{width:26px;height:26px}
 .panel{display:flex;gap:38px;align-items:flex-start}
 
@@ -119,7 +123,7 @@ body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bot
 .center-btn{display:flex;justify-content:center;margin-top:26px}
 
 /* ---------- BOTÓN AMARILLO ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--amarillo);color:var(--negro);border-radius:4px;font-size:15px;height:29px;padding:0 24px;min-width:127px;transition:filter .15s,transform .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--amarillo);color:var(--negro);border-radius:999px;font-size:15px;height:29px;padding:0 24px;min-width:127px;transition:filter .15s,transform .15s}
 .btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 .btn svg{width:16px;height:16px;flex:none}
 
@@ -242,7 +246,7 @@ const CONFIG = {
     ranking:       "https://www.muevete.pe/ranking",
     nosotros:      "https://www.muevete.pe/nosotros",
     bases:         "https://www.muevete.pe/_files/ugd/b3ff12_eeeb66a490654419864b59722d92b03f.pdf",
-    miCuenta:      "https://www.muevete.pe/account",
+    miCuenta:      "mi-cuenta.html",
     umaGo:         "",   // ← pega aquí el link de "Uma Go"
     ronda1:        "https://www.muevete.pe/playa/sombrillas1/ronda/1",
     ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
