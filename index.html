@@ -269,12 +269,18 @@ footer a:hover{color:var(--amarillo)}
 .lista-h2 h2{font-size:24px;font-weight:600;color:#1A1D22;margin:0}
 .cont2{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6B7DA6}
 .listas2 .lista{width:100%;gap:5px}
-.listas2 .fila{height:38px;font-size:15px}
+.listas2 .fila.msg{display:flex;font-weight:500}
+.listas2 .fila{height:46px;font-size:15px;border-radius:12px;padding:0 8px 0 14px}
+.listas2 .top5 .fila > [data-f=puesto]{font-size:13px;color:#6B5A00}
+.listas2 .top5 .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top5 .mas{width:32px;height:32px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0}
+.top5 .mas:hover{background:rgba(0,0,0,.06)}
+.top5 .mas svg{width:22px;height:22px}
 .listas2 .fechas .fila{grid-template-columns:1fr 1fr 1.3fr}
 .listas2 .fechas .fila span:nth-child(2){text-align:left;padding-right:0}
 .listas2 .fechas .fila span:nth-child(3){padding-left:0}
 .listas2 .top5 .fila{grid-template-columns:28px 34px 1fr auto}
-.listas2 .top5 .av{width:26px;height:26px}
+.listas2 .top5 .av{width:28px;height:28px}
 .ver-mas{display:flex;justify-content:flex-end;margin-top:16px}
 .pie-azul .foot-logo{padding-top:44px}
 @media (max-width:980px){
@@ -295,7 +301,7 @@ footer a:hover{color:var(--amarillo)}
   .prox-cta p{font-size:21px}
   .prox-cta .pill{width:100%}
   .listas2{gap:30px;margin-top:34px}
-  .listas2 .fila{height:44px;font-size:16px}
+  .listas2 .fila{height:46px;font-size:16px}
   .ver-mas .pill{width:100%}
 }
 
@@ -475,7 +481,7 @@ const CONFIG = {
         <!-- REPETIDOR: ítem de jugador (Top 5 del ranking) -->
         <template id="tpl-jugador">
           <div class="fila"><span data-f="puesto"></span><span class="av" data-f="av"></span><span class="nm" data-f="nombre"></span>
-            <span class="ics"><svg data-f="sube" hidden><use href="#up"/></svg><svg data-f="baja" hidden><use href="#down"/></svg><a data-f="perfil"><svg><use href="#circplus"/></svg></a></span></div>
+            <span class="ics"><svg data-f="sube" hidden><use href="#up"/></svg><svg data-f="baja" hidden><use href="#down"/></svg><button class="mas" type="button" data-f="perfil"><svg><use href="#circplus"/></svg></button></span></div>
         </template>
         <div class="ver-mas"><a class="pill azul chico" data-link="ranking">ver ranking completo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
       </div>
@@ -531,6 +537,7 @@ const CONFIG = {
 <script src="js/config.js"></script>
 <script src="js/ranking-datos.js"></script>
 <script src="js/inscripciones-datos.js"></script>
+<script src="js/perfil-jugador.js"></script>
 <script>
 (function(){
   try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
@@ -577,7 +584,7 @@ const CONFIG = {
   const repetir=(items,tpl,box,fill)=>{box.replaceChildren(...items.map((it,i)=>{const n=tpl.content.firstElementChild.cloneNode(true);
     const f=k=>n.querySelector(`[data-f="${k}"]`); fill(n,f,it,i); return n;}));};
   const cargar=u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw r.status;return r.json()});
-  const errorLista=box=>box.innerHTML='<div class="fila">No se pudo cargar la lista</div>';
+  const errorLista=box=>box.innerHTML='<div class="fila msg">No se pudo cargar la lista</div>';
 
   // fechas
   const now=new Date(), [fh,fm]=C.horaFin.split(':').map(Number);
@@ -586,7 +593,7 @@ const CONFIG = {
   const esHoy=f=>d0(f).toDateString()===now.toDateString();
   const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   cargarEventos({limite:5}).then(lista=>{
-    if(!lista.length){ $('#fechas').innerHTML='<div class="fila">Pronto anunciaremos nuevas fechas</div>'; return; }
+    if(!lista.length){ $('#fechas').innerHTML='<div class="fila msg">Pronto anunciaremos nuevas fechas</div>'; return; }
     repetir(lista,$('#tpl-fecha'),$('#fechas'),(n,f,it)=>{const d=d0(it.fecha);
       f('dia').textContent=it.dia||dias[d.getDay()];
       f('fecha').textContent=`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}`;
@@ -602,7 +609,7 @@ const CONFIG = {
       f('nombre').textContent=it.nombre;
       {const im=new Image();im.alt='';im.onerror=()=>{im.onerror=null;im.src=M.avatar};im.src=it.foto||M.avatar;f('av').append(im)}
       f('sube').toggleAttribute('hidden',it.tendencia!=='sube'); f('baja').toggleAttribute('hidden',it.tendencia!=='baja');
-      f('perfil').href=it.perfil||C.links.ranking; f('perfil').setAttribute('aria-label','Ver '+it.nombre);
+      f('perfil').setAttribute('aria-label','Ver perfil de '+it.nombre); f('perfil').onclick=()=>abrirPerfil(it);
     });
   }).catch(()=>errorLista($('#top5')));
 

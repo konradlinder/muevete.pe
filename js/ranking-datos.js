@@ -51,6 +51,7 @@
     tendencia: j.movimiento > 0 ? 'sube' : j.movimiento < 0 ? 'baja' : '',
     movimiento: j.movimiento,
     top8: j.top_8,
+    menorTop8: j.menor_top8,
     jugados: j.kings_jugados,
     ganados: j.kings_ganados,
     promedio: j.promedio,
@@ -60,7 +61,7 @@
   });
 
   // Guarda la última copia en el navegador para mostrarla al instante en la próxima visita
-  const CLAVE = 'muevete.ranking.v1';
+  const CLAVE = 'muevete.ranking.v2';
   const leerCache = limite => {
     try {
       const c = JSON.parse(localStorage.getItem(CLAVE) || 'null');

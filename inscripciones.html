@@ -134,7 +134,8 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
 .preview.on{display:block}
 
 /* listas */
-.listas{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:46px}
+.listas{display:grid;grid-template-columns:2fr 1fr;gap:28px;margin-top:46px;width:min(1140px,calc(100vw - 40px));position:relative;left:50%;transform:translateX(-50%)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 .listas[hidden]{display:none}
 .listas-aviso{margin:46px auto 0;max-width:560px;text-align:center;background:#fff;border-radius:18px;padding:22px 24px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .listas-aviso[hidden]{display:none}
@@ -144,11 +145,17 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
 .lista-h h2{font-size:22px;font-weight:600}
 .cont{min-width:44px;height:32px;border-radius:999px;background:var(--azul-menu);color:#fff;display:grid;place-items:center;font-size:15px;padding:0 12px}
 .cont.gris{background:#8A93A3}
-.enc{display:grid;grid-template-columns:40px 30px 1fr;font-size:14px;color:#5A606B;padding:0 14px 8px}
-.filas{display:grid;gap:4px}
-.jug{display:grid;grid-template-columns:40px 30px 1fr;align-items:center;background:var(--amarillo);border-radius:4px;height:34px;padding:0 14px;font-size:14px}
+.enc{display:grid;grid-template-columns:24px 36px 1fr 30px;font-size:12px;font-weight:700;letter-spacing:.04em;color:#5B6370;padding:0 10px 8px}
+.filas{display:grid;gap:5px;align-content:start}
+.jug{display:grid;grid-template-columns:24px 36px 1fr 30px;align-items:center;background:var(--amarillo);border-radius:12px;height:46px;padding:0 8px 0 10px;font-size:15px}
+.jug > span:first-child{font-size:13px;color:#6B5A00;text-align:center}
+.jug .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
+.jug .mas{width:30px;height:30px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0}
+.jug .mas:hover{background:rgba(0,0,0,.06)}
+.jug .mas svg{width:22px;height:22px}
 .jug.espera{background:#E8ECF3}
-.jug .av{width:22px;height:22px;border-radius:50%;overflow:hidden}
+.jug.espera > span:first-child{color:#5B6370}
+.jug .av{width:28px;height:28px;border-radius:50%;overflow:hidden}
 .jug .av img{width:100%;height:100%;object-fit:cover;display:block}
 .jug .yo{margin-left:8px;background:var(--azul-menu);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;vertical-align:1px}
 .vacia{background:#fff;border:1.5px dashed #D5D9E0;border-radius:12px;padding:18px;text-align:center;color:#7A808A;font-size:14px;font-weight:500}
@@ -161,16 +168,20 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
   .burger{display:grid;place-items:center}
   main{padding:110px 18px 60px}
 }
+@media (max-width:1100px) and (min-width:761px){
+  .listas{grid-template-columns:1fr;width:auto;left:auto;transform:none}
+}
 @media (max-width:760px){
   h1{font-size:32px}
   .datos{font-size:16px;gap:10px 20px}
   .evento{font-size:16px}
   .panel-insc{padding:24px 18px;border-radius:18px;margin-top:22px}
   .tit{font-size:21px}
-  .listas{grid-template-columns:1fr;gap:30px;margin-top:36px}
-  .jug{height:42px;font-size:16px}
-  .jug .av{width:28px;height:28px}
-  .enc,.jug{grid-template-columns:36px 38px 1fr}
+  .listas{grid-template-columns:1fr;gap:30px;margin-top:36px;width:auto;left:auto;transform:none}
+  .dos{grid-template-columns:1fr;gap:5px}
+  .col2 .enc{display:none}
+  .jug{font-size:16px}
+  .enc,.jug{grid-template-columns:30px 40px 1fr 34px}
   .yape .num{font-size:20px}
 }
 
@@ -381,15 +392,17 @@ html{scrollbar-gutter:stable}
   <section class="listas" id="listas">
     <div>
       <div class="lista-h"><h2>Lista de inscritos:</h2><span class="cont" id="cInscritos">00</span></div>
-      <div class="enc"><span></span><span></span><span>Jugador</span></div>
-      <div class="filas" id="lInscritos"></div>
+      <div class="dos">
+        <div><div class="enc"><span>#</span><span></span><span>JUGADOR</span></div><div class="filas" id="lInscritos"></div></div>
+        <div class="col2" id="col2"><div class="enc"><span>#</span><span></span><span>JUGADOR</span></div><div class="filas" id="lInscritos2"></div></div>
+      </div>
     </div>
     <div>
       <div class="lista-h"><h2>Lista de espera:</h2><span class="cont gris" id="cEspera">00</span></div>
-      <div class="enc"><span></span><span></span><span>Jugador</span></div>
+      <div class="enc"><span>#</span><span></span><span>JUGADOR</span></div>
       <div class="filas" id="lEspera"></div>
     </div>
-    <template id="tpl-insc"><div class="jug"><span data-f="n"></span><span class="av" data-f="av"></span><span data-f="nombre"></span></div></template>
+    <template id="tpl-insc"><div class="jug"><span data-f="n"></span><span class="av" data-f="av"></span><span class="nm" data-f="nombre"></span><button class="mas" type="button" data-f="mas"><svg><use href="#circplus"/></svg></button></div></template>
   </section>
 </main>
 <div class="aviso" id="aviso"></div>
@@ -416,7 +429,9 @@ html{scrollbar-gutter:stable}
 </aside>
 
 <script src="js/config.js"></script>
+<script src="js/ranking-datos.js"></script>
 <script src="js/inscripciones-datos.js"></script>
+<script src="js/perfil-jugador.js"></script>
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
@@ -497,14 +512,22 @@ const LINKS = {
     if(clase) n.classList.add(clase);
     f('n').textContent=i+1;
     const im=new Image(); im.alt=''; im.loading='lazy'; im.onerror=()=>{im.onerror=null;im.src='img/avatar.png'}; im.src=j.foto||'img/avatar.png'; f('av').append(im);
-    f('nombre').textContent=j.nombre; if(j.yo) f('nombre').insertAdjacentHTML('beforeend','<span class="yo">tú</span>');
+    f('nombre').textContent=j.nombre; f('nombre').title=j.nombre; if(j.yo) f('nombre').insertAdjacentHTML('beforeend','<span class="yo">tú</span>');
+    const mas=f('mas');
+    if(j.yo) mas.remove();
+    else { mas.setAttribute('aria-label','Ver perfil de '+j.nombre); mas.onclick=()=>abrirPerfil({nombre:j.nombre,foto:j.foto,fotoGrande:j.fotoGrande}); }
     return n;};
   const pad=n=>String(n).padStart(2,'0');
   const vacia=t=>Object.assign(document.createElement('div'),{className:'vacia',textContent:t});
   const pintarListas=()=>{
     const L=yo?[...todos,yo]:todos;
     const inscritos=L.slice(0,TORNEO.cupo), espera=L.slice(TORNEO.cupo,TORNEO.cupo+TORNEO.maxEspera);
-    $('#lInscritos').replaceChildren(...(inscritos.length?inscritos.map((j,i)=>fila(j,i)):[vacia(errorListas?'No se pudo cargar la lista':'Aún no hay inscritos')]));
+    // inscritos en dos columnas (la primera con la mitad redondeada hacia arriba)
+    const mitad=Math.ceil(inscritos.length/2);
+    const filasI=inscritos.map((j,i)=>fila(j,i));
+    $('#lInscritos').replaceChildren(...(inscritos.length?filasI.slice(0,mitad):[vacia(errorListas?'No se pudo cargar la lista':'Aún no hay inscritos')]));
+    $('#lInscritos2').replaceChildren(...filasI.slice(mitad));
+    $('#col2').hidden=inscritos.length<2;
     $('#lEspera').replaceChildren(...(espera.length?espera.map((j,i)=>fila(j,i,'espera')):[vacia('Nadie en lista de espera')]));
     $('#cInscritos').textContent=pad(inscritos.length); $('#cEspera').textContent=pad(espera.length);
   };

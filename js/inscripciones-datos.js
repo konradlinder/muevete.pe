@@ -83,7 +83,7 @@
     });
     const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/inscripciones?' + p, { headers: headersDe(db.anonKey) });
     if (!r.ok) throw new Error('Supabase ' + r.status);
-    return (await r.json()).map(x => ({ id: x.id, nombre: x.jugador, foto: x.profile_picture ? window.fotoChica(x.profile_picture) : '', creado: x.created_at }));
+    return (await r.json()).map(x => ({ id: x.id, nombre: x.jugador, foto: x.profile_picture ? window.fotoChica(x.profile_picture) : '', fotoGrande: x.profile_picture ? window.fotoChica(x.profile_picture, 400) : '', creado: x.created_at }));
   };
 
   // Cuántos inscritos activos hay (número público, sin datos de jugadores)
