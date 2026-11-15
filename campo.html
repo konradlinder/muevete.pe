@@ -77,8 +77,10 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .demo b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7A808A;margin-right:4px}
 .demo button{border:1.5px solid #D5D9E0;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
 .demo button.on{background:var(--azul-menu);border-color:var(--azul-menu);color:#fff}
-@media (max-width:980px){.panel{display:none}.burger{display:grid;place-items:center}main{padding:110px 16px 60px}}
+@media (max-width:980px){.panel{display:none}.burger{display:grid;place-items:center}main{padding:calc(23px + env(safe-area-inset-top,0px)) 16px 40px}main > h1:first-child{min-height:52px;display:flex;align-items:center;padding-right:64px}.volver{margin-top:6px}}
 @media (max-width:760px){h1{font-size:34px}}
+/* celular: el contenido empieza a la altura del botón del menú */
+@media (max-width:980px){main{padding-top:calc(29px + env(safe-area-inset-top,0px))}}
 
 .volver{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 10px;border-radius:999px;background:#fff;color:#000;font-size:14px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .volver svg{width:20px;height:20px}
@@ -139,7 +141,7 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .aviso{text-align:center;font-weight:500;color:#5B6370;padding:20px 0;grid-column:1 / -1}
 .pill.confirmar{background:#fff;color:var(--azul-menu)}
 
-@media (max-width:980px){.cuerpo{grid-template-columns:1fr}.tabla{position:static}.lista{grid-template-columns:1fr 1fr}}
+@media (max-width:980px){main{padding-top:calc(29px + env(safe-area-inset-top,0px))}.cab{margin-top:18px}.cuerpo{grid-template-columns:1fr}.tabla{position:static}.lista{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.lista{grid-template-columns:1fr}}
 @media (max-width:420px){.enc,.fila{grid-template-columns:22px 1fr 46px 58px 46px}.fila{font-size:14px;padding:0 8px}}
 
@@ -293,6 +295,7 @@ const LINKS = {
   const AUTH=window.MUEVETE_AUTH;
   let partidos=[], J=[], puedo=false, sesion=null, firma='';
   const editando=new Set();   // partidos finalizados que se están corrigiendo
+  const VENTANA=60000;        // un marcador se puede corregir hasta 60 s después de registrarlo
   const SVG_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
   const escritos={};   // marcadores que la persona está escribiendo (no se pierden al actualizar)
 
@@ -338,9 +341,10 @@ const LINKS = {
         f(ganaA?'la':'lb').classList.add('gana');
         f(ganaA?'lb':'la').classList.add('pierde');
         f('estado').innerHTML=`<span class="estado-fin">${SVG_OK} Finalizado</span>`;
-        if(puedo){
+        const resta=p.finEn?Math.ceil((p.finEn+VENTANA-Date.now())/1000):0;
+        if(puedo&&resta>0){
           n.classList.add('editable');
-          const e=document.createElement('button'); e.type='button'; e.className='pill chica borde'; e.innerHTML='editar '+SVG_EDIT;
+          const e=document.createElement('button'); e.type='button'; e.className='pill chica borde'; e.dataset.hasta=p.finEn+VENTANA; e.innerHTML=`editar <span class="seg">${resta} s</span> `+SVG_EDIT;
           e.setAttribute('aria-label',`Editar el marcador del partido ${p.n}`);
           e.onclick=()=>{ editando.add(p.id); escritos[p.id]=[String(p.pa??''),String(p.pb??'')]; pintar(); };
           f('pie').append(e);
@@ -380,6 +384,7 @@ const LINKS = {
         }
       };
       if(corrigiendo){
+        ayuda.dataset.hasta=p.finEn+VENTANA;
         const c=document.createElement('button'); c.type='button'; c.className='pill chica borde'; c.style.marginRight='8px'; c.textContent='cancelar';
         c.onclick=()=>{ editando.delete(p.id); delete escritos[p.id]; pintar(); };
         f('pie').append(ayuda,c,b);
@@ -407,6 +412,21 @@ const LINKS = {
   setInterval(()=>{ if(!document.hidden) cargar(); },20000);
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cargar(); });
 
+  // cuenta regresiva de los 60 s para corregir
+  setInterval(()=>{
+    let vencido=false;
+    document.querySelectorAll('[data-hasta]').forEach(el=>{
+      const r=Math.ceil((+el.dataset.hasta-Date.now())/1000);
+      if(r<=0){ vencido=true; return; }
+      if(el.classList.contains('ayuda')){ if(!el.classList.contains('error')&&!el.textContent.startsWith('¿')) el.textContent=`Quedan ${r} s para corregir`; }
+      else { const s=el.querySelector('.seg'); if(s) s.textContent=r+' s'; }
+    });
+    if(vencido){
+      partidos.forEach(p=>{ if(p.finEn&&p.finEn+VENTANA<=Date.now()){ editando.delete(p.id); delete escritos[p.id]; } });
+      pintar();
+    }
+  },1000);
+
   // menú celular
   const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
   const menu=open=>{clearTimeout(cierre);
@@ -417,6 +437,7 @@ const LINKS = {
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
 })();
 </script>
+<script src="js/pie.js"></script>
 <script src="js/menu-pill.js"></script>
 </body>
 </html>

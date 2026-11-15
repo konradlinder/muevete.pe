@@ -6,7 +6,7 @@
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const p = new URLSearchParams({
-      select: 'id,ronda,campo,partido,jugador_a1,jugador_a2,score_a,score_b,jugador_b1,jugador_b2,jugadores,finalizado,updated_at',
+      select: 'id,ronda,campo,partido,jugador_a1,jugador_a2,score_a,score_b,jugador_b1,jugador_b2,jugadores,finalizado,finalizado_en,updated_at',
       ronda: 'eq.' + ronda,
       playa: 'eq.' + playa,
       order: 'campo.asc,partido.asc'
@@ -27,6 +27,7 @@
       pb: x.score_b,
       fin: !!x.finalizado,
       jugadores: (x.jugadores || '').split(',').map(limpiar).filter(Boolean),
+      finEn: x.finalizado_en ? Date.parse(x.finalizado_en) : null,
       act: x.updated_at
     }));
   };
