@@ -56,6 +56,29 @@ img,video{display:block;max-width:100%}
 .cuenta:hover{color:var(--amarillo)}
 .burger{display:none;background:var(--azul-menu);border:0;border-radius:5px;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
 .burger svg{width:26px;height:26px}
+.panel{display:flex;gap:38px;align-items:flex-start}
+
+/* ---------- MENÚ CELULAR (panel desde la derecha) ---------- */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;
+  padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{display:flex;height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-family:var(--poppins);font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mnav a:active,.mnav button:active{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+body.mopen{overflow:hidden}
 
 /* ---------- HERO ---------- */
 .hero{position:relative;height:759px;background:var(--gris-hero);overflow:hidden}
@@ -99,28 +122,25 @@ img,video{display:block;max-width:100%}
 .col-foto{height:399px}
 .col-foto img{width:100%;height:100%;object-fit:cover}
 h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
-.lista{display:grid;gap:4px}
-.fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:29px;padding:0 14px;border-radius:4px}
-.fechas .fila{grid-template-columns:72px 82px 1fr;width:313px}
+.lista{display:grid;gap:4px;width:313px}
+.fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:32px;padding:0 8px 0 14px;border-radius:4px}
+.fechas .fila{grid-template-columns:72px 82px 1fr}
 .fechas .fila span:nth-child(2){text-align:right;padding-right:28px}
 .fechas .fila span:nth-child(3){padding-left:16px}
-.fechas .fila.pasada{color:rgba(0,0,0,.38)}
-.fechas .fila.prox{box-shadow:inset 4px 0 0 var(--negro)}
 .fechas .fila .hoy{font-size:10px;background:var(--azul);color:var(--amarillo);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:1px}
 .ven{position:relative;width:313px;margin-top:20px}
 .ven p{font-size:25px;line-height:27.5px;letter-spacing:.02em}
 .ven em{color:var(--amarillo)}
 .ven .btn{position:absolute;right:6px;bottom:-4px}
 
-.top5 .lista{width:277px;margin-left:6px}
-.top5 .fila{grid-template-columns:22px 28px 1fr auto;height:32px;padding:0 6px 0 14px}
-.top5 .av{width:22px;height:22px;border-radius:50%;overflow:hidden;background:rgba(0,70,184,.15);display:grid;place-items:center;font-size:9px;color:var(--azul)}
+.top5 .fila{grid-template-columns:22px 26px 1fr auto}
+.top5 .av{width:22px;height:22px;border-radius:50%;overflow:hidden;display:block}
 .top5 .av img{width:100%;height:100%;object-fit:cover}
 .top5 .nm{padding-left:6px}
 .top5 .ics{display:flex;gap:5px;align-items:center}
 .top5 .ics svg{width:20px;height:20px}
 .top5 .ics a{display:flex}
-.top5 .center-btn{margin-top:20px;justify-content:flex-end;width:272px}
+.top5 .center-btn{margin-top:20px;justify-content:flex-end;width:313px}
 
 .foot-logo{display:flex;justify-content:center;padding:28px 0 0}
 .foot-logo > div{width:260px}
@@ -148,14 +168,8 @@ footer a:hover{color:var(--amarillo)}
   .col-foto{grid-column:1/-1;height:420px;margin:0 -30px}
 }
 @media (max-width:980px){
-  .menu,.cuenta{display:none}
+  .panel{display:none}
   .burger{display:grid;place-items:center}
-  .right.open{position:fixed;inset:0;background:var(--azul);flex-direction:column;align-items:stretch;padding:90px 24px 24px;gap:14px}
-  .right.open .menu{display:flex;flex-direction:column}
-  .right.open .menu a{border-bottom:1px solid rgba(255,255,255,.12)}
-  .right.open .menu a.on{border-radius:0}
-  .right.open .cuenta{display:flex;justify-content:center}
-  .right.open .burger{position:fixed;top:19px;right:21px}
 }
 @media (max-width:760px){
   .hero{height:auto;min-height:620px;min-height:100svh}
@@ -198,6 +212,7 @@ const CONFIG = {
     logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
     heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
     heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
+    avatar:        "img/avatar.png",       // foto por defecto de los jugadores sin foto
     sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
@@ -218,6 +233,7 @@ const CONFIG = {
     nosotros:      "https://www.muevete.pe/nosotros",
     bases:         "https://www.muevete.pe/_files/ugd/b3ff12_eeeb66a490654419864b59722d92b03f.pdf",
     miCuenta:      "https://www.muevete.pe/account",
+    umaGo:         "",   // ← pega aquí el link de "Uma Go"
     ronda1:        "https://www.muevete.pe/playa/sombrillas1/ronda/1",
     ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
     terminos:      "https://www.muevete.pe/terminos-y-condiciones",
@@ -246,6 +262,7 @@ const CONFIG = {
 <header class="top">
   <div class="wrap">
     <div class="right" id="right">
+      <div class="panel" id="panel">
       <nav class="menu" aria-label="Menú principal">
         <a class="on" data-link="inicio">Inicio</a>
         <a data-link="inscripciones">Inscripciones</a>
@@ -254,6 +271,7 @@ const CONFIG = {
         <a data-link="bases" target="_blank" rel="noopener">Bases</a>
       </nav>
       <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
+      </div>
       <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -330,6 +348,26 @@ const CONFIG = {
   </div>
 </main>
 
+<div class="mfondo" id="mfondo"></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" aria-hidden="true">
+  <div class="mhead">
+    <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a class="on" data-link="inicio">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a data-link="bases" target="_blank" rel="noopener">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+    <a data-link="nosotros">Nosotros</a>
+  </nav>
+</aside>
 <a class="wa" id="wa" target="_blank" rel="noopener" aria-label="Contacto WhatsApp"></a>
 
 <script>
@@ -397,13 +435,12 @@ const CONFIG = {
   }).catch(()=>errorLista($('#fechas')));
 
   // top 5
-  const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
   cargar(C.datosTop5).then(lista=>{
     lista=[...lista].sort((a,b)=>(a.puesto||99)-(b.puesto||99)).slice(0,5);
     repetir(lista,$('#tpl-jugador'),$('#top5'),(n,f,it,i)=>{
       f('puesto').textContent=it.puesto||i+1;
       f('nombre').textContent=it.nombre;
-      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else f('av').textContent=ini(it.nombre);
+      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else {const im=new Image();im.src=M.avatar;im.alt='';f('av').append(im)}
       f('sube').toggleAttribute('hidden',it.tendencia!=='sube'); f('baja').toggleAttribute('hidden',it.tendencia!=='baja');
       f('perfil').href=it.perfil||C.links.ranking; f('perfil').setAttribute('aria-label','Ver '+it.nombre);
     });
@@ -413,7 +450,12 @@ const CONFIG = {
   $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
 
   // menú móvil
-  $('#burger').onclick=()=>$('#right').classList.toggle('open');
+  const mp=$('#mpanel');
+  const menu=open=>{document.body.classList.toggle('mopen',open);mp.setAttribute('aria-hidden',!open)};
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); $('#mfondo').onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+  mp.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>menu(false)));
 })();
 </script>
 </body>
