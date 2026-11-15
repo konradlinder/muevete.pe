@@ -357,7 +357,7 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
 </aside>
 
 <script src="js/config.js"></script>
-<script src="js/ranking-datos.js"></script>
+<script src="js/inscripciones-datos.js"></script>
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
@@ -377,7 +377,9 @@ const LINKS = {
   // ===== CONFIGURACIÓN DEL TORNEO (luego vendrá de la base de datos) =====
   const TORNEO = {
     sede: "Playa Sombrillas, Barranco",
-    fecha: "2026-11-21",
+    fecha: "",                // vacío = la próxima fecha de data/fechas.json
+    playa: "sombrillas1",     // sombrillas1 = turno 6:30 a. m.
+    cupo: 125,                // ← cupos del torneo: del 126 en adelante pasan a lista de espera
     hora: "6:30 a. m.",
     evento: "Uma Arena: competencia vóley playa individual",
     comunidad: "",            // ← link de la comunidad de WhatsApp
@@ -388,15 +390,15 @@ const LINKS = {
       ["S/ 13", "de multa por llegar después de las 6:30 a. m. al registro en mesa"]
     ],
     mostrarVistaPrevia: true, // selector de estados (solo mientras diseñamos)
-    estadoInicial: "abiertas",
-    ejemploInscritos: 23, ejemploEspera: 3
+    estadoInicial: "abiertas"
   };
 
   const aviso=t=>{const a=$('#aviso');a.textContent=t;a.classList.add('on');clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove('on'),2200)};
-  const [y,m,d]=TORNEO.fecha.split('-');
-  $('#tSede').textContent=TORNEO.sede; $('#tFecha').textContent=`${d}/${m}/${y}`; $('#tHora').textContent=TORNEO.hora; $('#tEvento').textContent=TORNEO.evento;
+  $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; $('#tEvento').textContent=TORNEO.evento;
+  const ponerFecha=()=>{ if(!TORNEO.fecha){ $('#tFecha').textContent='Por anunciar'; $('#txtInscrito').textContent=`Te esperamos a las ${TORNEO.hora} en ${TORNEO.sede}.`; return; }
+    const [y,m,d]=TORNEO.fecha.split('-'); $('#tFecha').textContent=`${d}/${m}/${y}`;
   $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
-  $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} a las ${TORNEO.hora} en ${TORNEO.sede}.`;
+    $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} a las ${TORNEO.hora} en ${TORNEO.sede}.`; };
   $('#reglas').innerHTML=TORNEO.reglas.map(([a,b])=>`<li><b>${a}</b><span>${b}</span></li>`).join('');
   $('#txtMulta').textContent=`¡Tienes una multa de S/ ${TORNEO.multaPendiente} pendiente por inasistencia sin notificar!`;
   $('#yapeNum').textContent=TORNEO.yape.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3');
@@ -413,8 +415,8 @@ const LINKS = {
   $('#demo').hidden=!TORNEO.mostrarVistaPrevia;
   document.querySelectorAll('#demo button').forEach(b=>b.onclick=()=>mostrar(b.dataset.e));
 
-  // ----- listas (ejemplo con nombres del ranking) -----
-  let inscritos=[], espera=[], yo=null;
+  // ----- listas (Supabase) -----
+  let todos=[], yo=null, errorListas=false;
   const tpl=$('#tpl-insc');
   const fila=(j,i,clase)=>{const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
     if(clase) n.classList.add(clase);
@@ -423,17 +425,22 @@ const LINKS = {
     f('nombre').textContent=j.nombre; if(j.yo) f('nombre').insertAdjacentHTML('beforeend','<span class="yo">tú</span>');
     return n;};
   const pad=n=>String(n).padStart(2,'0');
+  const vacia=t=>Object.assign(document.createElement('div'),{className:'vacia',textContent:t});
   const pintarListas=()=>{
-    const L=yo?[...inscritos,yo]:inscritos;
-    $('#lInscritos').replaceChildren(...(L.length?L.map((j,i)=>fila(j,i)):[Object.assign(document.createElement('div'),{className:'vacia',textContent:'Aún no hay inscritos'})]));
-    $('#lEspera').replaceChildren(...(espera.length?espera.map((j,i)=>fila(j,i,'espera')):[Object.assign(document.createElement('div'),{className:'vacia',textContent:'Nadie en lista de espera'})]));
-    $('#cInscritos').textContent=pad(L.length); $('#cEspera').textContent=pad(espera.length);
+    const L=yo?[...todos,yo]:todos;
+    const inscritos=L.slice(0,TORNEO.cupo), espera=L.slice(TORNEO.cupo);
+    $('#lInscritos').replaceChildren(...(inscritos.length?inscritos.map((j,i)=>fila(j,i)):[vacia(errorListas?'No se pudo cargar la lista':'Aún no hay inscritos')]));
+    $('#lEspera').replaceChildren(...(espera.length?espera.map((j,i)=>fila(j,i,'espera')):[vacia('Nadie en lista de espera')]));
+    $('#cInscritos').textContent=pad(inscritos.length); $('#cEspera').textContent=pad(espera.length);
   };
-  cargarRanking().then(r=>{
-    const mezcla=[...r].sort((a,b)=>((a.puesto*37)%101)-((b.puesto*37)%101));
-    inscritos=mezcla.slice(0,TORNEO.ejemploInscritos); espera=mezcla.slice(TORNEO.ejemploInscritos,TORNEO.ejemploInscritos+TORNEO.ejemploEspera);
+  (async()=>{
+    try{ if(!TORNEO.fecha) TORNEO.fecha=await proximaFecha(); }catch(e){}
+    ponerFecha();
+    if(!TORNEO.fecha){ pintarListas(); return; }
+    try{ todos=await cargarInscritos({fecha:TORNEO.fecha, playa:TORNEO.playa}); }
+    catch(e){ console.warn('No se pudo leer inscripciones:',e); errorListas=true; }
     pintarListas();
-  }).catch(pintarListas);
+  })();
 
   // ----- formulario -----
   const dni=$('#dni'), conf=$('#confHora'), btn=$('#btnInsc'), err=$('#errInsc');
