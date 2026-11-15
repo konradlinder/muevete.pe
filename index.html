@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>muévete.pe | Voley Playa | Lima, Perú</title>
 <meta name="description" content="muévete.pe: promovemos la comunidad del Vóley Playa. +90 participantes por fecha. Juegan principiantes, avanzados y expertos.">
-<meta name="theme-color" content="#0046B8">
 <link rel="icon" href="img/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -43,7 +42,7 @@ img,video{display:block;max-width:100%}
 
 /* ---------- HEADER ---------- */
 .top{position:absolute;inset:0 0 auto 0;z-index:20}
-.top .wrap{display:flex;align-items:flex-start;justify-content:flex-end;padding:19px 21px 0}
+.top .wrap{display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(19px + env(safe-area-inset-top,0px)) calc(21px + env(safe-area-inset-right,0px)) 0 21px}
 .logo-box{display:block;width:74px;height:74px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(179,179,179,.6)}
 .logo-box img{width:100%;height:100%;object-fit:cover}
 .right{display:flex;gap:38px;align-items:flex-start;padding-top:7px}
@@ -87,6 +86,9 @@ body.mopen{overflow:hidden}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
 .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
 .hero-logo{width:500px;max-width:78vw}
+.bajar{display:none;position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3;width:44px;height:44px;border:2px solid #fff;border-radius:50%;display:grid;place-items:center;color:#fff;transition:transform .2s}
+.bajar:hover{transform:translateX(-50%) translateY(3px)}
+.bajar svg{width:22px;height:22px}
 .hero-logo img{width:100%;height:auto}
 .temporada{display:flex;align-items:flex-end;gap:40px;margin-top:22px}
 .temporada h1{font-style:italic;font-size:45px;line-height:49.5px;letter-spacing:.02em;color:var(--amarillo);text-align:right;font-weight:600}
@@ -173,7 +175,8 @@ footer a:hover{color:var(--amarillo)}
 }
 @media (max-width:760px){
   .hero{height:auto;min-height:620px;min-height:100svh}
-  .hero-in{padding:120px 20px 50px}
+  .bajar{display:grid}
+  .hero-in{padding:calc(110px + env(safe-area-inset-top,0px)) 20px 100px}
   .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
   .temporada h1{font-size:32px;line-height:36px;text-align:center}
   .by{font-size:28px}
@@ -281,6 +284,7 @@ const CONFIG = {
   <!-- HERO -->
   <section class="hero" id="inicio">
     <div class="hero-bg" id="heroBg"></div>
+    <a class="bajar" href="#contenido" aria-label="Bajar"><svg viewBox="0 0 24 24"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     <div class="hero-in">
       <div class="hero-logo" id="heroLogo"></div>
       <div class="temporada">
@@ -292,7 +296,7 @@ const CONFIG = {
 
   <div class="wrap">
     <!-- TRES PILARES -->
-    <section class="pilares">
+    <section class="pilares" id="contenido">
       <div class="pilar"><div class="ic"><svg><use href="#jugador"/></svg></div><p>promovemos la comunidad del Vóley Playa</p></div>
       <div class="pilar"><div class="ic" id="icComunidad"></div><p>contamos con +90 participantes por fecha</p></div>
       <div class="pilar"><div class="ic" id="icRanking"></div><p>juegan principiantes, avanzados y expertos</p></div>
