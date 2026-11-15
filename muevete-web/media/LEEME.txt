@@ -1,6 +1,6 @@
 Pon aquí tus archivos multimedia:
 
   fondo.mp4  -> video de fondo de la portada (obligatorio este nombre)
-  fondo.jpg  -> imagen que se ve mientras carga el video (opcional)
+  fondo-poster.jpg -> imagen que se ve mientras carga el video
 
 Recomendado: video MP4 (H.264), horizontal 1920x1080, sin audio, 10-20 segundos, menos de 10 MB.

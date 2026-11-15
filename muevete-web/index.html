@@ -60,7 +60,9 @@ img,video{display:block;max-width:100%}
 /* ---------- HERO ---------- */
 .hero{position:relative;height:759px;background:var(--gris-hero);overflow:hidden}
 .hero-bg{position:absolute;inset:0}
-.hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover}
+.hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 42%}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,40,110,.45) 0%,rgba(0,40,110,.25) 45%,rgba(0,40,110,.55) 100%);pointer-events:none}
+.hero-bg:has(.ph)::after{display:none}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
 .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
 .hero-logo{width:500px;max-width:78vw}
@@ -136,7 +138,9 @@ footer a:hover{color:var(--amarillo)}
 .f-links .sep{height:12px}
 .spons{display:flex;align-items:center;justify-content:space-around;gap:20px;padding-top:4px}
 .spons a{display:flex;align-items:center;justify-content:center;height:80px;text-decoration:none}
-.spons a img{max-height:80px;width:auto}
+.spons a img{height:72px;width:auto;max-width:190px;object-fit:contain;transition:opacity .15s}
+.spons a:hover img{opacity:.8}
+.spons a:nth-child(3) img{height:54px}
 .spons a .ph{width:150px;height:70px;font-family:var(--poppins);font-weight:600}
 .f-admin{display:grid;gap:6px;justify-items:end;text-align:right}
 .f-admin .copy{margin-top:16px;text-decoration:none}
@@ -158,7 +162,7 @@ footer a:hover{color:var(--amarillo)}
   .right.open .burger{position:fixed;top:19px;right:21px}
 }
 @media (max-width:760px){
-  .hero{height:auto;min-height:620px}
+  .hero{height:auto;min-height:620px;min-height:100svh}
   .hero-in{padding:120px 20px 50px}
   .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
   .temporada h1{font-size:32px;line-height:36px;text-align:center}
@@ -198,8 +202,8 @@ const CONFIG = {
     logoIcono:     "img/logo-icono.png",   // logo cuadrado de la cabecera
     logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
     heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
-    heroFoto:      "media/fondo.jpg",      // imagen mientras carga el video (opcional)
-    sponsorHero:   "",   // logo Electrolife blanco (al lado de "by")
+    heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
+    sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
     fotoInicio:    "",   // foto a la derecha de Top 5 (inicio.jpg)
@@ -207,9 +211,9 @@ const CONFIG = {
   },
 
   aliados: [
-    { nombre:"Arena Voleibol Club", url:"https://www.instagram.com/arena_voleibolclub/", logo:"" },
-    { nombre:"Electrolife",         url:"https://www.instagram.com/electrolifeperu/",    logo:"" },
-    { nombre:"Diablo Atelier",      url:"https://www.instagram.com/diabloatelier/",      logo:"" },
+    { nombre:"Arena Voleibol Club", url:"https://www.instagram.com/arena_voleibolclub/", logo:"img/sponsor-arena.svg" },
+    { nombre:"Electrolife",         url:"https://www.instagram.com/electrolifeperu/",    logo:"img/sponsor-electrolife.svg" },
+    { nombre:"Diablo Atelier",      url:"https://www.instagram.com/diabloatelier/",      logo:"img/sponsor-diablo-atelier.svg" },
   ],
 
   links: {
@@ -349,7 +353,7 @@ const CONFIG = {
   $('#logoTop').innerHTML=img(M.logoIcono,'muévete.pe','logo');
   $('#heroLogo').innerHTML=img(M.logo,'logo muévete.pe','logo muévete.pe',true);
   $('#logoFoot').innerHTML=img(M.logo,'logo muévete','logo muévete');
-  $('#sponHero').innerHTML=img(M.sponsorHero,'Electrolife','logo Electrolife (blanco)',true);
+  $('#sponHero').innerHTML=M.sponsorHero?`<img src="${M.sponsorHero}" alt="Electrolife">`:'<span style="display:flex;align-items:flex-end;height:100%;font-size:40px;line-height:44px">Electrolife</span>';
   $('#icComunidad').innerHTML=M.iconComunidad?`<img src="${M.iconComunidad}" alt="comunidad vóley playa">`:'<svg><use href="#grupo"/></svg>';
   $('#icRanking').innerHTML=M.iconRanking?`<img src="${M.iconRanking}" alt="ranking muévete">`:'<svg><use href="#podio"/></svg>';
   $('#fotoInicio').innerHTML=img(M.fotoInicio,'muévete vóley playa','foto inicio');
