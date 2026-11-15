@@ -14,6 +14,29 @@
     return lista.find(f => { const [y,mo,d] = f.split('-').map(Number); return ahora < new Date(y, mo-1, d, h, m); }) || null;
   };
 
+  // Configuración de una playa (tabla configuraciones) + estado de mantenimiento
+  window.cargarConfig = async function(playa = 'sombrillas1'){
+    const db = window.MUEVETE_DB || {};
+    if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
+    const p = new URLSearchParams({
+      select: 'title,playa,ubicacion,evento,is_active,siguiente_fecha,asistencia_mesa,num_jugadores,num_espera',
+      playa: 'in.(' + playa + ',"general mantenimiento")'
+    });
+    const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/configuraciones?' + p, { headers: headersDe(db.anonKey) });
+    if (!r.ok) throw new Error('Supabase ' + r.status);
+    const filas = await r.json();
+    const c = filas.find(x => x.playa === playa) || null;
+    const mant = filas.find(x => x.playa === 'general mantenimiento');
+    return c && { ...c, mantenimiento: !!(mant && mant.is_active) };
+  };
+
+  // "06:30:00" -> "6:30 a. m."
+  window.horaBonita = function(t){
+    if (!t) return '';
+    let [h, m] = t.split(':').map(Number); const pm = h >= 12; h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2,'0')} ${pm ? 'p. m.' : 'a. m.'}`;
+  };
+
   // Inscripciones no canceladas de una fecha y playa, en orden de llegada
   window.cargarInscritos = async function({ fecha, playa = 'sombrillas1' }){
     const db = window.MUEVETE_DB || {};

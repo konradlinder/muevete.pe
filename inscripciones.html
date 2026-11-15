@@ -215,6 +215,8 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
     <button data-e="inscrito">Inscrito</button>
     <button data-e="multa">Multa</button>
     <button data-e="cerradas">Cerradas</button>
+    <button data-e="llenas">Cupos agotados</button>
+    <button data-e="mantenimiento">Mantenimiento</button>
     <button data-e="doble">Doble torneo</button>
     <button data-e="sesion">Sin sesión</button>
   </div>
@@ -301,6 +303,20 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
       <div class="acciones-c"><a class="pill verde" data-comunidad target="_blank" rel="noopener">unirme <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a></div>
     </div>
 
+    <!-- 4b. CUPOS AGOTADOS -->
+    <div class="estado" data-estado="llenas">
+      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDB03" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>¡Cupos agotados!</div>
+      <p class="txt">Se completaron los cupos y la lista de espera para esta fecha. Únete a nuestra comunidad para enterarte de la próxima.</p>
+      <div class="acciones-c"><a class="pill verde" data-comunidad target="_blank" rel="noopener">unirme <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a></div>
+    </div>
+
+    <!-- 4c. MANTENIMIENTO -->
+    <div class="estado" data-estado="mantenimiento">
+      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDB03" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg>Estamos en mantenimiento</div>
+      <p class="txt">Las inscripciones vuelven en breve. Únete a nuestra comunidad para enterarte apenas abran.</p>
+      <div class="acciones-c"><a class="pill verde" data-comunidad target="_blank" rel="noopener">unirme <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a></div>
+    </div>
+
     <!-- 5. DOS TORNEOS EL MISMO DÍA -->
     <div class="estado" data-estado="doble">
       <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FF8A7A" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/></svg>¡No puedes inscribirte!</div>
@@ -374,12 +390,15 @@ const LINKS = {
   const $=s=>document.querySelector(s);
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
-  // ===== CONFIGURACIÓN DEL TORNEO (luego vendrá de la base de datos) =====
+  // ===== CONFIGURACIÓN DEL TORNEO =====
+  // Fecha, hora, sede, cupos y si está abierto vienen de Supabase (tabla configuraciones).
+  // Estos valores solo se usan si no se puede leer la base de datos.
   const TORNEO = {
     sede: "Playa Sombrillas, Barranco",
     fecha: "",                // vacío = la próxima fecha de data/fechas.json
     playa: "sombrillas1",     // sombrillas1 = turno 6:30 a. m.
-    cupo: 125,                // ← cupos del torneo: del 126 en adelante pasan a lista de espera
+    cupo: 100,                // num_jugadores
+    maxEspera: 25,            // num_espera
     hora: "6:30 a. m.",
     evento: "Uma Arena: competencia vóley playa individual",
     comunidad: "",            // ← link de la comunidad de WhatsApp
@@ -390,7 +409,7 @@ const LINKS = {
       ["S/ 13", "de multa por llegar después de las 6:30 a. m. al registro en mesa"]
     ],
     mostrarVistaPrevia: true, // selector de estados (solo mientras diseñamos)
-    estadoInicial: "abiertas"
+    estadoInicial: "cerradas"
   };
 
   const aviso=t=>{const a=$('#aviso');a.textContent=t;a.classList.add('on');clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove('on'),2200)};
@@ -409,7 +428,7 @@ const LINKS = {
   const mostrar=e=>{ estado=e;
     document.querySelectorAll('.estado').forEach(x=>x.classList.toggle('on',x.dataset.estado===e));
     document.querySelectorAll('#demo button').forEach(b=>b.classList.toggle('on',b.dataset.e===e));
-    $('#listas').hidden=(e==='cerradas'||e==='sesion');
+    $('#listas').hidden=(e==='cerradas'||e==='sesion'||e==='mantenimiento');
     $('#confCancelar').classList.remove('on');
   };
   $('#demo').hidden=!TORNEO.mostrarVistaPrevia;
@@ -428,18 +447,34 @@ const LINKS = {
   const vacia=t=>Object.assign(document.createElement('div'),{className:'vacia',textContent:t});
   const pintarListas=()=>{
     const L=yo?[...todos,yo]:todos;
-    const inscritos=L.slice(0,TORNEO.cupo), espera=L.slice(TORNEO.cupo);
+    const inscritos=L.slice(0,TORNEO.cupo), espera=L.slice(TORNEO.cupo,TORNEO.cupo+TORNEO.maxEspera);
     $('#lInscritos').replaceChildren(...(inscritos.length?inscritos.map((j,i)=>fila(j,i)):[vacia(errorListas?'No se pudo cargar la lista':'Aún no hay inscritos')]));
     $('#lEspera').replaceChildren(...(espera.length?espera.map((j,i)=>fila(j,i,'espera')):[vacia('Nadie en lista de espera')]));
     $('#cInscritos').textContent=pad(inscritos.length); $('#cEspera').textContent=pad(espera.length);
   };
   (async()=>{
+    let cfg=null;
+    try{ cfg=await cargarConfig(TORNEO.playa); }catch(e){ console.warn('No se pudo leer configuraciones:',e); }
+    if(cfg){
+      if(cfg.siguiente_fecha) TORNEO.fecha=cfg.siguiente_fecha;
+      if(cfg.asistencia_mesa) TORNEO.hora=horaBonita(cfg.asistencia_mesa);
+      if(cfg.ubicacion) TORNEO.sede=cfg.ubicacion;
+      if(cfg.num_jugadores!=null) TORNEO.cupo=cfg.num_jugadores;
+      if(cfg.num_espera!=null) TORNEO.maxEspera=cfg.num_espera;
+      $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
+    }
     try{ if(!TORNEO.fecha) TORNEO.fecha=await proximaFecha(); }catch(e){}
     ponerFecha();
-    if(!TORNEO.fecha){ pintarListas(); return; }
-    try{ todos=await cargarInscritos({fecha:TORNEO.fecha, playa:TORNEO.playa}); }
-    catch(e){ console.warn('No se pudo leer inscripciones:',e); errorListas=true; }
+    if(TORNEO.fecha){
+      try{ todos=await cargarInscritos({fecha:TORNEO.fecha, playa:TORNEO.playa}); }
+      catch(e){ console.warn('No se pudo leer inscripciones:',e); errorListas=true; }
+    }
     pintarListas();
+    // estado según la configuración
+    if(cfg){
+      const lleno = todos.length >= TORNEO.cupo + TORNEO.maxEspera;
+      mostrar(cfg.mantenimiento ? 'mantenimiento' : !cfg.is_active ? 'cerradas' : lleno ? 'llenas' : 'abiertas');
+    }
   })();
 
   // ----- formulario -----
