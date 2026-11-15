@@ -6,7 +6,7 @@
    Si se deja vacío, la web usa los datos de respaldo de la carpeta /data.
    ===================================================================== */
 window.MUEVETE_DB = {
-  url: "",          // ej: "https://abcdefghijk.supabase.co"
-  anonKey: "",      // ej: "eyJhbGciOi..." o "sb_publishable_..."
+  url: "https://xrfvzqeepihoyqyootcs.supabase.co",          // ej: "https://abcdefghijk.supabase.co"
+  anonKey: "sb_publishable_LGNSc3y_rJ8dqp_u3_XfSQ_ahogEkUj",      // ej: "eyJhbGciOi..." o "sb_publishable_..."
   temporada: "Primavera 2026"
 };
