@@ -352,8 +352,8 @@ const CONFIG = {
   </div>
 </main>
 
-<div class="mfondo" id="mfondo"></div>
-<aside class="mpanel" id="mpanel" aria-label="Menú" aria-hidden="true">
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
   <div class="mhead">
     <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
     <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
@@ -455,7 +455,14 @@ const CONFIG = {
 
   // menú móvil
   const mp=$('#mpanel');
-  const menu=open=>{document.body.classList.toggle('mopen',open);mp.setAttribute('aria-hidden',!open)};
+  // el panel y el fondo oscuro no existen mientras el menú está cerrado
+  // (así Safari en iPhone no pinta la franja de arriba con su color)
+  const mf=$('#mfondo'); let cierre;
+  const menu=open=>{
+    clearTimeout(cierre);
+    if(open){ mp.hidden=false; mf.hidden=false; mp.offsetWidth; requestAnimationFrame(()=>document.body.classList.add('mopen')); }
+    else { document.body.classList.remove('mopen'); cierre=setTimeout(()=>{mp.hidden=true; mf.hidden=true;},340); }
+  };
   $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); $('#mfondo').onclick=()=>menu(false);
   addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
