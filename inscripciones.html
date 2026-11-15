@@ -134,6 +134,10 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
 /* listas */
 .listas{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:46px}
 .listas[hidden]{display:none}
+.listas-aviso{margin:46px auto 0;max-width:560px;text-align:center;background:#fff;border-radius:18px;padding:22px 24px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.listas-aviso[hidden]{display:none}
+.listas-aviso b{display:block;font-size:18px;font-weight:600;margin-bottom:4px}
+.listas-aviso span{font-size:15px;color:#5B6370}
 .lista-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .lista-h h2{font-size:22px;font-weight:600}
 .cont{min-width:44px;height:32px;border-radius:999px;background:var(--azul-menu);color:#fff;display:grid;place-items:center;font-size:15px;padding:0 12px}
@@ -371,6 +375,7 @@ html{scrollbar-gutter:stable}
   </section>
 
   <!-- LISTAS -->
+  <div class="listas-aviso" id="listasAviso" hidden><b>La lista de inscritos se publicará pronto</b><span id="listasAvisoTxt"></span></div>
   <section class="listas" id="listas">
     <div>
       <div class="lista-h"><h2>Lista de inscritos:</h2><span class="cont" id="cInscritos">00</span></div>
@@ -433,7 +438,8 @@ const LINKS = {
     sede: "Playa Sombrillas, Barranco",
     fecha: "",                // vacío = la próxima fecha de data/fechas.json
     playa: "sombrillas1",     // sombrillas1 = turno 6:30 a. m.
-    cupo: 100,                // num_jugadores
+    minLista:10,      // la lista se muestra a todos desde este número de inscritos
+  cupo: 100,                // num_jugadores
     maxEspera: 25,            // num_espera
     hora: "6:30 – 10:30 a. m.",
     evento: "Uma Arena: competencia vóley playa individual",
@@ -464,14 +470,26 @@ const LINKS = {
   const mostrar=e=>{ estado=e;
     document.querySelectorAll('.estado').forEach(x=>x.classList.toggle('on',x.dataset.estado===e));
     document.querySelectorAll('#demo button').forEach(b=>b.classList.toggle('on',b.dataset.e===e));
-    $('#listas').hidden=(e==='cerradas'||e==='sesion'||e==='mantenimiento');
+    ponerListas();
     $('#confCancelar').classList.remove('on');
   };
   $('#demo').hidden=!TORNEO.mostrarVistaPrevia;
   document.querySelectorAll('#demo button').forEach(b=>b.onclick=()=>mostrar(b.dataset.e));
 
   // ----- listas (Supabase) -----
-  let todos=[], yo=null, errorListas=false;
+  let todos=[], yo=null, errorListas=false, total=null;
+  // Las listas se ven para todos cuando hay al menos TORNEO.minLista inscritos
+  function ponerListas(){
+    const n=total==null?(todos.length+(yo?1:0)):total+(yo?1:0);
+    const visibles=estado!=='mantenimiento'&&(errorListas||n>=TORNEO.minLista);
+    $('#listas').hidden=!visibles;
+    const av=$('#listasAviso');
+    av.hidden=visibles||estado==='mantenimiento'||!TORNEO.fecha;
+    const faltan=TORNEO.minLista-n;
+    $('#listasAvisoTxt').textContent=n>0
+      ? `Van ${n} inscrito${n===1?'':'s'}. Se mostrará cuando haya al menos ${TORNEO.minLista} (faltan ${faltan}).`
+      : `Se mostrará cuando haya al menos ${TORNEO.minLista} inscritos.`;
+  }
   const tpl=$('#tpl-insc');
   const fila=(j,i,clase)=>{const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
     if(clase) n.classList.add(clase);
@@ -502,13 +520,16 @@ const LINKS = {
     try{ if(!TORNEO.fecha) TORNEO.fecha=await proximaFecha(); }catch(e){}
     ponerFecha();
     if(TORNEO.fecha){
+      try{ total=await contarInscritos({fecha:TORNEO.fecha, playa:TORNEO.playa}); }
+      catch(e){ console.warn('No se pudo contar inscripciones:',e); }
       try{ todos=await cargarInscritos({fecha:TORNEO.fecha, playa:TORNEO.playa}); }
       catch(e){ console.warn('No se pudo leer inscripciones:',e); errorListas=true; }
+      if(total==null) total=todos.length;
     }
-    pintarListas();
+    pintarListas(); ponerListas();
     // estado según la configuración
     if(cfg){
-      const lleno = todos.length >= TORNEO.cupo + TORNEO.maxEspera;
+      const lleno = total >= TORNEO.cupo + TORNEO.maxEspera;
       mostrar(cfg.mantenimiento ? 'mantenimiento' : !cfg.is_active ? 'cerradas' : lleno ? 'llenas' : 'abiertas');
     }
   })();

@@ -75,4 +75,14 @@
     if (!r.ok) throw new Error('Supabase ' + r.status);
     return (await r.json()).map(x => ({ id: x.id, nombre: x.jugador, foto: x.profile_picture || '', creado: x.created_at }));
   };
+
+  // Cuántos inscritos activos hay (número público, sin datos de jugadores)
+  window.contarInscritos = async function({ fecha, playa = 'sombrillas1' }){
+    const db = window.MUEVETE_DB || {};
+    if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
+    const h = Object.assign({ 'Content-Type': 'application/json' }, headersDe(db.anonKey));
+    const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/rpc/conteo_inscritos', { method: 'POST', headers: h, body: JSON.stringify({ p_fecha: fecha, p_playa: playa }) });
+    if (!r.ok) throw new Error('Supabase ' + r.status);
+    return +(await r.json());
+  };
 })();
