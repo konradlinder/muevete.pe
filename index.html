@@ -60,7 +60,7 @@ img,video{display:block;max-width:100%}
 /* ---------- HERO ---------- */
 .hero{position:relative;height:759px;background:var(--gris-hero);overflow:hidden}
 .hero-bg{position:absolute;inset:0}
-.hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover}
+.hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 42%}
 .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,40,110,.45) 0%,rgba(0,40,110,.25) 45%,rgba(0,40,110,.55) 100%);pointer-events:none}
 .hero-bg:has(.ph)::after{display:none}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
@@ -162,7 +162,7 @@ footer a:hover{color:var(--amarillo)}
   .right.open .burger{position:fixed;top:19px;right:21px}
 }
 @media (max-width:760px){
-  .hero{height:auto;min-height:620px}
+  .hero{height:auto;min-height:620px;min-height:100svh}
   .hero-in{padding:120px 20px 50px}
   .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
   .temporada h1{font-size:32px;line-height:36px;text-align:center}
@@ -202,7 +202,7 @@ const CONFIG = {
     logoIcono:     "img/logo-icono.png",   // logo cuadrado de la cabecera
     logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
     heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
-    heroFoto:      "media/fondo.jpg",      // imagen mientras carga el video (opcional)
+    heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
     sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
@@ -360,8 +360,18 @@ const CONFIG = {
   const hb=$('#heroBg');
   const sinFondo=()=>{hb.innerHTML=ph('sube tu video como media/fondo.mp4')};
   const conFoto=()=>{ if(!M.heroFoto) return sinFondo(); const i=new Image(); i.alt=''; i.onerror=sinFondo; i.src=M.heroFoto; hb.replaceChildren(i); };
-  if(M.heroVideo){ const v=document.createElement('video'); Object.assign(v,{autoplay:true,muted:true,loop:true,playsInline:true});
-    v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.onerror=conFoto; v.src=M.heroVideo; hb.replaceChildren(v); v.play().catch(()=>{}); }
+  if(M.heroVideo){
+    // video declarado como HTML (más compatible con iPhone/Safari)
+    hb.innerHTML=`<video autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture ${M.heroFoto?`poster="${M.heroFoto}"`:''}>
+      <source src="${M.heroVideo}" type="video/mp4"></video>`;
+    const v=hb.querySelector('video'); v.muted=true; v.defaultMuted=true;
+    v.querySelector('source').addEventListener('error',conFoto);
+    const intentar=()=>{const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});};
+    intentar(); v.addEventListener('loadeddata',intentar);
+    // si el navegador bloquea el autoplay (ej. modo ahorro de batería), arranca al primer toque o scroll
+    const alTocar=()=>{intentar(); if(!v.paused){['touchstart','click','scroll'].forEach(e=>removeEventListener(e,alTocar));}};
+    ['touchstart','click','scroll'].forEach(e=>addEventListener(e,alTocar,{passive:true}));
+  }
   else conFoto();
 
   // whatsapp
