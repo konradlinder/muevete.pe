@@ -160,7 +160,7 @@ select:disabled{color:#9AA1AD;cursor:default}
       <div class="filtros">
         <span class="lbl">Filtrar por:</span>
         <div class="fila-f">
-          <select id="fCategoria" aria-label="Categoría"><option value="">Categorías</option></select>
+          <select id="fCategoria" aria-label="Categoría"><option value="">Todas las categorías</option></select>
           <input id="fNombre" type="search" placeholder="Nombre" aria-label="Buscar por nombre" autocomplete="off">
         </div>
       </div>
@@ -208,6 +208,8 @@ select:disabled{color:#9AA1AD;cursor:default}
   </nav>
 </aside>
 
+<script src="js/config.js"></script>
+<script src="js/ranking-datos.js"></script>
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
@@ -225,18 +227,20 @@ const LINKS = {
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
   // ===== RANKING (repetidor) =====
-  const DATOS='data/ranking.json';
   const tpl=$('#tpl-jugador'), box=$('#filas'), selCat=$('#fCategoria'), inNom=$('#fNombre');
   const fmt=n=>(n===''||n==null)?'':Number(n).toLocaleString('es-PE',{maximumFractionDigits:1,useGrouping:false});
   const sinTildes=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const GENEROS={M:'Hombres',F:'Mujeres'};
+  const EDADES={'-18':'Menores de 18','19-39':'19 a 39 años','40-49':'40 a 49 años','50+':'50 años o más'};
   let todos=[];
+  const pasaFiltro=(j,v)=>{ if(!v) return true; const [t,x]=v.split(':'); return t==='g'?j.genero===x:j.categoria===x; };
   const pintar=()=>{
-    const cat=selCat.value, q=sinTildes(inNom.value.trim());
-    const lista=todos.filter(j=>(!cat||j.categoria===cat)&&(!q||sinTildes(j.nombre).includes(q)));
+    const v=selCat.value, q=sinTildes(inNom.value.trim());
+    const lista=todos.filter(j=>pasaFiltro(j,v)&&(!q||sinTildes(j.nombre).includes(q)));
     box.replaceChildren(...lista.map(j=>{
       const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
       f('puesto').textContent=j.puesto;
-      const im=new Image(); im.alt=''; im.src=j.foto||'img/avatar.png'; f('av').append(im);
+      const im=new Image(); im.alt=''; im.loading='lazy'; im.onerror=()=>{im.onerror=null;im.src='img/avatar.png'}; im.src=j.foto||'img/avatar.png'; f('av').append(im);
       f('nombre').textContent=j.nombre;
       f('sube').toggleAttribute('hidden',j.tendencia!=='sube');
       f('baja').toggleAttribute('hidden',j.tendencia!=='baja');
@@ -247,11 +251,13 @@ const LINKS = {
     }));
     $('#vacio').hidden=lista.length>0;
   };
-  fetch(DATOS,{cache:'no-cache'}).then(r=>{if(!r.ok)throw r.status;return r.json()}).then(d=>{
-    todos=[...d].sort((a,b)=>a.puesto-b.puesto);
-    const cats=[...new Set(todos.map(j=>j.categoria).filter(Boolean))].sort();
-    cats.forEach(c=>selCat.append(new Option(c,c)));
-    selCat.disabled=!cats.length;
+  cargarRanking().then(d=>{
+    todos=d;
+    const grupo=(titulo,pares)=>{ if(!pares.length) return; const og=document.createElement('optgroup'); og.label=titulo;
+      pares.forEach(([v,t])=>og.append(new Option(t,v))); selCat.append(og); };
+    grupo('Género',Object.keys(GENEROS).filter(g=>d.some(j=>j.genero===g)).map(g=>['g:'+g,GENEROS[g]]));
+    grupo('Edad',Object.keys(EDADES).filter(c=>d.some(j=>j.categoria===c)).map(c=>['c:'+c,EDADES[c]]));
+    selCat.disabled=selCat.options.length<2;
     pintar();
   }).catch(()=>{box.innerHTML='<div class="vacio">No se pudo cargar el ranking</div>'});
   selCat.addEventListener('change',pintar); inNom.addEventListener('input',pintar);

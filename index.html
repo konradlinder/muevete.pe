@@ -246,9 +246,8 @@ const CONFIG = {
   whatsapp: "51964214852",
   waTexto: "Hola Konrad,\nNecesito ayuda con",
 
-  // Las fechas se editan en data/fechas.json y el ranking (Top 5) en data/ranking.json
+  // Las fechas se editan en data/fechas.json. El Top 5 sale del ranking (Supabase, ver js/config.js)
   datosFechas: "data/fechas.json",
-  datosTop5:   "data/ranking.json",   // el Top 5 se toma de los 5 primeros del ranking
 
   // ---- FOTOS Y VIDEOS: ruta o URL de cada archivo (vacío = recuadro de muestra) ----
   media: {
@@ -414,6 +413,8 @@ const CONFIG = {
 </aside>
 <a class="wa" id="wa" target="_blank" rel="noopener" aria-label="Contacto WhatsApp"></a>
 
+<script src="js/config.js"></script>
+<script src="js/ranking-datos.js"></script>
 <script>
 (function(){
   try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
@@ -481,12 +482,11 @@ const CONFIG = {
   }).catch(()=>errorLista($('#fechas')));
 
   // top 5
-  cargar(C.datosTop5).then(lista=>{
-    lista=[...lista].sort((a,b)=>(a.puesto||99)-(b.puesto||99)).slice(0,5);
+  cargarRanking({limite:5}).then(lista=>{
     repetir(lista,$('#tpl-jugador'),$('#top5'),(n,f,it,i)=>{
       f('puesto').textContent=it.puesto||i+1;
       f('nombre').textContent=it.nombre;
-      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else {const im=new Image();im.src=M.avatar;im.alt='';f('av').append(im)}
+      {const im=new Image();im.alt='';im.onerror=()=>{im.onerror=null;im.src=M.avatar};im.src=it.foto||M.avatar;f('av').append(im)}
       f('sube').toggleAttribute('hidden',it.tendencia!=='sube'); f('baja').toggleAttribute('hidden',it.tendencia!=='baja');
       f('perfil').href=it.perfil||C.links.ranking; f('perfil').setAttribute('aria-label','Ver '+it.nombre);
     });
