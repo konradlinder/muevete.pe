@@ -173,6 +173,17 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
   .enc,.jug{grid-template-columns:36px 38px 1fr}
   .yape .num{font-size:20px}
 }
+
+/* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
+.menu{padding:0;align-items:stretch}
+.menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:not(.on):hover{color:var(--amarillo)}
+.mnav{padding:0 10px;gap:2px}
+.mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
+.msub{padding-left:14px}
+.msub a{min-height:46px;padding-left:26px}
 </style>
 </head>
 <body>
