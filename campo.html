@@ -124,6 +124,12 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .estado-pend{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#BFD0F5}
 .estado-pend::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amarillo)}
 .partido.fin .p-pie{display:none}
+.partido.fin.editable .p-pie{display:flex;min-height:0;margin-top:10px}
+.pill.chica{height:34px;padding:0 14px;font-size:13px;gap:7px}
+.pill.borde{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45)}
+.pill.borde:hover{background:rgba(255,255,255,.1)}
+.pill.chica svg{width:15px;height:15px}
+.cancelar{background:none;border:0;color:#BFD0F5;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-right:10px}
 .lista{align-items:start}
 .partido .ayuda{margin-right:auto;font-size:12px;font-weight:500;color:#BFD0F5;padding-right:10px}
 .partido .ayuda.error{color:#FFB59A;font-weight:600}
@@ -286,6 +292,8 @@ const LINKS = {
   const SVG_OK=`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8.2" stroke-width="1.6"/><path d="M6.4 10.3l2.4 2.4 4.8-5"/></svg>`, SVG_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
   const AUTH=window.MUEVETE_AUTH;
   let partidos=[], J=[], puedo=false, sesion=null, firma='';
+  const editando=new Set();   // partidos finalizados que se están corrigiendo
+  const SVG_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
   const escritos={};   // marcadores que la persona está escribiendo (no se pierden al actualizar)
 
   // Tabla calculada con los partidos finalizados
@@ -313,9 +321,7 @@ const LINKS = {
     const pend=partidos.some(p=>!p.fin);
     const nota=$('#nota');
     nota.hidden=!(pend&&!puedo);
-    if(pend&&!puedo) nota.innerHTML=sesion
-      ? 'Solo los jugadores de este campo pueden registrar los marcadores.'
-      : '¿Juegas en este campo? <a href="mi-cuenta.html">Inicia sesión</a> para registrar los marcadores.';
+    if(pend&&!puedo) nota.innerHTML='<a href="mi-cuenta.html">Inicia sesión</a> para registrar los marcadores.';
 
     if(!partidos.length){ $('#lista').innerHTML='<p class="aviso">Todavía no hay partidos para este campo.</p>'; return; }
     const tpl=$('#tpl-partido');
@@ -324,16 +330,24 @@ const LINKS = {
       f('n').textContent=p.n;
       const eq=(el,ids)=>ids.forEach(j=>{const s=document.createElement('span');s.textContent=j;el.append(s)});
       eq(f('ea'),p.a); eq(f('eb'),p.b);
-      if(p.fin){
+      const corrigiendo=p.fin&&editando.has(p.id);
+      if(p.fin&&!corrigiendo){
         n.classList.add('fin');
         const ganaA=p.pa>p.pb;
         f('pa').textContent=p.pa??'–'; f('pb').textContent=p.pb??'–';
         f(ganaA?'la':'lb').classList.add('gana');
         f(ganaA?'lb':'la').classList.add('pierde');
         f('estado').innerHTML=`<span class="estado-fin">${SVG_OK} Finalizado</span>`;
+        if(puedo){
+          n.classList.add('editable');
+          const e=document.createElement('button'); e.type='button'; e.className='pill chica borde'; e.innerHTML='editar '+SVG_EDIT;
+          e.setAttribute('aria-label',`Editar el marcador del partido ${p.n}`);
+          e.onclick=()=>{ editando.add(p.id); escritos[p.id]=[String(p.pa??''),String(p.pb??'')]; pintar(); };
+          f('pie').append(e);
+        }
         return n;
       }
-      f('estado').innerHTML='<span class="estado-pend">Pendiente</span>';
+      f('estado').innerHTML=corrigiendo?'<span class="estado-pend">Editando</span>':'<span class="estado-pend">Pendiente</span>';
       if(!puedo){
         f('pa').innerHTML='<span class="guion">–</span>'; f('pb').innerHTML='<span class="guion">–</span>';
         n.querySelector('.p-pie').remove();
@@ -345,26 +359,31 @@ const LINKS = {
       const b=document.createElement('button'); b.type='button'; b.className='pill';
       const ayuda=Object.assign(document.createElement('span'),{className:'ayuda'});
       let confirmando=false;
-      const normal=()=>{confirmando=false;b.classList.remove('confirmar');b.innerHTML='Finalizar '+SVG_CHECK};
+      const etiqueta=corrigiendo?'Guardar':'Finalizar';
+      const normal=()=>{confirmando=false;b.classList.remove('confirmar');b.innerHTML=etiqueta+' '+SVG_CHECK};
       const revisar=()=>{
         escritos[p.id]=[ia.value,ib.value]; normal(); ayuda.classList.remove('error');
         const a=ia.value,c=ib.value, ok=a!==''&&c!==''&&+a>=0&&+c>=0&&+a<=99&&+c<=99;
         b.disabled=!(ok&&+a!==+c);
-        ayuda.textContent=(ok&&+a===+c)?'No puede haber empate':'Ingresa el marcador';
+        ayuda.textContent=(ok&&+a===+c)?'No puede haber empate':(corrigiendo?'':'Ingresa el marcador');
       };
       ia.oninput=ib.oninput=revisar; revisar();
       b.onclick=async()=>{
-        if(!confirmando){ confirmando=true; b.classList.add('confirmar'); b.innerHTML=`Confirmar ${ia.value}–${ib.value} ${SVG_CHECK}`; ayuda.textContent='¿Seguro? Luego no se puede cambiar'; return; }
+        if(!confirmando){ confirmando=true; b.classList.add('confirmar'); b.innerHTML=`Confirmar ${ia.value}–${ib.value} ${SVG_CHECK}`; ayuda.textContent='¿Seguro? Toca otra vez para confirmar'; return; }
         b.disabled=true; b.textContent='guardando…';
         try{
           await AUTH.db('rpc/finalizar_partido',{method:'POST',body:JSON.stringify({p_id:p.id,p_score_a:+ia.value,p_score_b:+ib.value})});
-          delete escritos[p.id]; firma=''; await cargar();
+          delete escritos[p.id]; editando.delete(p.id); firma=''; await cargar();
         }catch(e){
           normal(); b.disabled=false; ayuda.classList.add('error');
           ayuda.textContent=e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':e.message;
         }
       };
-      f('pie').append(ayuda,b);
+      if(corrigiendo){
+        const c=document.createElement('button'); c.type='button'; c.className='pill chica borde'; c.style.marginRight='8px'; c.textContent='cancelar';
+        c.onclick=()=>{ editando.delete(p.id); delete escritos[p.id]; pintar(); };
+        f('pie').append(ayuda,c,b);
+      } else f('pie').append(ayuda,b);
       return n;
     }));
   }
@@ -376,16 +395,13 @@ const LINKS = {
     const nueva=ps.map(p=>p.id+p.act).join()+'|'+puedo;
     if(nueva===firma) return; firma=nueva;
     // no repintar mientras alguien escribe un marcador
-    if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.partido')&&partidos.length){ firma=''; return; }
+    if((editando.size||(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.partido')))&&partidos.length){ firma=''; return; }
     partidos=ps; J=jugadoresDelCampo(ps); pintar();
   }
 
   (async()=>{
     try{ sesion=AUTH?await AUTH.sesion():null; }catch(e){ sesion=null; }
-    if(sesion){
-      try{ puedo=!!(await AUTH.db('rpc/juego_en_campo',{method:'POST',body:JSON.stringify({p_ronda:ronda,p_playa:'sombrillas1',p_campo:campo})})); }
-      catch(e){ puedo=false; }
-    }
+    puedo=!!sesion;   // por ahora: cualquier persona con cuenta puede registrar o corregir marcadores
     await cargar();
   })();
   setInterval(()=>{ if(!document.hidden) cargar(); },20000);
