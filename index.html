@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>muévete.pe | Voley Playa | Lima, Perú</title>
+<meta name="description" content="muévete.pe: promovemos la comunidad del Vóley Playa. +90 participantes por fecha. Juegan principiantes, avanzados y expertos.">
+<meta name="theme-color" content="#0046B8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;1,600&family=Roboto:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ===== Línea gráfica muévete.pe (valores tomados del sitio actual) ===== */
+:root{
+  --azul:#0046B8;        /* fondo principal */
+  --azul-menu:#0051C2;   /* menú y botón Mi cuenta */
+  --amarillo:#FFDB03;    /* filas, botones y acentos */
+  --blanco:#F7F7F7;      /* textos sobre azul */
+  --negro:#000;          /* textos sobre amarillo */
+  --gris-hero:#F7F7F7;
+  --verde:#1E9E3A;       /* sube en ranking */
+  --naranja:#E2561B;     /* baja en ranking */
+  --poppins:"Poppins",sans-serif;
+  --roboto:"Roboto",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--poppins);font-weight:600;background:var(--azul);color:var(--blanco);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%}
+.wrap{max-width:1366px;margin:0 auto;position:relative}
+
+/* ---------- placeholder de medios ---------- */
+.ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  border:1.5px dashed rgba(255,255,255,.55);color:rgba(255,255,255,.85);font-size:12px;padding:6px;line-height:1.3}
+.ph.dark{border-color:rgba(0,70,184,.35);color:rgba(0,70,184,.7)}
+
+/* ---------- HEADER ---------- */
+.top{position:absolute;inset:0 0 auto 0;z-index:20}
+.top .wrap{display:flex;align-items:flex-start;justify-content:space-between;padding:19px 21px 0}
+.logo-box{background:var(--azul);border-radius:5px;padding:9px 14px;width:107px;height:74px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(179,179,179,.6)}
+.logo-box img{max-height:60px;width:auto}
+.right{display:flex;gap:38px;align-items:flex-start;padding-top:7px}
+.menu{display:flex;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
+.menu a:hover{color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 15px;font-size:16px;letter-spacing:.02em;color:#fff}
+.cuenta svg{width:24px;height:24px}
+.cuenta:hover{color:var(--amarillo)}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:5px;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger svg{width:26px;height:26px}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;height:759px;background:var(--gris-hero);overflow:hidden}
+.hero-bg{position:absolute;inset:0}
+.hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover}
+.hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
+.hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
+.hero-logo{width:575px;max-width:82vw;aspect-ratio:575/401}
+.hero-logo img{width:100%;height:100%;object-fit:contain}
+.temporada{display:flex;align-items:flex-end;gap:40px;margin-top:-18px}
+.temporada h1{font-style:italic;font-size:45px;line-height:49.5px;letter-spacing:.02em;color:var(--amarillo);text-align:right;font-weight:600}
+.by{display:flex;align-items:flex-end;gap:12px;font-style:italic;font-size:40px;line-height:44px;letter-spacing:.02em;color:var(--blanco)}
+.by .spon{width:235px;height:90px}
+.by .spon img{width:100%;height:100%;object-fit:contain}
+.hero .ph.dark{border-color:rgba(0,70,184,.35)}
+
+/* ---------- WhatsApp flotante ---------- */
+.wa{position:fixed;right:40px;bottom:30px;z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
+.wa:hover{transform:scale(1.07)}
+.wa img{width:100%;height:100%;object-fit:cover}
+.wa svg{width:30px;height:30px;fill:#fff}
+
+/* ---------- TRES PILARES ---------- */
+.pilares{display:grid;grid-template-columns:repeat(3,1fr);padding:51px 40px 0;text-align:center}
+.pilar{display:flex;flex-direction:column;align-items:center}
+.pilar .ic{width:138px;height:138px;display:flex;align-items:center;justify-content:center}
+.pilar .ic img{width:100%;height:100%;object-fit:contain}
+.pilar .ic svg{width:130px;height:130px}
+.pilar p{margin-top:24px;font-size:20px;letter-spacing:.02em;line-height:1.15;max-width:300px}
+.center-btn{display:flex;justify-content:center;margin-top:26px}
+
+/* ---------- BOTÓN AMARILLO ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--amarillo);color:var(--negro);border-radius:4px;font-size:15px;height:29px;padding:0 24px;min-width:127px;transition:filter .15s,transform .15s}
+.btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.btn svg{width:16px;height:16px;flex:none}
+
+/* ---------- FECHAS / TOP 5 / FOTO ---------- */
+.trio{display:grid;grid-template-columns:490px 412px 1fr;column-gap:0;margin-top:19px;align-items:start}
+.col-fechas{padding:24px 0 0 133px}
+.col-top{padding:24px 0 0 46px}
+.col-foto{height:399px}
+.col-foto img{width:100%;height:100%;object-fit:cover}
+h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
+.lista{display:grid;gap:0}
+.fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:27px;padding:0 14px}
+.fila:first-child{border-radius:4px 4px 0 0}
+.fila:last-child{border-radius:0 0 4px 4px}
+.fechas .fila{grid-template-columns:72px 82px 1fr;width:313px}
+.fechas .fila span:nth-child(2){text-align:right;padding-right:28px}
+.fechas .fila span:nth-child(3){padding-left:16px}
+.fechas .fila.pasada{color:rgba(0,0,0,.38)}
+.fechas .fila.prox{box-shadow:inset 4px 0 0 var(--negro)}
+.fechas .fila .hoy{font-size:10px;background:var(--azul);color:var(--amarillo);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+.ven{position:relative;width:313px;margin-top:20px}
+.ven p{font-size:25px;line-height:27.5px;letter-spacing:.02em}
+.ven em{color:var(--amarillo)}
+.ven .btn{position:absolute;right:6px;bottom:-4px}
+
+.top5 .lista{width:277px;margin-left:6px}
+.top5 .fila{grid-template-columns:22px 28px 1fr auto;height:32px;padding:0 6px 0 14px}
+.top5 .av{width:22px;height:22px;overflow:hidden;background:rgba(0,70,184,.15);display:grid;place-items:center;font-size:9px;color:var(--azul)}
+.top5 .av img{width:100%;height:100%;object-fit:cover}
+.top5 .nm{padding-left:6px}
+.top5 .ics{display:flex;gap:5px;align-items:center}
+.top5 .ics svg{width:20px;height:20px}
+.top5 .ics a{display:flex}
+.top5 .center-btn{margin-top:20px;justify-content:flex-end;width:272px}
+
+.foot-logo{display:flex;justify-content:center;padding:28px 0 0}
+.foot-logo > div{width:278px;height:211px}
+.foot-logo img{width:100%;height:100%;object-fit:contain}
+
+/* ---------- FOOTER ---------- */
+footer{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:start;padding:12px 44px 46px;font-family:var(--roboto);font-weight:700;font-size:16px}
+footer a{text-decoration:underline;text-underline-offset:2px}
+footer a:hover{color:var(--amarillo)}
+.f-links{display:grid;gap:6px;justify-items:start}
+.f-links .sep{height:12px}
+.spons{display:flex;align-items:center;justify-content:space-around;gap:20px;padding-top:4px}
+.spons a{display:flex;align-items:center;justify-content:center;height:80px;text-decoration:none}
+.spons a img{max-height:80px;width:auto}
+.spons a .ph{width:150px;height:70px;font-family:var(--poppins);font-weight:600}
+.f-admin{display:grid;gap:6px;justify-items:end;text-align:right}
+.f-admin .copy{margin-top:16px;text-decoration:none}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1180px){
+  .trio{grid-template-columns:1fr 1fr;row-gap:40px;padding:0 30px}
+  .col-fechas,.col-top{padding:24px 0 0 !important;justify-self:center}
+  .col-foto{grid-column:1/-1;height:420px;margin:0 -30px}
+}
+@media (max-width:980px){
+  .menu,.cuenta{display:none}
+  .burger{display:grid;place-items:center}
+  .right.open{position:fixed;inset:0;background:var(--azul);flex-direction:column;align-items:stretch;padding:90px 24px 24px;gap:14px}
+  .right.open .menu{display:flex;flex-direction:column}
+  .right.open .menu a{border-bottom:1px solid rgba(255,255,255,.12)}
+  .right.open .menu a.on{border-radius:0}
+  .right.open .cuenta{display:flex;justify-content:center}
+  .right.open .burger{position:fixed;top:19px;right:21px}
+}
+@media (max-width:760px){
+  .hero{height:auto;min-height:620px}
+  .hero-in{padding:120px 20px 50px}
+  .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
+  .temporada h1{font-size:32px;line-height:36px;text-align:center}
+  .by{font-size:28px}
+  .by .spon{width:170px;height:64px}
+  .pilares{grid-template-columns:1fr;row-gap:36px;padding:44px 20px 0}
+  .pilar p{margin-top:14px}
+  .trio{grid-template-columns:1fr;padding:0 20px}
+  .col-fechas,.col-top{justify-self:center}
+  .col-foto{margin:0 -20px;height:300px}
+  footer{grid-template-columns:1fr;gap:30px;padding:20px 24px 100px;text-align:center}
+  .f-links,.f-admin{justify-items:center;text-align:center}
+  .spons{flex-wrap:wrap}
+  .wa{right:20px;bottom:20px}
+}
+</style>
+</head>
+<body>
+
+<script>
+/* ======================================================================
+   CONFIGURACIÓN — edita solo esta parte
+   ====================================================================== */
+const CONFIG = {
+  temporada: "Primavera 2026",
+  sede: "Uma Arena",
+  horaFin: "14:00",      // a partir de esta hora, la fecha del día se marca como jugada
+  whatsapp: "51964214852",
+  waTexto: "Hola Konrad,\nNecesito ayuda con",
+
+  fechas: ["2026-10-17","2026-10-24","2026-11-07","2026-11-14","2026-11-21"],
+
+  // tendencia: "sube", "baja" o "" (sin flecha). perfil: link al "+" de cada jugador
+  top5: [
+    { nombre:"Isaac Alonso",     foto:"", tendencia:"",     perfil:"" },
+    { nombre:"Diego Luque",      foto:"", tendencia:"",     perfil:"" },
+    { nombre:"Alvaro Rodriguez", foto:"", tendencia:"sube", perfil:"" },
+    { nombre:"Anthony Rosas",    foto:"", tendencia:"baja", perfil:"" },
+    { nombre:"Favio Noce",       foto:"", tendencia:"baja", perfil:"" },
+  ],
+
+  // ---- FOTOS Y VIDEOS: ruta o URL de cada archivo (vacío = recuadro de muestra) ----
+  media: {
+    logo:          "",   // logo muévete.pe (se usa en la cabecera, portada y abajo)
+    heroVideo:     "",   // video de fondo de la portada (.mp4)
+    heroFoto:      "",   // imagen de la portada mientras carga el video
+    sponsorHero:   "",   // logo Electrolife blanco (al lado de "by")
+    iconComunidad: "",   // ícono "contamos con +90 participantes"
+    iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
+    fotoInicio:    "",   // foto a la derecha de Top 5 (inicio.jpg)
+    whatsappIcono: "",   // ícono del botón flotante (opcional)
+  },
+
+  aliados: [
+    { nombre:"Arena Voleibol Club", url:"https://www.instagram.com/arena_voleibolclub/", logo:"" },
+    { nombre:"Electrolife",         url:"https://www.instagram.com/electrolifeperu/",    logo:"" },
+    { nombre:"Diablo Atelier",      url:"https://www.instagram.com/diabloatelier/",      logo:"" },
+  ],
+
+  links: {
+    inicio:        "#inicio",
+    inscripciones: "https://www.muevete.pe/playa/sombrillas1/inscripciones",
+    ranking:       "https://www.muevete.pe/ranking",
+    nosotros:      "https://www.muevete.pe/nosotros",
+    bases:         "https://www.muevete.pe/_files/ugd/b3ff12_eeeb66a490654419864b59722d92b03f.pdf",
+    miCuenta:      "https://www.muevete.pe/account",
+    ronda1:        "https://www.muevete.pe/playa/sombrillas1/ronda/1",
+    ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
+    terminos:      "https://www.muevete.pe/terminos-y-condiciones",
+    admin630:      "https://www.muevete.pe/playa/sombrillas1/admin",
+    admin1030:     "https://www.muevete.pe/playa/sombrillas2/admin",
+    owner:         "https://www.muevete.pe/owner",
+  },
+};
+</script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="list" viewBox="0 0 16 16"><path d="M5 4h9M5 8h9M5 12h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="2" cy="4" r="1" fill="currentColor"/><circle cx="2" cy="8" r="1" fill="currentColor"/><circle cx="2" cy="12" r="1" fill="currentColor"/></symbol>
+  <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="var(--verde)"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="var(--naranja)"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="wa" viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.1.9 2.9 1 4 .8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.2-.3-.3-.7-.5z"/></symbol>
+  <!-- jugador de vóley (línea blanca, igual estilo que el ícono actual) -->
+  <symbol id="jugador" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="7" r="4.5"/><circle cx="32" cy="21" r="4"/><path d="M27 17c-3 2-4 6-2 10 1.5 3 4 4 4 8v4c0 4-3 8-6 12-2 2.5-1.5 5 1 5s4-3 5-6l3-7M37 17c3 2 4 6 2 10-1.5 3-4 4-4 8v4c0 4 1 9 0 13-1 3-3 5-5 6"/></g></symbol>
+  <symbol id="grupo" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="18" r="6"/><path d="M21 44v-6a11 11 0 0 1 22 0v6"/><circle cx="14" cy="24" r="5"/><path d="M5 46v-4a9 9 0 0 1 12-8.5"/><circle cx="50" cy="24" r="5"/><path d="M59 46v-4a9 9 0 0 0-12-8.5"/><path d="M8 54h48"/></g></symbol>
+  <symbol id="podio" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 56V30h20v26M6 56V40h16M42 56V44h16v12M4 56h56"/><path d="M32 8l2.6 5.3 5.8.8-4.2 4.1 1 5.8L32 21.3 26.8 24l1-5.8-4.2-4.1 5.8-.8z"/></g></symbol>
+</svg>
+
+<!-- HEADER -->
+<header class="top">
+  <div class="wrap">
+    <a class="logo-box" data-link="inicio" id="logoTop"></a>
+    <div class="right" id="right">
+      <nav class="menu" aria-label="Menú principal">
+        <a class="on" data-link="inicio">Inicio</a>
+        <a data-link="inscripciones">Inscripciones</a>
+        <a data-link="ranking">Ranking</a>
+        <a data-link="nosotros">Nosotros</a>
+        <a data-link="bases" target="_blank" rel="noopener">Bases</a>
+      </nav>
+      <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
+      <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-in">
+      <div class="hero-logo" id="heroLogo"></div>
+      <div class="temporada">
+        <h1>Temporada<br><span data-t="temporada"></span></h1>
+        <div class="by">by <div class="spon" id="sponHero"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- TRES PILARES -->
+    <section class="pilares">
+      <div class="pilar"><div class="ic"><svg><use href="#jugador"/></svg></div><p>promovemos la comunidad del Vóley Playa</p></div>
+      <div class="pilar"><div class="ic" id="icComunidad"></div><p>contamos con +90 participantes por fecha</p></div>
+      <div class="pilar"><div class="ic" id="icRanking"></div><p>juegan principiantes, avanzados y expertos</p></div>
+    </section>
+    <div class="center-btn"><a class="btn" data-link="nosotros">nosotros <svg><use href="#plus"/></svg></a></div>
+
+    <!-- FECHAS · TOP 5 · FOTO -->
+    <section class="trio">
+      <div class="col-fechas fechas">
+        <h2>Próximas fechas:</h2>
+        <div class="lista" id="fechas"></div>
+        <div class="ven">
+          <p>¡Ven y <em>muévete</em> con nosotros!</p>
+          <a class="btn" data-link="inscripciones">inscribirme <svg><use href="#list"/></svg></a>
+        </div>
+      </div>
+      <div class="col-top top5">
+        <h2>Top 5 <span data-t="temporada"></span>:</h2>
+        <div class="lista" id="top5"></div>
+        <div class="center-btn"><a class="btn" data-link="ranking">ranking <svg><use href="#plus"/></svg></a></div>
+      </div>
+      <div class="col-foto" id="fotoInicio"></div>
+    </section>
+
+    <div class="foot-logo"><div id="logoFoot"></div></div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="f-links">
+        <a data-link="bases" target="_blank" rel="noopener">bases <span data-t="sede"></span></a>
+        <a data-link="ronda1">partidos ronda 1</a>
+        <a data-link="ronda2">partidos ronda 2</a>
+        <span class="sep"></span>
+        <a data-link="terminos">Términos y condiciones</a>
+      </div>
+      <div class="spons" id="spons"></div>
+      <div class="f-admin">
+        <a data-link="admin630">admin sombrillas 6:30</a>
+        <a data-link="admin1030">admin sombrillas 10:30</a>
+        <a data-link="owner">owner</a>
+        <span class="copy">© <span id="yr"></span> by muévete.pe</span>
+      </div>
+    </footer>
+  </div>
+</main>
+
+<a class="wa" id="wa" target="_blank" rel="noopener" aria-label="Contacto WhatsApp"></a>
+
+<script>
+(function(){
+  const C=CONFIG,M=C.media,$=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+  const isVid=u=>/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
+  const ph=(t,dark)=>`<div class="ph${dark?' dark':''}">${t}</div>`;
+  const img=(src,alt,t,dark)=>src?`<img src="${src}" alt="${alt}">`:ph(t,dark);
+
+  $$('[data-t]').forEach(e=>e.textContent=C[e.dataset.t]);
+  $$('[data-link]').forEach(e=>e.href=C.links[e.dataset.link]||'#');
+  $('#yr').textContent=new Date().getFullYear();
+
+  // logos y medios
+  $('#logoTop').innerHTML=img(M.logo,'logo muévete','logo');
+  $('#heroLogo').innerHTML=img(M.logo,'logo muévete.pe','logo muévete.pe',true);
+  $('#logoFoot').innerHTML=img(M.logo,'logo muévete','logo muévete');
+  $('#sponHero').innerHTML=img(M.sponsorHero,'Electrolife','logo Electrolife (blanco)',true);
+  $('#icComunidad').innerHTML=M.iconComunidad?`<img src="${M.iconComunidad}" alt="comunidad vóley playa">`:'<svg><use href="#grupo"/></svg>';
+  $('#icRanking').innerHTML=M.iconRanking?`<img src="${M.iconRanking}" alt="ranking muévete">`:'<svg><use href="#podio"/></svg>';
+  $('#fotoInicio').innerHTML=img(M.fotoInicio,'muévete vóley playa','foto inicio');
+  const hb=$('#heroBg');
+  if(M.heroVideo) hb.innerHTML=`<video src="${M.heroVideo}" ${M.heroFoto?`poster="${M.heroFoto}"`:''} autoplay muted loop playsinline></video>`;
+  else if(M.heroFoto) hb.innerHTML=`<img src="${M.heroFoto}" alt="">`;
+  else hb.innerHTML=ph('video de portada');
+
+  // whatsapp
+  const wa=$('#wa'); wa.href=`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.waTexto)}`;
+  wa.innerHTML=M.whatsappIcono?`<img src="${M.whatsappIcono}" alt="Contacto Whatsapp">`:'<svg><use href="#wa"/></svg>';
+
+  // fechas
+  const now=new Date(), [fh,fm]=C.horaFin.split(':').map(Number);
+  const d0=f=>{const[y,m,d]=f.split('-').map(Number);return new Date(y,m-1,d)};
+  const jugada=f=>{const d=d0(f);d.setHours(fh,fm);return now>d};
+  const esHoy=f=>d0(f).toDateString()===now.toDateString();
+  const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const fechas=[...C.fechas].sort(); const prox=fechas.find(f=>!jugada(f));
+  $('#fechas').innerHTML=fechas.map(f=>{const d=d0(f);
+    const cls=jugada(f)?'pasada':(f===prox?'prox':'');
+    const corta=`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}`;
+    return `<div class="fila ${cls}"><span>${dias[d.getDay()]}</span><span>${corta}</span><span>${C.sede}${esHoy(f)&&!jugada(f)?'<span class="hoy">HOY</span>':''}</span></div>`}).join('');
+
+  // top 5
+  const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
+  $('#top5').innerHTML=C.top5.map((p,i)=>`<div class="fila"><span>${i+1}</span>
+    <span class="av">${p.foto?`<img src="${p.foto}" alt="foto perfil">`:ini(p.nombre)}</span>
+    <span class="nm">${p.nombre}</span>
+    <span class="ics">${p.tendencia==='sube'?'<svg><use href="#up"/></svg>':p.tendencia==='baja'?'<svg><use href="#down"/></svg>':''}
+      <a href="${p.perfil||C.links.ranking}" aria-label="Ver ${p.nombre}"><svg><use href="#circplus"/></svg></a></span></div>`).join('');
+
+  // aliados
+  $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
+
+  // menú móvil
+  $('#burger').onclick=()=>$('#right').classList.toggle('open');
+})();
+</script>
+</body>
+</html>
