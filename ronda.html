@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ronda 1 | muévete.pe</title>
+<meta name="description" content="Campos y jugadores de la ronda en el Uma Arena de muévete.pe.">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
+<link rel="preconnect" href="https://static.wixstatic.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0046B8; --azul-menu:#0051C2; --amarillo:#FFDB03; --blanco:#F7F7F7;
+  --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
+  --poppins:"Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:var(--poppins);font-weight:600;background:var(--fondo);color:var(--negro);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+
+/* ---------- MENÚ (igual que el inicio) ---------- */
+.right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(23px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:20}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
+.menu a:hover{color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:first-child{padding-left:30px}
+.menu a:last-child{padding-right:30px}
+.cuenta{padding:0 20px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 12px;font-size:16px;letter-spacing:.02em;color:#fff}
+.cuenta svg{width:24px;height:24px}
+.cuenta.on,.cuenta:hover{color:var(--amarillo)}
+.panel{display:flex;gap:38px;align-items:flex-start}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger svg{width:26px;height:26px}
+
+/* menú celular */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column;color:var(--blanco)}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+body.mopen{overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+
+
+/* ---------- RONDAS Y CAMPOS ---------- */
+main{max-width:1040px;margin:0 auto;padding:122px 20px 80px}
+h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.sub{margin-top:8px;font-size:15px;font-weight:500;color:#5B6370}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
+.pill:hover{filter:brightness(1.06)}
+.pill:active{transform:scale(.97)}
+.pill svg{width:18px;height:18px}
+.pill[disabled]{background:transparent;color:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35);cursor:default;transform:none;filter:none}
+.demo{margin:22px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border:1.5px dashed #C9D2E3;border-radius:14px;background:#fff}
+.demo b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7A808A;margin-right:4px}
+.demo button{border:1.5px solid #D5D9E0;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.demo button.on{background:var(--azul-menu);border-color:var(--azul-menu);color:#fff}
+@media (max-width:980px){.panel{display:none}.burger{display:grid;place-items:center}main{padding:110px 16px 60px}}
+@media (max-width:760px){h1{font-size:34px}}
+
+.campos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+.campo{background:var(--azul-menu);color:#fff;border-radius:20px;padding:22px 22px 18px;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(0,40,120,.12)}
+.campo h2{font-size:24px;font-weight:700;line-height:1}
+.campo h2 b{color:var(--amarillo);margin-left:6px}
+.campo ul{list-style:none;margin:14px 0 18px;display:grid;gap:5px;font-size:15px;font-weight:500;color:#E6EDFC}
+.campo li{display:flex;align-items:center;gap:9px}
+.campo li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amarillo);flex:none;opacity:.85}
+.campo .pill{margin-top:auto;align-self:flex-end}
+@media (max-width:980px){.campos{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.campos{grid-template-columns:1fr;gap:14px}.campo{padding:20px 20px 16px}.campo ul{font-size:16px}}
+
+/* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
+.menu{padding:0;align-items:stretch}
+.menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:not(.on):hover{color:var(--amarillo)}
+.mnav{padding:0 10px;gap:2px}
+.mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
+.msub{padding-left:14px}
+.msub a{min-height:46px;padding-left:26px}
+
+/* ---------- Menú en la misma posición en todas las páginas ---------- */
+html{scrollbar-gutter:stable}
+.top .wrap{max-width:none;position:static}
+.right{top:calc(24px + env(safe-area-inset-top,0px));right:calc(20px + env(safe-area-inset-right,0px));gap:38px}
+.menu a,.menu a:first-child,.menu a:last-child{font-size:16px;letter-spacing:0}
+.cuenta{height:60px;gap:14px;font-size:16px;letter-spacing:.02em;padding:0 22px!important}
+.mhead .cuenta{height:46px;font-size:19px;gap:22px;padding:0 18px!important}
+
+/* Campos */
+input,select{height:44px;border:1.5px solid #D5D9E0;border-radius:12px;background:#fff;padding:0 14px;font-size:15px;font-weight:500;color:#000;outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+input::placeholder{color:#9AA1AC;font-weight:400}
+input:hover,select:hover{border-color:#B9C0CC}
+input:focus,select:focus{border-color:var(--azul-menu);box-shadow:0 0 0 3px rgba(0,81,194,.15)}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center}
+#fCategoria{width:215px}
+#fNombre{width:200px}
+@media (max-width:760px){#fCategoria,#fNombre{width:0;min-width:0;flex:1;height:48px;font-size:17px}}
+
+/* Rendimiento: las filas fuera de pantalla no se dibujan hasta que se acercan */
+#filas > [hidden]{display:none!important}
+#filas > *{content-visibility:auto;contain-intrinsic-size:auto 35px}
+
+/* Burbuja del menú que se desliza de página en página (escritorio) */
+@media (min-width:981px){@view-transition{navigation:auto}}
+.menu{position:relative}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
+.menu a{position:relative;z-index:1}
+.menu.con-pill a.on{background:transparent}
+.menu a:nth-of-type(1){view-transition-name:menu-1}
+.menu a:nth-of-type(2){view-transition-name:menu-2}
+.menu a:nth-of-type(3){view-transition-name:menu-3}
+.menu a:nth-of-type(4){view-transition-name:menu-4}
+::view-transition-group(menu-pill){animation-duration:.4s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="salir" viewBox="0 0 24 24"><circle cx="10" cy="7.5" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 21v-1.5a5 5 0 0 1 5-5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 15.5l5 5M21 15.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#1E9E3A"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#E2561B"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- MENÚ -->
+<div class="right">
+  <div class="panel">
+    <nav class="menu" aria-label="Menú principal">
+      <a href="index.html">Inicio</a>
+      <a data-link="inscripciones">Inscripciones</a>
+      <a data-link="ranking">Ranking</a>
+      <a data-link="bases">Bases</a>
+    </nav>
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+  </div>
+  <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</div>
+
+<main>
+  <h1 id="titulo">Ronda 1</h1>
+  <p class="sub">Elige tu campo para ver los partidos y la tabla.</p>
+  <section class="campos" id="campos"></section>
+  <template id="tpl-campo">
+    <article class="campo">
+      <h2>Campo <b data-f="n"></b></h2>
+      <ul data-f="jug"></ul>
+      <a class="pill" data-f="link">partidos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg></a>
+    </article>
+  </template>
+</main>
+
+<!-- MENÚ CELULAR -->
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
+  <div class="mhead">
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a href="index.html">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a data-link="bases">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+  </nav>
+</aside>
+
+<script>
+const LINKS = {
+  inscripciones: "inscripciones.html",
+  ranking:       "ranking.html",
+  bases:         "bases.html",
+  umaGo:         "",
+  ronda1:        "ronda.html?ronda=1",
+  ronda2:        "ronda.html?ronda=2",
+};
+
+(function(){
+  const $=s=>document.querySelector(s);
+  document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
+
+  // ===== DATOS DE MUESTRA (después vendrán de la base de datos) =====
+  const CAMPOS={
+    1:['Diego Luque','Jesus Armijo','Walfrido Ruiz','Claudia Leon','Ayrton Herrera'],
+    2:['Alvaro Rodriguez','Christian Valqui','Sandro Sandoval','Carlos Echegaray','Miguel Montero'],
+    3:['Anthony Rosas','Jack Vega','Marcos Diaz','Coqui Panizo','Bennie Reyes'],
+    4:['Henry Guevara','Diego Ccosi','Diego Yaringaño','Rafael Alvarez','César Luis Lara'],
+    5:['Diego Cordova','Martin Cespedes','Britney Zegarra','Jean Burga','Deyanira De la Cruz'],
+    6:['Angel Vily','Karla Chalco','Felipe Mejia','Florencio Trejo','Josue Giron'],
+    7:['Kevin Valdez','Jhon Huari','Kris Bernachea','Arturo Inoñan','Rodrigo Gutierrez'],
+    8:['Mariano Backer','Edder Muñoz','Cristiam Escobar','Rosangela Pizarro','Yusuke Takahashi'],
+    9:['Pedro Lumbre','Fernando Cáceda','Ricardo Gonzales','Daniel Campos','Tonylee Go'],
+    10:['Antonio Tang','Jose Chate','Cristina Del Aguila','Ernesto Moreno','Pola Pandal'],
+    11:['David Angel','Marcelo León','Alejandro Asmat','Jonathan Porras','Luis Zavala'],
+    12:['Andrea Quispe','David Abanto','Rafael Andrade','Leonardo Guevara','Cristina Chicata'],
+    13:['Camila Quispe','Ximena Barrientos','Lauri Paredes','Paula Ruiz','Jorge Chávez'],
+    14:['Luiggi Bellido','Brayan Guerrero','Marcia Santa Cruz','Marina Jacobsen'],
+    15:['Fernando Ruiz','Anghie Becerra','Jhon Crisbax','Brian Colonia Mendoza']
+  };
+
+  const ronda=new URLSearchParams(location.search).get('ronda')||'1';
+  $('#titulo').textContent='Ronda '+ronda; document.title='Ronda '+ronda+' | muévete.pe';
+  document.querySelectorAll(`[data-link="ronda${ronda}"]`).forEach(a=>a.classList.add('on'));
+  const tpl=$('#tpl-campo'), frag=document.createDocumentFragment();
+  Object.keys(CAMPOS).map(Number).sort((a,b)=>a-b).forEach(n=>{
+    const c=tpl.content.firstElementChild.cloneNode(true), f=k=>c.querySelector(`[data-f="${k}"]`);
+    f('n').textContent=n;
+    CAMPOS[n].forEach(j=>{const li=document.createElement('li');li.textContent=j;f('jug').append(li)});
+    f('link').href=`campo.html?ronda=${ronda}&campo=${n}`;
+    f('link').setAttribute('aria-label',`Ver partidos del campo ${n}`);
+    frag.append(c);
+  });
+  $('#campos').append(frag);
+
+  // menú celular
+  const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
+  const menu=open=>{clearTimeout(cierre);
+    if(open){mp.hidden=false;mf.hidden=false;mp.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('mopen'));}
+    else{document.body.classList.remove('mopen');cierre=setTimeout(()=>{mp.hidden=true;mf.hidden=true;},340);}};
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); mf.onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+})();
+</script>
+<script src="js/menu-pill.js"></script>
+</body>
+</html>
