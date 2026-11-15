@@ -234,7 +234,7 @@ h1{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
         </div>
         <div class="paso">
           <span class="lbl" style="display:block;font-size:16px;font-weight:600;margin-bottom:9px"><span class="n">2</span>Confirme el horario:</span>
-          <label class="check"><input type="checkbox" id="confHora"> Asistiré a las <b id="hConf"></b> en <span id="sConf"></span></label>
+          <label class="check"><input type="checkbox" id="confHora"> <span>Asistiré en el horario de <b id="hConf"></b> en <span id="sConf"></span></span></label>
         </div>
         <div class="error" id="errInsc"></div>
         <div class="acciones-c" style="margin-top:4px">
@@ -399,7 +399,7 @@ const LINKS = {
     playa: "sombrillas1",     // sombrillas1 = turno 6:30 a. m.
     cupo: 100,                // num_jugadores
     maxEspera: 25,            // num_espera
-    hora: "6:30 a. m.",
+    hora: "6:30 – 10:30 a. m.",
     evento: "Uma Arena: competencia vóley playa individual",
     comunidad: "",            // ← link de la comunidad de WhatsApp
     yape: "906233577",
@@ -414,10 +414,10 @@ const LINKS = {
 
   const aviso=t=>{const a=$('#aviso');a.textContent=t;a.classList.add('on');clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove('on'),2200)};
   $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; $('#tEvento').textContent=TORNEO.evento;
-  const ponerFecha=()=>{ if(!TORNEO.fecha){ $('#tFecha').textContent='Por anunciar'; $('#txtInscrito').textContent=`Te esperamos a las ${TORNEO.hora} en ${TORNEO.sede}.`; return; }
+  const ponerFecha=()=>{ if(!TORNEO.fecha){ $('#tFecha').textContent='Por anunciar'; $('#txtInscrito').textContent=`Te esperamos en el horario de ${TORNEO.hora} en ${TORNEO.sede}.`; return; }
     const [y,m,d]=TORNEO.fecha.split('-'); $('#tFecha').textContent=`${d}/${m}/${y}`;
   $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
-    $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} a las ${TORNEO.hora} en ${TORNEO.sede}.`; };
+    $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} en el horario de ${TORNEO.hora} en ${TORNEO.sede}.`; };
   $('#reglas').innerHTML=TORNEO.reglas.map(([a,b])=>`<li><b>${a}</b><span>${b}</span></li>`).join('');
   $('#txtMulta').textContent=`¡Tienes una multa de S/ ${TORNEO.multaPendiente} pendiente por inasistencia sin notificar!`;
   $('#yapeNum').textContent=TORNEO.yape.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3');
@@ -457,7 +457,7 @@ const LINKS = {
     try{ cfg=await cargarConfig(TORNEO.playa); }catch(e){ console.warn('No se pudo leer configuraciones:',e); }
     if(cfg){
       if(cfg.siguiente_fecha) TORNEO.fecha=cfg.siguiente_fecha;
-      if(cfg.asistencia_mesa) TORNEO.hora=horaBonita(cfg.asistencia_mesa);
+      if(cfg.asistencia_mesa) TORNEO.hora=horaRango(cfg.asistencia_mesa,cfg.hora_fin);
       if(cfg.ubicacion) TORNEO.sede=cfg.ubicacion;
       if(cfg.num_jugadores!=null) TORNEO.cupo=cfg.num_jugadores;
       if(cfg.num_espera!=null) TORNEO.maxEspera=cfg.num_espera;

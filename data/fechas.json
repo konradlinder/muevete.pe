@@ -1,7 +1,42 @@
 [
-  { "fecha": "2026-10-17", "sede": "Uma Arena" },
-  { "fecha": "2026-10-24", "sede": "Uma Arena" },
-  { "fecha": "2026-11-07", "sede": "Uma Arena" },
-  { "fecha": "2026-11-14", "sede": "Uma Arena" },
-  { "fecha": "2026-11-21", "sede": "Uma Arena" }
+ {
+  "fecha": "2026-10-17",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-10-24",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-11-07",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-11-14",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-11-21",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-11-28",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-12-05",
+  "dia": "sábado",
+  "evento": "Uma Arena"
+ },
+ {
+  "fecha": "2026-12-12",
+  "dia": "sábado",
+  "evento": "Uma Grand Slam"
+ }
 ]

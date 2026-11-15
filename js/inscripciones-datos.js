@@ -6,12 +6,10 @@
     return h;
   };
 
-  // Próxima fecha del calendario (data/fechas.json). Una fecha "pasa" después de horaFin.
-  window.proximaFecha = async function(horaFin = '14:00'){
-    const r = await fetch('data/fechas.json', { cache: 'no-cache' });
-    const lista = (await r.json()).map(x => x.fecha).sort();
-    const [h, m] = horaFin.split(':').map(Number), ahora = new Date();
-    return lista.find(f => { const [y,mo,d] = f.split('-').map(Number); return ahora < new Date(y, mo-1, d, h, m); }) || null;
+  // Próxima fecha del calendario (proximos_eventos; respaldo data/fechas.json)
+  window.proximaFecha = async function(){
+    const ev = await window.cargarEventos({ limite: 1 });
+    return ev.length ? ev[0].fecha : null;
   };
 
   // Configuración de una playa (tabla configuraciones) + estado de mantenimiento
@@ -19,7 +17,7 @@
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const p = new URLSearchParams({
-      select: 'title,playa,ubicacion,evento,is_active,siguiente_fecha,asistencia_mesa,num_jugadores,num_espera',
+      select: 'title,playa,ubicacion,evento,is_active,siguiente_fecha,asistencia_mesa,hora_fin,num_jugadores,num_espera',
       playa: 'in.(' + playa + ',"general mantenimiento")'
     });
     const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/configuraciones?' + p, { headers: headersDe(db.anonKey) });
@@ -30,11 +28,36 @@
     return c && { ...c, mantenimiento: !!(mant && mant.is_active) };
   };
 
+  // Fecha de hoy en Lima (AAAA-MM-DD)
+  const hoyLima = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date());
+
+  // Próximos eventos (tabla proximos_eventos): no caducados, de hoy en adelante
+  window.cargarEventos = async function({ limite = 5 } = {}){
+    const db = window.MUEVETE_DB || {}, hoy = hoyLima();
+    if (db.url && db.anonKey) {
+      try {
+        const p = new URLSearchParams({ select: 'fecha,dia,estado', caducado: 'is.false', fecha: 'gte.' + hoy, order: 'fecha.asc', limit: String(limite) });
+        const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/proximos_eventos?' + p, { headers: headersDe(db.anonKey) });
+        if (!r.ok) throw new Error('Supabase ' + r.status);
+        return (await r.json()).map(x => ({ fecha: x.fecha, dia: x.dia, evento: x.estado }));
+      } catch (e) { console.warn('No se pudo leer proximos_eventos, uso respaldo:', e); }
+    }
+    const r = await fetch('data/fechas.json', { cache: 'no-cache' });
+    return (await r.json()).filter(x => x.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha)).slice(0, limite);
+  };
+
   // "06:30:00" -> "6:30 a. m."
   window.horaBonita = function(t){
     if (!t) return '';
     let [h, m] = t.split(':').map(Number); const pm = h >= 12; h = h % 12 || 12;
     return `${h}:${String(m).padStart(2,'0')} ${pm ? 'p. m.' : 'a. m.'}`;
+  };
+
+  // ("06:30","10:30") -> "6:30 – 10:30 a. m."   ·   ("10:00","13:00") -> "10:00 a. m. – 1:00 p. m."
+  window.horaRango = function(ini, fin){
+    if (!fin) return window.horaBonita(ini);
+    const a = window.horaBonita(ini), b = window.horaBonita(fin), sa = a.slice(-5), sb = b.slice(-5);
+    return sa === sb ? `${a.slice(0,-6)} – ${b}` : `${a} – ${b}`;
   };
 
   // Inscripciones no canceladas de una fecha y playa, en orden de llegada

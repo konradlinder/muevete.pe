@@ -230,6 +230,72 @@ footer a:hover{color:var(--amarillo)}
   .wa{right:20px;top:calc(var(--heroH,100lvh) - 73px - var(--barras) - env(safe-area-inset-bottom,0px))}
   body.fijo .wa{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 }
+
+/* ======== PROPUESTA: estilo de la página de inscripciones ======== */
+.claro{background:#F6F6F6;color:#1A1D22;padding:64px 0 72px}
+.claro .wrap{padding:0 40px;max-width:1180px}
+.pie-azul{background:var(--azul)}
+.pilares2{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pilar2{background:#fff;border:1px solid #E6EAF2;border-radius:20px;padding:26px 22px;display:flex;align-items:center;gap:18px;box-shadow:0 4px 14px rgba(16,24,40,.04)}
+.ic2{width:78px;height:78px;display:grid;place-items:center;flex:none;color:#1E46B4}
+.ic2 svg,.ic2 img{width:78px;height:78px;object-fit:contain}
+.pilar2 p{font-size:17px;font-weight:600;line-height:1.3}
+.destacado{display:grid;grid-template-columns:1.05fr 1fr;gap:24px;margin-top:28px;align-items:stretch}
+.proxcard{background:var(--azul);color:#fff;border-radius:20px;padding:28px 30px;box-shadow:0 10px 30px rgba(0,40,110,.18);display:flex;flex-direction:column}
+.prox-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.eti{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#BFD0F5}
+.estado-chip{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:5px 12px;font-size:13px;background:rgba(255,255,255,.14)}
+.estado-chip::before{content:"";width:8px;height:8px;border-radius:50%;background:#FF8A7A}
+.estado-chip.abierta::before{background:#3DDC84}
+.prox-fecha{font-size:40px;font-weight:700;line-height:1.1;margin-top:10px}
+.prox-datos{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:14px;font-size:17px;font-weight:500;color:#E3EBFB}
+.prox-datos > span{display:flex;align-items:center;gap:8px}
+.prox-datos svg{width:22px;height:22px;flex:none}
+.prox-cta{margin-top:auto;padding-top:26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.18);margin-top:26px}
+.prox-cta p{font-size:24px;font-weight:600;line-height:1.2}
+.prox-cta em{color:var(--amarillo)}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:999px;height:46px;padding:0 24px;font-size:16px;font-weight:600;transition:filter .15s,transform .15s;white-space:nowrap}
+.pill:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.pill svg{width:18px;height:18px;flex:none}
+.pill.amarillo{background:var(--amarillo);color:#000}
+.pill.azul{background:var(--azul-menu);color:#fff}
+.pill.chico{height:38px;padding:0 18px;font-size:14px}
+.col-foto2{border-radius:20px;overflow:hidden;min-height:300px}
+.col-foto2 img{width:100%;height:100%;object-fit:cover;object-position:28% 70%;display:block}
+.listas2{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:44px}
+.lista-h2{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.lista-h2 h2{font-size:24px;font-weight:600;color:#1A1D22;margin:0}
+.cont2{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6B7DA6}
+.listas2 .lista{width:100%;gap:5px}
+.listas2 .fila{height:38px;font-size:15px}
+.listas2 .fechas .fila{grid-template-columns:1fr 1fr 1.3fr}
+.listas2 .fechas .fila span:nth-child(2){text-align:left;padding-right:0}
+.listas2 .fechas .fila span:nth-child(3){padding-left:0}
+.listas2 .top5 .fila{grid-template-columns:28px 34px 1fr auto}
+.listas2 .top5 .av{width:26px;height:26px}
+.ver-mas{display:flex;justify-content:flex-end;margin-top:16px}
+.pie-azul .foot-logo{padding-top:44px}
+@media (max-width:980px){
+  .claro .wrap{padding:0 24px}
+  .pilares2{grid-template-columns:1fr}
+  .destacado,.listas2{grid-template-columns:1fr}
+  .col-foto2{min-height:260px}
+}
+@media (max-width:760px){
+  .claro{padding:40px 0 52px}
+  .claro .wrap{padding:0 16px}
+  .pilar2{padding:18px 18px;gap:16px}
+  .ic2,.ic2 svg,.ic2 img{width:66px;height:66px}
+  .pilar2 p{font-size:16px}
+  .proxcard{padding:24px 20px}
+  .prox-fecha{font-size:32px}
+  .prox-datos{font-size:16px}
+  .prox-cta p{font-size:21px}
+  .prox-cta .pill{width:100%}
+  .listas2{gap:30px;margin-top:34px}
+  .listas2 .fila{height:44px;font-size:16px}
+  .ver-mas .pill{width:100%}
+}
 </style>
 </head>
 <body>
@@ -294,9 +360,9 @@ const CONFIG = {
   <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="var(--naranja)"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="ic-wa" viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.1.9 2.9 1 4 .8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.2-.3-.3-.7-.5z"/></symbol>
   <!-- jugador de vóley (línea blanca, igual estilo que el ícono actual) -->
-  <symbol id="jugador" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="7" r="4.5"/><circle cx="32" cy="21" r="4"/><path d="M27 17c-3 2-4 6-2 10 1.5 3 4 4 4 8v4c0 4-3 8-6 12-2 2.5-1.5 5 1 5s4-3 5-6l3-7M37 17c3 2 4 6 2 10-1.5 3-4 4-4 8v4c0 4 1 9 0 13-1 3-3 5-5 6"/></g></symbol>
-  <symbol id="grupo" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="18" r="6"/><path d="M21 44v-6a11 11 0 0 1 22 0v6"/><circle cx="14" cy="24" r="5"/><path d="M5 46v-4a9 9 0 0 1 12-8.5"/><circle cx="50" cy="24" r="5"/><path d="M59 46v-4a9 9 0 0 0-12-8.5"/><path d="M8 54h48"/></g></symbol>
-  <symbol id="podio" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 56V30h20v26M6 56V40h16M42 56V44h16v12M4 56h56"/><path d="M32 8l2.6 5.3 5.8.8-4.2 4.1 1 5.8L32 21.3 26.8 24l1-5.8-4.2-4.1 5.8-.8z"/></g></symbol>
+  <symbol id="jugador" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="7" r="4.5"/><circle cx="32" cy="21" r="4"/><path d="M27 17c-3 2-4 6-2 10 1.5 3 4 4 4 8v4c0 4-3 8-6 12-2 2.5-1.5 5 1 5s4-3 5-6l3-7M37 17c3 2 4 6 2 10-1.5 3-4 4-4 8v4c0 4 1 9 0 13-1 3-3 5-5 6"/></g></symbol>
+  <symbol id="grupo" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="18" r="6"/><path d="M21 44v-6a11 11 0 0 1 22 0v6"/><circle cx="14" cy="24" r="5"/><path d="M5 46v-4a9 9 0 0 1 12-8.5"/><circle cx="50" cy="24" r="5"/><path d="M59 46v-4a9 9 0 0 0-12-8.5"/><path d="M8 54h48"/></g></symbol>
+  <symbol id="podio" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 56V30h20v26M6 56V40h16M42 56V44h16v12M4 56h56"/><path d="M32 8l2.6 5.3 5.8.8-4.2 4.1 1 5.8L32 21.3 26.8 24l1-5.8-4.2-4.1 5.8-.8z"/></g></symbol>
 </svg>
 
 <!-- HEADER -->
@@ -331,41 +397,58 @@ const CONFIG = {
     </div>
   </section>
 
+  <div class="claro">
   <div class="wrap">
     <!-- TRES PILARES -->
-    <section class="pilares" id="contenido">
-      <div class="pilar"><div class="ic"><svg><use href="#jugador"/></svg></div><p>promovemos la comunidad del Vóley Playa</p></div>
-      <div class="pilar"><div class="ic" id="icComunidad"></div><p>contamos con +90 participantes por fecha</p></div>
-      <div class="pilar"><div class="ic" id="icRanking"></div><p>juegan principiantes, avanzados y expertos</p></div>
+    <section class="pilares2" id="contenido">
+      <div class="pilar2"><div class="ic2"><svg><use href="#jugador"/></svg></div><p>Promovemos la comunidad del vóley playa</p></div>
+      <div class="pilar2"><div class="ic2" id="icComunidad"></div><p>Contamos con +90 participantes por fecha</p></div>
+      <div class="pilar2"><div class="ic2" id="icRanking"></div><p>Juegan principiantes, avanzados y expertos</p></div>
     </section>
 
-    <!-- FECHAS · TOP 5 · FOTO -->
-    <section class="trio">
-      <div class="col-fechas fechas">
-        <h2>Próximas fechas:</h2>
+    <!-- PRÓXIMA FECHA + FOTO -->
+    <section class="destacado">
+      <div class="proxcard">
+        <div class="prox-top"><span class="eti">Próxima fecha</span><span class="estado-chip" id="chipEstado" hidden></span></div>
+        <div class="prox-fecha" id="pxFecha">—</div>
+        <div class="prox-datos">
+          <span><svg viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-11.8A7 7 0 0 1 19 9.7c0 5.5-7 11.8-7 11.8z" fill="#FF7A7A"/><circle cx="12" cy="9.6" r="2.6" fill="#0046B8"/></svg><span id="pxSede">Playa Sombrillas, Barranco</span></span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.8"/><path d="M12 6.5V12l3.5 2.5" stroke="#FFDB03" stroke-width="2"/></svg><span id="pxHora">6:30 – 10:30 a. m.</span></span>
+        </div>
+        <div class="prox-cta">
+          <p>¡Ven y <em>muévete</em> con nosotros!</p>
+          <a class="pill amarillo" data-link="inscripciones">inscribirme <svg viewBox="0 0 16 16"><path d="M5 4h9M5 8h9M5 12h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="2" cy="4" r="1" fill="currentColor"/><circle cx="2" cy="8" r="1" fill="currentColor"/><circle cx="2" cy="12" r="1" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div class="col-foto2" id="fotoInicio"></div>
+    </section>
+
+    <!-- FECHAS + TOP 5 -->
+    <section class="listas2">
+      <div class="fechas">
+        <div class="lista-h2"><h2>Próximas fechas</h2><span class="cont2" data-t="temporada"></span></div>
         <div class="lista" id="fechas"></div>
         <!-- REPETIDOR: ítem de fecha (se repite una vez por cada fecha de data/fechas.json) -->
         <template id="tpl-fecha">
           <div class="fila"><span data-f="dia"></span><span data-f="fecha"></span><span><span data-f="sede"></span><span class="hoy" data-f="hoy" hidden>HOY</span></span></div>
         </template>
-        <div class="ven">
-          <p>¡Ven y <em>muévete</em> con nosotros!</p>
-          <a class="btn" data-link="inscripciones">inscribirme <svg><use href="#list"/></svg></a>
-        </div>
       </div>
-      <div class="col-top top5">
-        <h2>Top 5 <span data-t="temporada"></span>:</h2>
+      <div class="top5">
+        <div class="lista-h2"><h2>Top 5</h2><span class="cont2" data-t="temporada"></span></div>
         <div class="lista" id="top5"></div>
-        <!-- REPETIDOR: ítem de jugador (se repite una vez por cada jugador de data/top5.json) -->
+        <!-- REPETIDOR: ítem de jugador (Top 5 del ranking) -->
         <template id="tpl-jugador">
           <div class="fila"><span data-f="puesto"></span><span class="av" data-f="av"></span><span class="nm" data-f="nombre"></span>
             <span class="ics"><svg data-f="sube" hidden><use href="#up"/></svg><svg data-f="baja" hidden><use href="#down"/></svg><a data-f="perfil"><svg><use href="#circplus"/></svg></a></span></div>
         </template>
-        <div class="center-btn"><a class="btn" data-link="ranking">ranking <svg><use href="#plus"/></svg></a></div>
+        <div class="ver-mas"><a class="pill azul chico" data-link="ranking">ver ranking completo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
       </div>
-      <div class="col-foto" id="fotoInicio"></div>
     </section>
+  </div>
+  </div>
 
+  <div class="pie-azul">
+  <div class="wrap">
     <div class="foot-logo"><div id="logoFoot"></div></div>
 
     <!-- FOOTER -->
@@ -384,6 +467,7 @@ const CONFIG = {
         <span class="copy">© <span id="yr"></span> by muévete.pe</span>
       </div>
     </footer>
+  </div>
   </div>
 </main>
 
@@ -410,6 +494,7 @@ const CONFIG = {
 
 <script src="js/config.js"></script>
 <script src="js/ranking-datos.js"></script>
+<script src="js/inscripciones-datos.js"></script>
 <script>
 (function(){
   try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
@@ -464,14 +549,12 @@ const CONFIG = {
   const jugada=f=>{const d=d0(f);d.setHours(fh,fm);return now>d};
   const esHoy=f=>d0(f).toDateString()===now.toDateString();
   const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-  cargar(C.datosFechas).then(lista=>{
-    lista=[...lista].sort((a,b)=>a.fecha.localeCompare(b.fecha));
-    const prox=(lista.find(x=>!jugada(x.fecha))||{}).fecha;
+  cargarEventos({limite:5}).then(lista=>{
+    if(!lista.length){ $('#fechas').innerHTML='<div class="fila">Pronto anunciaremos nuevas fechas</div>'; return; }
     repetir(lista,$('#tpl-fecha'),$('#fechas'),(n,f,it)=>{const d=d0(it.fecha);
-      if(jugada(it.fecha)) n.classList.add('pasada'); else if(it.fecha===prox) n.classList.add('prox');
-      f('dia').textContent=dias[d.getDay()];
+      f('dia').textContent=it.dia||dias[d.getDay()];
       f('fecha').textContent=`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}`;
-      f('sede').textContent=it.sede||C.sede;
+      f('sede').textContent=it.evento||C.sede;
       f('hoy').hidden=!(esHoy(it.fecha)&&!jugada(it.fecha));
     });
   }).catch(()=>errorLista($('#fechas')));
@@ -491,6 +574,18 @@ const CONFIG = {
   $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
 
   document.querySelectorAll('a.bajar').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.getElementById('contenido').scrollIntoView({behavior:'smooth'});}));
+  // ===== Tarjeta "Próxima fecha" (configuraciones de Supabase; respaldo: data/fechas.json) =====
+  (async()=>{
+    const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'], MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    let fecha=null, cfg=null;
+    try{ cfg=await cargarConfig('sombrillas1'); }catch(e){}
+    if(cfg){ fecha=cfg.siguiente_fecha; if(cfg.ubicacion) $('#pxSede').textContent=cfg.ubicacion; if(cfg.asistencia_mesa) $('#pxHora').textContent=horaRango(cfg.asistencia_mesa,cfg.hora_fin);
+      const ch=$('#chipEstado'); ch.hidden=false; const ab=cfg.is_active&&!cfg.mantenimiento; ch.classList.toggle('abierta',ab); ch.textContent=ab?'Inscripciones abiertas':'Inscripciones cerradas'; }
+    if(!fecha){ try{ fecha=await proximaFecha(C.horaFin); }catch(e){} }
+    if(fecha){ const [y,m,d]=fecha.split('-').map(Number); const dt=new Date(y,m-1,d); const dia=DIAS[dt.getDay()]; $('#pxFecha').textContent=`${dia[0].toUpperCase()+dia.slice(1)} ${d} de ${MES[m-1]}`; }
+    else $('#pxFecha').textContent='Por anunciar';
+  })();
+
   // menú y WhatsApp fijos solo después de la portada
   const heroEl=document.getElementById('inicio');
   const fijar=()=>{const h=heroEl.offsetHeight;document.documentElement.style.setProperty('--heroH',h+'px');
