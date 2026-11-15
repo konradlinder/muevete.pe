@@ -44,7 +44,12 @@ img,video{display:block;max-width:100%}
 .top .wrap{display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(19px + env(safe-area-inset-top,0px)) calc(21px + env(safe-area-inset-right,0px)) 0 21px}
 .logo-box{display:block;width:74px;height:74px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(179,179,179,.6)}
 .logo-box img{width:100%;height:100%;object-fit:cover}
-.right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(26px + env(safe-area-inset-top,0px));right:calc(21px + env(safe-area-inset-right,0px));z-index:20}
+.right{display:flex;gap:38px;align-items:flex-start;position:absolute;top:calc(26px + env(safe-area-inset-top,0px));right:calc(21px + env(safe-area-inset-right,0px));z-index:20}
+/* Fuera de la portada el menú queda fijo. En la portada no hay nada fijo:
+   así Safari (iPhone) deja que el video ocupe toda la pantalla, sin franjas. */
+body.fijo .right{position:fixed;animation:entraMenu .25s ease}
+@keyframes entraMenu{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
+:root{--barras:calc(100lvh - 100svh)}
 .menu{display:flex;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
@@ -85,7 +90,7 @@ body.mopen{overflow:hidden}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
 .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
 .hero-logo{width:500px;max-width:78vw}
-.bajar{display:none;position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3;width:44px;height:44px;border:2px solid #fff;border-radius:50%;place-items:center;color:#fff;transition:transform .2s}
+.bajar{display:none;position:absolute;left:50%;bottom:calc(28px + var(--barras) + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3;width:44px;height:44px;border:2px solid #fff;border-radius:50%;place-items:center;color:#fff;transition:transform .2s}
 .bajar:hover{transform:translateX(-50%) translateY(3px)}
 .bajar svg{width:22px;height:22px}
 .hero-logo img{width:100%;height:auto}
@@ -97,8 +102,10 @@ body.mopen{overflow:hidden}
 .hero .ph.dark{border-color:rgba(0,70,184,.35)}
 
 /* ---------- WhatsApp flotante ---------- */
-.wa{position:fixed;right:40px;bottom:30px;z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
+.wa{position:absolute;right:40px;top:calc(var(--heroH,759px) - 83px - var(--barras) - env(safe-area-inset-bottom,0px));z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
 .wa:hover{transform:scale(1.07)}
+body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bottom,0px));animation:entraWa .25s ease}
+@keyframes entraWa{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .wa img{width:100%;height:100%;object-fit:cover}
 .wa svg{width:30px;height:30px;fill:#fff}
 
@@ -173,7 +180,7 @@ footer a:hover{color:var(--amarillo)}
   .burger{display:grid;place-items:center}
 }
 @media (max-width:760px){
-  .hero{height:auto;min-height:620px;min-height:100svh}
+  .hero{height:auto;min-height:620px;min-height:100lvh}
   .bajar{display:grid}
   .hero-in{padding:calc(110px + env(safe-area-inset-top,0px)) 20px 100px}
   .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
@@ -188,7 +195,8 @@ footer a:hover{color:var(--amarillo)}
   footer{grid-template-columns:1fr;gap:30px;padding:20px 24px 100px;text-align:center}
   .f-links,.f-admin{justify-items:center;text-align:center}
   .spons{flex-wrap:wrap}
-  .wa{right:20px;bottom:20px}
+  .wa{right:20px;top:calc(var(--heroH,100lvh) - 73px - var(--barras) - env(safe-area-inset-bottom,0px))}
+  body.fijo .wa{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 }
 </style>
 </head>
@@ -455,6 +463,11 @@ const CONFIG = {
   $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
 
   document.querySelectorAll('a.bajar').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.getElementById('contenido').scrollIntoView({behavior:'smooth'});}));
+  // menú y WhatsApp fijos solo después de la portada
+  const heroEl=document.getElementById('inicio');
+  const fijar=()=>{const h=heroEl.offsetHeight;document.documentElement.style.setProperty('--heroH',h+'px');
+    document.body.classList.toggle('fijo',window.scrollY>h-100);};
+  addEventListener('scroll',fijar,{passive:true}); addEventListener('resize',fijar); fijar();
   // menú móvil
   const mp=$('#mpanel');
   // el panel y el fondo oscuro no existen mientras el menú está cerrado
