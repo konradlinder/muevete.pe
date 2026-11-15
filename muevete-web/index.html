@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>muévete.pe | Voley Playa | Lima, Perú</title>
 <meta name="description" content="muévete.pe: promovemos la comunidad del Vóley Playa. +90 participantes por fecha. Juegan principiantes, avanzados y expertos.">
-<meta name="theme-color" content="#0046B8">
 <link rel="icon" href="img/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -30,7 +29,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth}
 body{font-family:var(--poppins);font-weight:600;background:var(--azul);color:var(--blanco);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 img,video{display:block;max-width:100%}
@@ -43,30 +41,63 @@ img,video{display:block;max-width:100%}
 
 /* ---------- HEADER ---------- */
 .top{position:absolute;inset:0 0 auto 0;z-index:20}
-.top .wrap{display:flex;align-items:flex-start;justify-content:space-between;padding:19px 21px 0}
+.top .wrap{display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(19px + env(safe-area-inset-top,0px)) calc(21px + env(safe-area-inset-right,0px)) 0 21px}
 .logo-box{display:block;width:74px;height:74px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(179,179,179,.6)}
 .logo-box img{width:100%;height:100%;object-fit:cover}
-.right{display:flex;gap:38px;align-items:flex-start;padding-top:7px}
-.menu{display:flex;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.right{display:flex;gap:38px;align-items:flex-start;position:absolute;top:calc(26px + env(safe-area-inset-top,0px));right:calc(21px + env(safe-area-inset-right,0px));z-index:20}
+/* Fuera de la portada el menú queda fijo. En la portada no hay nada fijo:
+   así Safari (iPhone) deja que el video ocupe toda la pantalla, sin franjas. */
+body.fijo .right{position:fixed;animation:entraMenu .25s ease}
+@keyframes entraMenu{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
+:root{--barras:calc(100lvh - 100svh)}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
 .menu a.on{background:var(--azul);color:var(--amarillo)}
-.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 15px;font-size:16px;letter-spacing:.02em;color:#fff}
+.menu a:first-child{padding-left:32px}
+.menu a:last-child{padding-right:32px}
+.cuenta{padding:0 22px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 15px;font-size:16px;letter-spacing:.02em;color:#fff}
 .cuenta svg{width:24px;height:24px}
 .cuenta:hover{color:var(--amarillo)}
-.burger{display:none;background:var(--azul-menu);border:0;border-radius:5px;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
 .burger svg{width:26px;height:26px}
+.panel{display:flex;gap:38px;align-items:flex-start}
+
+/* ---------- MENÚ CELULAR (panel desde la derecha) ---------- */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;
+  padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{display:flex;height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-family:var(--poppins);font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mnav a:active,.mnav button:active{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+body.mopen{overflow:hidden}
 
 /* ---------- HERO ---------- */
 .hero{position:relative;height:759px;background:var(--gris-hero);overflow:hidden}
 .hero-bg{position:absolute;inset:0}
 .hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 42%}
-.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,40,110,.45) 0%,rgba(0,40,110,.25) 45%,rgba(0,40,110,.55) 100%);pointer-events:none}
-.hero-bg:has(.ph)::after{display:none}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
 .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
 .hero-logo{width:500px;max-width:78vw}
-.hero-logo img{width:100%;height:auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.18))}
+.bajar{display:none;position:absolute;left:50%;bottom:calc(28px + var(--barras) + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3;width:44px;height:44px;border:2px solid #fff;border-radius:50%;place-items:center;color:#fff;transition:transform .2s}
+.bajar:hover{transform:translateX(-50%) translateY(3px)}
+.bajar svg{width:22px;height:22px}
+.hero-logo img{width:100%;height:auto}
 .temporada{display:flex;align-items:flex-end;gap:40px;margin-top:22px}
 .temporada h1{font-style:italic;font-size:45px;line-height:49.5px;letter-spacing:.02em;color:var(--amarillo);text-align:right;font-weight:600}
 .by{display:flex;align-items:flex-end;gap:12px;font-style:italic;font-size:40px;line-height:44px;letter-spacing:.02em;color:var(--blanco)}
@@ -75,8 +106,10 @@ img,video{display:block;max-width:100%}
 .hero .ph.dark{border-color:rgba(0,70,184,.35)}
 
 /* ---------- WhatsApp flotante ---------- */
-.wa{position:fixed;right:40px;bottom:30px;z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
+.wa{position:absolute;right:40px;top:calc(var(--heroH,759px) - 83px - var(--barras) - env(safe-area-inset-bottom,0px));z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
 .wa:hover{transform:scale(1.07)}
+body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bottom,0px));animation:entraWa .25s ease}
+@keyframes entraWa{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .wa img{width:100%;height:100%;object-fit:cover}
 .wa svg{width:30px;height:30px;fill:#fff}
 
@@ -90,7 +123,7 @@ img,video{display:block;max-width:100%}
 .center-btn{display:flex;justify-content:center;margin-top:26px}
 
 /* ---------- BOTÓN AMARILLO ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--amarillo);color:var(--negro);border-radius:4px;font-size:15px;height:29px;padding:0 24px;min-width:127px;transition:filter .15s,transform .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--amarillo);color:var(--negro);border-radius:999px;font-size:15px;height:29px;padding:0 24px;min-width:127px;transition:filter .15s,transform .15s}
 .btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 .btn svg{width:16px;height:16px;flex:none}
 
@@ -101,30 +134,25 @@ img,video{display:block;max-width:100%}
 .col-foto{height:399px}
 .col-foto img{width:100%;height:100%;object-fit:cover}
 h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
-.lista{display:grid;gap:0}
-.fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:27px;padding:0 14px}
-.fila:first-child{border-radius:4px 4px 0 0}
-.fila:last-child{border-radius:0 0 4px 4px}
-.fechas .fila{grid-template-columns:72px 82px 1fr;width:313px}
+.lista{display:grid;gap:4px;width:313px}
+.fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:32px;padding:0 8px 0 14px;border-radius:4px}
+.fechas .fila{grid-template-columns:72px 82px 1fr}
 .fechas .fila span:nth-child(2){text-align:right;padding-right:28px}
 .fechas .fila span:nth-child(3){padding-left:16px}
-.fechas .fila.pasada{color:rgba(0,0,0,.38)}
-.fechas .fila.prox{box-shadow:inset 4px 0 0 var(--negro)}
 .fechas .fila .hoy{font-size:10px;background:var(--azul);color:var(--amarillo);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:1px}
 .ven{position:relative;width:313px;margin-top:20px}
 .ven p{font-size:25px;line-height:27.5px;letter-spacing:.02em}
 .ven em{color:var(--amarillo)}
 .ven .btn{position:absolute;right:6px;bottom:-4px}
 
-.top5 .lista{width:277px;margin-left:6px}
-.top5 .fila{grid-template-columns:22px 28px 1fr auto;height:32px;padding:0 6px 0 14px}
-.top5 .av{width:22px;height:22px;overflow:hidden;background:rgba(0,70,184,.15);display:grid;place-items:center;font-size:9px;color:var(--azul)}
+.top5 .fila{grid-template-columns:22px 26px 1fr auto}
+.top5 .av{width:22px;height:22px;border-radius:50%;overflow:hidden;display:block}
 .top5 .av img{width:100%;height:100%;object-fit:cover}
 .top5 .nm{padding-left:6px}
 .top5 .ics{display:flex;gap:5px;align-items:center}
 .top5 .ics svg{width:20px;height:20px}
 .top5 .ics a{display:flex}
-.top5 .center-btn{margin-top:20px;justify-content:flex-end;width:272px}
+.top5 .center-btn{margin-top:20px;justify-content:flex-end;width:313px}
 
 .foot-logo{display:flex;justify-content:center;padding:28px 0 0}
 .foot-logo > div{width:260px}
@@ -152,18 +180,13 @@ footer a:hover{color:var(--amarillo)}
   .col-foto{grid-column:1/-1;height:420px;margin:0 -30px}
 }
 @media (max-width:980px){
-  .menu,.cuenta{display:none}
+  .panel{display:none}
   .burger{display:grid;place-items:center}
-  .right.open{position:fixed;inset:0;background:var(--azul);flex-direction:column;align-items:stretch;padding:90px 24px 24px;gap:14px}
-  .right.open .menu{display:flex;flex-direction:column}
-  .right.open .menu a{border-bottom:1px solid rgba(255,255,255,.12)}
-  .right.open .menu a.on{border-radius:0}
-  .right.open .cuenta{display:flex;justify-content:center}
-  .right.open .burger{position:fixed;top:19px;right:21px}
 }
 @media (max-width:760px){
-  .hero{height:auto;min-height:620px;min-height:100svh}
-  .hero-in{padding:120px 20px 50px}
+  .hero{height:auto;min-height:620px;min-height:100lvh}
+  .bajar{display:grid}
+  .hero-in{padding:calc(110px + env(safe-area-inset-top,0px)) 20px 100px}
   .temporada{flex-direction:column;align-items:center;gap:6px;margin-top:6px}
   .temporada h1{font-size:32px;line-height:36px;text-align:center}
   .by{font-size:28px}
@@ -176,7 +199,8 @@ footer a:hover{color:var(--amarillo)}
   footer{grid-template-columns:1fr;gap:30px;padding:20px 24px 100px;text-align:center}
   .f-links,.f-admin{justify-items:center;text-align:center}
   .spons{flex-wrap:wrap}
-  .wa{right:20px;bottom:20px}
+  .wa{right:20px;top:calc(var(--heroH,100lvh) - 73px - var(--barras) - env(safe-area-inset-bottom,0px))}
+  body.fijo .wa{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 }
 </style>
 </head>
@@ -199,10 +223,10 @@ const CONFIG = {
 
   // ---- FOTOS Y VIDEOS: ruta o URL de cada archivo (vacío = recuadro de muestra) ----
   media: {
-    logoIcono:     "img/logo-icono.png",   // logo cuadrado de la cabecera
     logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
     heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
     heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
+    avatar:        "img/avatar.png",       // foto por defecto de los jugadores sin foto
     sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
@@ -222,7 +246,8 @@ const CONFIG = {
     ranking:       "https://www.muevete.pe/ranking",
     nosotros:      "https://www.muevete.pe/nosotros",
     bases:         "https://www.muevete.pe/_files/ugd/b3ff12_eeeb66a490654419864b59722d92b03f.pdf",
-    miCuenta:      "https://www.muevete.pe/account",
+    miCuenta:      "mi-cuenta.html",
+    umaGo:         "",   // ← pega aquí el link de "Uma Go"
     ronda1:        "https://www.muevete.pe/playa/sombrillas1/ronda/1",
     ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
     terminos:      "https://www.muevete.pe/terminos-y-condiciones",
@@ -250,8 +275,8 @@ const CONFIG = {
 <!-- HEADER -->
 <header class="top">
   <div class="wrap">
-    <a class="logo-box" data-link="inicio" id="logoTop"></a>
     <div class="right" id="right">
+      <div class="panel" id="panel">
       <nav class="menu" aria-label="Menú principal">
         <a class="on" data-link="inicio">Inicio</a>
         <a data-link="inscripciones">Inscripciones</a>
@@ -260,6 +285,7 @@ const CONFIG = {
         <a data-link="bases" target="_blank" rel="noopener">Bases</a>
       </nav>
       <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
+      </div>
       <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -269,6 +295,7 @@ const CONFIG = {
   <!-- HERO -->
   <section class="hero" id="inicio">
     <div class="hero-bg" id="heroBg"></div>
+    <a class="bajar" href="#contenido" aria-label="Bajar"><svg viewBox="0 0 24 24"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     <div class="hero-in">
       <div class="hero-logo" id="heroLogo"></div>
       <div class="temporada">
@@ -280,7 +307,7 @@ const CONFIG = {
 
   <div class="wrap">
     <!-- TRES PILARES -->
-    <section class="pilares">
+    <section class="pilares" id="contenido">
       <div class="pilar"><div class="ic"><svg><use href="#jugador"/></svg></div><p>promovemos la comunidad del Vóley Playa</p></div>
       <div class="pilar"><div class="ic" id="icComunidad"></div><p>contamos con +90 participantes por fecha</p></div>
       <div class="pilar"><div class="ic" id="icRanking"></div><p>juegan principiantes, avanzados y expertos</p></div>
@@ -336,10 +363,32 @@ const CONFIG = {
   </div>
 </main>
 
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
+  <div class="mhead">
+    <a class="cuenta" data-link="miCuenta">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a class="on" data-link="inicio">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a data-link="bases" target="_blank" rel="noopener">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+    <a data-link="nosotros">Nosotros</a>
+  </nav>
+</aside>
 <a class="wa" id="wa" target="_blank" rel="noopener" aria-label="Contacto WhatsApp"></a>
 
 <script>
 (function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  if(!location.hash) window.scrollTo(0,0);
   const C=CONFIG,M=C.media,$=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
   const isVid=u=>/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
   const ph=(t,dark)=>`<div class="ph${dark?' dark':''}">${t}</div>`;
@@ -350,7 +399,6 @@ const CONFIG = {
   $('#yr').textContent=new Date().getFullYear();
 
   // logos y medios
-  $('#logoTop').innerHTML=img(M.logoIcono,'muévete.pe','logo');
   $('#heroLogo').innerHTML=img(M.logo,'logo muévete.pe','logo muévete.pe',true);
   $('#logoFoot').innerHTML=img(M.logo,'logo muévete','logo muévete');
   $('#sponHero').innerHTML=M.sponsorHero?`<img src="${M.sponsorHero}" alt="Electrolife">`:'<span style="display:flex;align-items:flex-end;height:100%;font-size:40px;line-height:44px">Electrolife</span>';
@@ -360,8 +408,18 @@ const CONFIG = {
   const hb=$('#heroBg');
   const sinFondo=()=>{hb.innerHTML=ph('sube tu video como media/fondo.mp4')};
   const conFoto=()=>{ if(!M.heroFoto) return sinFondo(); const i=new Image(); i.alt=''; i.onerror=sinFondo; i.src=M.heroFoto; hb.replaceChildren(i); };
-  if(M.heroVideo){ const v=document.createElement('video'); Object.assign(v,{autoplay:true,muted:true,loop:true,playsInline:true});
-    v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.onerror=conFoto; v.src=M.heroVideo; hb.replaceChildren(v); v.play().catch(()=>{}); }
+  if(M.heroVideo){
+    // video declarado como HTML (más compatible con iPhone/Safari)
+    hb.innerHTML=`<video autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture ${M.heroFoto?`poster="${M.heroFoto}"`:''}>
+      <source src="${M.heroVideo}" type="video/mp4"></video>`;
+    const v=hb.querySelector('video'); v.muted=true; v.defaultMuted=true;
+    v.querySelector('source').addEventListener('error',conFoto);
+    const intentar=()=>{const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});};
+    intentar(); v.addEventListener('loadeddata',intentar);
+    // si el navegador bloquea el autoplay (ej. modo ahorro de batería), arranca al primer toque o scroll
+    const alTocar=()=>{intentar(); if(!v.paused){['touchstart','click','scroll'].forEach(e=>removeEventListener(e,alTocar));}};
+    ['touchstart','click','scroll'].forEach(e=>addEventListener(e,alTocar,{passive:true}));
+  }
   else conFoto();
 
   // whatsapp
@@ -394,13 +452,12 @@ const CONFIG = {
   }).catch(()=>errorLista($('#fechas')));
 
   // top 5
-  const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
   cargar(C.datosTop5).then(lista=>{
     lista=[...lista].sort((a,b)=>(a.puesto||99)-(b.puesto||99)).slice(0,5);
     repetir(lista,$('#tpl-jugador'),$('#top5'),(n,f,it,i)=>{
       f('puesto').textContent=it.puesto||i+1;
       f('nombre').textContent=it.nombre;
-      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else f('av').textContent=ini(it.nombre);
+      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else {const im=new Image();im.src=M.avatar;im.alt='';f('av').append(im)}
       f('sube').toggleAttribute('hidden',it.tendencia!=='sube'); f('baja').toggleAttribute('hidden',it.tendencia!=='baja');
       f('perfil').href=it.perfil||C.links.ranking; f('perfil').setAttribute('aria-label','Ver '+it.nombre);
     });
@@ -409,8 +466,26 @@ const CONFIG = {
   // aliados
   $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
 
+  document.querySelectorAll('a.bajar').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.getElementById('contenido').scrollIntoView({behavior:'smooth'});}));
+  // menú y WhatsApp fijos solo después de la portada
+  const heroEl=document.getElementById('inicio');
+  const fijar=()=>{const h=heroEl.offsetHeight;document.documentElement.style.setProperty('--heroH',h+'px');
+    document.body.classList.toggle('fijo',window.scrollY>h-100);};
+  addEventListener('scroll',fijar,{passive:true}); addEventListener('resize',fijar); fijar();
   // menú móvil
-  $('#burger').onclick=()=>$('#right').classList.toggle('open');
+  const mp=$('#mpanel');
+  // el panel y el fondo oscuro no existen mientras el menú está cerrado
+  // (así Safari en iPhone no pinta la franja de arriba con su color)
+  const mf=$('#mfondo'); let cierre;
+  const menu=open=>{
+    clearTimeout(cierre);
+    if(open){ mp.hidden=false; mf.hidden=false; mp.offsetWidth; requestAnimationFrame(()=>document.body.classList.add('mopen')); }
+    else { document.body.classList.remove('mopen'); cierre=setTimeout(()=>{mp.hidden=true; mf.hidden=true;},340); }
+  };
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); $('#mfondo').onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+  mp.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>menu(false)));
 })();
 </script>
 </body>
