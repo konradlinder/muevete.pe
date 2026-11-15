@@ -132,7 +132,7 @@ body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bot
 .col-fechas{padding:24px 0 0 133px}
 .col-top{padding:24px 0 0 46px}
 .col-foto{height:399px}
-.col-foto img{width:100%;height:100%;object-fit:cover}
+.col-foto img{width:100%;height:100%;object-fit:cover;object-position:28% 70%}
 h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
 .lista{display:grid;gap:4px;width:313px}
 .fila{background:var(--amarillo);color:var(--negro);font-size:14px;letter-spacing:.01em;display:grid;align-items:center;height:32px;padding:0 8px 0 14px;border-radius:4px}
@@ -214,6 +214,7 @@ const CONFIG = {
   temporada: "Primavera 2026",
   sede: "Uma Arena",
   horaFin: "14:00",      // a partir de esta hora, la fecha del día se marca como jugada
+  mostrarWhatsapp: false,   // botón verde de WhatsApp: true = se muestra, false = oculto
   whatsapp: "51964214852",
   waTexto: "Hola Konrad,\nNecesito ayuda con",
 
@@ -230,7 +231,7 @@ const CONFIG = {
     sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
-    fotoInicio:    "",   // foto a la derecha de Top 5 (inicio.jpg)
+    fotoInicio:    "img/inicio.jpg",   // foto a la derecha de Top 5
     whatsappIcono: "",   // ícono del botón flotante (opcional)
   },
 
@@ -265,7 +266,7 @@ const CONFIG = {
   <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
   <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="var(--verde)"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="var(--naranja)"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="wa" viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.1.9 2.9 1 4 .8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.2-.3-.3-.7-.5z"/></symbol>
+  <symbol id="ic-wa" viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.1.9 2.9 1 4 .8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.2-.3-.3-.7-.5z"/></symbol>
   <!-- jugador de vóley (línea blanca, igual estilo que el ícono actual) -->
   <symbol id="jugador" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="7" r="4.5"/><circle cx="32" cy="21" r="4"/><path d="M27 17c-3 2-4 6-2 10 1.5 3 4 4 4 8v4c0 4-3 8-6 12-2 2.5-1.5 5 1 5s4-3 5-6l3-7M37 17c3 2 4 6 2 10-1.5 3-4 4-4 8v4c0 4 1 9 0 13-1 3-3 5-5 6"/></g></symbol>
   <symbol id="grupo" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="18" r="6"/><path d="M21 44v-6a11 11 0 0 1 22 0v6"/><circle cx="14" cy="24" r="5"/><path d="M5 46v-4a9 9 0 0 1 12-8.5"/><circle cx="50" cy="24" r="5"/><path d="M59 46v-4a9 9 0 0 0-12-8.5"/><path d="M8 54h48"/></g></symbol>
@@ -423,8 +424,8 @@ const CONFIG = {
   else conFoto();
 
   // whatsapp
-  const wa=$('#wa'); wa.href=`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.waTexto)}`;
-  wa.innerHTML=M.whatsappIcono?`<img src="${M.whatsappIcono}" alt="Contacto Whatsapp">`:'<svg><use href="#wa"/></svg>';
+  const wa=$('#wa'); wa.hidden=!C.mostrarWhatsapp; wa.href=`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.waTexto)}`;
+  wa.innerHTML=M.whatsappIcono?`<img src="${M.whatsappIcono}" alt="Contacto Whatsapp">`:'<svg><use href="#ic-wa"/></svg>';
 
   // ===== REPETIDORES =====
   // repetir(lista, plantilla, contenedor, rellenar): clona la plantilla por cada ítem
