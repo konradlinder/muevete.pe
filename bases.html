@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bases Uma Arena | muévete.pe</title>
+<meta name="description" content="Bases de Uma Arena, la competencia individual de vóley playa de muévete.pe: inscripción, formato, series, puntajes y ranking.">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0046B8; --azul-menu:#0051C2; --amarillo:#FFDB03; --blanco:#F7F7F7;
+  --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
+  --poppins:"Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:var(--poppins);font-weight:600;background:var(--fondo);color:var(--negro);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+
+/* ---------- MENÚ (igual que el inicio) ---------- */
+.right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(23px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:20}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
+.menu a:hover{color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:first-child{padding-left:30px}
+.menu a:last-child{padding-right:30px}
+.cuenta{padding:0 20px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 12px;font-size:16px;letter-spacing:.02em;color:#fff}
+.cuenta svg{width:24px;height:24px}
+.cuenta.on,.cuenta:hover{color:var(--amarillo)}
+.panel{display:flex;gap:38px;align-items:flex-start}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger svg{width:26px;height:26px}
+
+/* menú celular */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column;color:var(--blanco)}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+body.mopen{overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+
+/* ---------- BASES ---------- */
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+body{background:#fff}
+.hero{background:var(--azul);color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:40px;width:420px;height:260px;opacity:.35;
+  background-image:radial-gradient(circle,#7FA6F0 1.6px,transparent 1.8px);background-size:22px 22px;pointer-events:none}
+.hero-in{max-width:1100px;margin:0 auto;padding:130px 24px 56px;display:flex;align-items:center;gap:44px;position:relative;z-index:1}
+.uma{width:190px;height:auto;flex:none}
+.hero h1{font-size:64px;line-height:.98;font-weight:700;letter-spacing:-.02em}
+.hero .sub{color:var(--amarillo);font-size:22px;line-height:1.3;margin-top:14px}
+.btn-pdf{display:inline-flex;align-items:center;gap:10px;margin-top:24px;background:var(--amarillo);color:#000;border-radius:999px;height:44px;padding:0 22px;font-size:15px;transition:filter .15s,transform .15s}
+.btn-pdf:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn-pdf svg{width:18px;height:18px}
+.btn-pdf.azul{background:var(--azul-menu);color:#fff}
+
+.cuerpo{max-width:1100px;margin:0 auto;padding:48px 24px 80px;display:grid;grid-template-columns:250px 1fr;gap:56px;align-items:start}
+.indice{position:sticky;top:110px}
+.indice summary{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#7A808A;list-style:none;cursor:default;margin-bottom:10px}
+.indice summary::-webkit-details-marker{display:none}
+.indice ol{list-style:none;display:grid;gap:2px;border-left:2px solid #E4E8EF}
+.indice a{display:flex;gap:10px;padding:7px 12px;font-size:14px;font-weight:500;color:#4A4F57;border-left:2px solid transparent;margin-left:-2px;line-height:1.3;transition:color .15s,border-color .15s}
+.indice a b{color:#9AA6BB;font-weight:600;font-size:12px;padding-top:1px}
+.indice a:hover{color:var(--azul-menu)}
+.indice a.on{color:var(--azul-menu);border-left-color:var(--azul-menu)}
+.indice a.on b{color:var(--azul-menu)}
+
+.contenido{max-width:740px;min-width:0}
+.cuerpo > *{min-width:0}
+.contenido section{padding-bottom:44px;margin-bottom:44px;border-bottom:1px solid #EEF0F4}
+.contenido section:last-of-type{border-bottom:0}
+h2{display:flex;align-items:baseline;gap:14px;color:#1E46B4;font-size:30px;font-weight:600;line-height:1.15;margin-bottom:18px}
+h2 span{font-size:18px;font-weight:500;color:#7FA0DA;flex:none}
+.contenido p,.contenido li{font-size:16px;line-height:1.7;color:#454A52;font-weight:500}
+.contenido p+p{margin-top:12px}
+.contenido strong{color:#1A1D22;font-weight:700}
+.contenido a{color:var(--azul-menu);text-decoration:underline;text-underline-offset:2px}
+.contenido ul{padding-left:20px;display:grid;gap:8px}
+.contenido ul ul{margin-top:8px;gap:4px}
+.contenido li::marker{color:#1E46B4}
+.foto{width:100%;border-radius:16px;margin-top:26px;aspect-ratio:16/9;object-fit:cover}
+
+.tarjetas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tarjeta{background:#F5F7FB;border:1px solid #E6EAF2;border-radius:16px;padding:18px 18px 16px}
+.tarjeta .ic{width:42px;height:42px;border-radius:50%;background:#fff;border:1.5px solid #CFD9EE;display:grid;place-items:center;margin-bottom:10px}
+.tarjeta .ic svg{width:22px;height:22px;fill:none;stroke:#1E46B4;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tarjeta h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#1A1D22;margin-bottom:4px}
+.tarjeta p{font-size:15px!important;line-height:1.55!important}
+.tarjeta:last-child:nth-child(odd){grid-column:1 / -1}
+
+.sede{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.sede div{background:var(--azul);color:#fff;border-radius:16px;padding:16px 18px}
+.sede small{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#BFD0F5;font-weight:500}
+.sede b{font-size:18px;font-weight:600}
+.temporadas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 16px}
+.temporadas div{border:1.5px solid #E1E6EF;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.temporadas b{color:#1E46B4;font-size:17px}
+.temporadas span{font-size:14px;color:#5A606B;font-weight:500}
+.temporadas em{font-style:normal;align-self:flex-start;margin-top:8px;background:var(--amarillo);border-radius:999px;padding:2px 10px;font-size:13px}
+
+.rondas{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.ronda{border:1.5px solid #E1E6EF;border-radius:16px;padding:18px}
+.ronda .tag{display:inline-block;background:var(--azul-menu);color:#fff;border-radius:999px;font-size:12px;padding:3px 12px;letter-spacing:.06em;text-transform:uppercase}
+.ronda .tag.amarillo{background:var(--amarillo);color:#000}
+.ronda h3{font-size:20px;color:#1A1D22;margin:8px 0 10px}
+.ronda li{font-size:15px!important;line-height:1.6!important}
+
+.serie{margin-top:26px}
+.serie h3{font-size:15px;letter-spacing:.06em;margin-bottom:8px;color:#1A1D22}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid #DCE3EE}
+table{width:100%;border-collapse:collapse;min-width:560px;font-size:14px;text-align:center}
+th,td{padding:9px 8px;border-bottom:1px solid #E6EBF2}
+thead th{background:var(--azul-menu);color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.25)}
+thead tr:first-child th{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+tbody th{background:#F5F7FB;color:#1A1D22;width:70px}
+tbody td{color:#2A2E35;font-weight:500}
+td.q{background:#EEF3FC;font-weight:600}
+thead th.q{background:#003A99}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+.oro thead th{background:var(--amarillo);color:#000;border-bottom-color:rgba(0,0,0,.08)}
+.oro thead th.q{background:#F2C600}
+.oro td.q{background:#FFF6C2}
+.final{text-align:center;padding-top:6px}
+
+@media (max-width:980px){
+  .panel{display:none}
+  .burger{display:grid;place-items:center}
+  .cuerpo{grid-template-columns:1fr;gap:24px;padding-top:28px}
+  .indice{position:static}
+  .indice details{background:#F5F7FB;border:1px solid #E6EAF2;border-radius:16px;padding:14px 16px}
+  .indice summary{cursor:pointer;margin:0;display:flex;justify-content:space-between;color:#1A1D22;font-size:14px}
+  .indice summary::after{content:"";width:10px;height:10px;border-right:2px solid #1A1D22;border-bottom:2px solid #1A1D22;transform:rotate(45deg) translateY(-3px);transition:transform .2s}
+  .indice details[open] summary::after{transform:rotate(-135deg)}
+  .indice details[open] ol{margin-top:12px}
+}
+@media (max-width:760px){
+  .hero-in{flex-direction:column;align-items:flex-start;gap:22px;padding:104px 22px 40px}
+  .uma{width:130px}
+  .hero h1{font-size:46px}
+  .hero .sub{font-size:19px}
+  .hero::after{width:240px;height:200px;top:auto;bottom:-20px}
+  .cuerpo{padding:22px 18px 60px}
+  h2{font-size:25px;gap:10px}
+  h2 span{font-size:15px}
+  .contenido section{padding-bottom:34px;margin-bottom:34px}
+  .tarjetas,.rondas,.sede{grid-template-columns:1fr}
+  .temporadas{grid-template-columns:1fr}
+  .temporadas div{flex-direction:row;align-items:center;flex-wrap:wrap;column-gap:10px}
+  .temporadas em{margin:0 0 0 auto}
+  tbody th,thead th:first-child{position:sticky;left:0;z-index:1}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="salir" viewBox="0 0 24 24"><circle cx="10" cy="7.5" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 21v-1.5a5 5 0 0 1 5-5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 15.5l5 5M21 15.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#1E9E3A"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#E2561B"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- MENÚ -->
+<div class="right">
+  <div class="panel">
+    <nav class="menu" aria-label="Menú principal">
+      <a href="index.html">Inicio</a>
+      <a data-link="inscripciones">Inscripciones</a>
+      <a data-link="ranking">Ranking</a>
+      <a data-link="nosotros">Nosotros</a>
+      <a class="on" href="bases.html" aria-current="page">Bases</a>
+    </nav>
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+  </div>
+  <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</div>
+
+<header class="hero">
+  <div class="hero-in">
+    <img class="uma" src="img/bases/uma-logo.png" alt="UMA Arena · Organizado por muévete.pe">
+    <div>
+      <h1>Bases<br>Uma Arena</h1>
+      <p class="sub">Competencia individual<br>de vóley playa</p>
+      <a class="btn-pdf" href="media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar PDF
+        <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<div class="cuerpo">
+  <nav class="indice" aria-label="Índice">
+    <details open id="indice">
+      <summary>Índice</summary>
+      <ol>
+        <li><a href="#s01"><b>01</b>Objetivo general</a></li>
+        <li><a href="#s02"><b>02</b>Participantes y requisitos</a></li>
+        <li><a href="#s03"><b>03</b>Calendario y sede</a></li>
+        <li><a href="#s04"><b>04</b>Formato de competencia</a></li>
+        <li><a href="#s05"><b>05</b>Sistema de SERIES y ranking</a></li>
+        <li><a href="#s06"><b>06</b>Puntaje y ranking general</a></li>
+        <li><a href="#s07"><b>07</b>Conducta, autogestión y respeto</a></li>
+        <li><a href="#s08"><b>08</b>Reconocimiento y cultura comunitaria</a></li>
+        <li><a href="#s09"><b>09</b>Modificaciones y contingencias</a></li>
+        <li><a href="#s10"><b>10</b>Disposiciones finales</a></li>
+        <li><a href="#s11"><b>11</b>Puntajes por SERIE y CAMPO</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <article class="contenido">
+
+    <section id="s01">
+      <h2><span>01</span>Objetivo general</h2>
+      <p>El campeonato Uma Arena, organizado por Muévete.pe, tiene como objetivo promover la práctica sistemática del vóley playa como una herramienta para el desarrollo personal y comunitario, a través de una competencia individual que se construye desde la colaboración, la rotación de equipos y la autogestión.</p>
+    </section>
+
+    <section id="s02">
+      <h2><span>02</span>Participantes y requisitos</h2>
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 9.5h1.5v5.5M14.5 9.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 0 1.5-2.5"/></svg></div>
+          <h3>Edad y registro</h3>
+          <p>Pueden participar personas mayores de 16 años que se registren previamente en la plataforma oficial: <a href="index.html">www.muevete.pe</a>.</p>
+        </div>
+        <div class="tarjeta">
+          <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20v-1.2A5 5 0 0 1 10 14h4a5 5 0 0 1 5 4.8V20"/></svg></div>
+          <h3>Perfil</h3>
+          <p>La inscripción incluye la creación de un perfil personal, donde se solicita: nivel estimado de juego y datos personales.</p>
+        </div>
+        <div class="tarjeta">
+          <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>Inscripción</h3>
+          <p>La inscripción en cada jornada se habilita los miércoles a las 12:00:00 p.m. hasta completar el número de cupos disponibles.</p>
+        </div>
+        <div class="tarjeta">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6z"/><path d="M9.2 8.6c.3 2.5 2.4 4.9 5.2 5.6l1-1.2-1.8-.9-.8.8c-1-.5-1.8-1.3-2.2-2.2l.8-.8-.9-1.8z"/></svg></div>
+          <h3>Comunicaciones</h3>
+          <p>Los participantes deben registrarse en el canal oficial de WhatsApp de coordinación del campeonato, donde se publican anuncios, convocatorias, rondas y resultados.</p>
+        </div>
+        <div class="tarjeta">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12l4-4 3 1.5L13 7l4 1 4 4"/><path d="M7 8l-2 9h14l-2-9M10 13h4"/></svg></div>
+          <h3>Colaboración</h3>
+          <p>Los jugadores deberán ayudar a armar y desarmar los campos cuidando que no falten piezas.</p>
+        </div>
+      </div>
+      <img class="foto" src="img/bases/foto-1.jpg" alt="Grupo de jugadores de Uma Arena en la playa" loading="lazy">
+    </section>
+
+    <section id="s03">
+      <h2><span>03</span>Calendario y sede</h2>
+      <div class="sede">
+        <div><small>Cuándo</small><b>Cada sábado · 6:30 a.m.</b></div>
+        <div><small>Dónde</small><b>Playa Sombrillas, Barranco</b></div>
+      </div>
+      <p>El campeonato está organizado en tres temporadas anuales:</p>
+      <div class="temporadas">
+        <div><b>Uma Verano</b><span>enero a marzo</span><em>10 fechas</em></div>
+        <div><b>Uma Otoño</b><span>abril a julio</span><em>14 fechas</em></div>
+        <div><b>Uma Primavera</b><span>agosto a noviembre</span><em>14 fechas</em></div>
+      </div>
+      <p>Cada temporada tiene su propio ranking y culmina con un cierre de ranking y premiación simbólica.</p>
+    </section>
+
+    <section id="s04">
+      <h2><span>04</span>Formato de competencia</h2>
+      <p><strong>Estructura de cada fecha:</strong> cada fecha se divide en dos rondas.</p>
+      <div class="rondas">
+        <div class="ronda">
+          <div class="tag">Ronda 1</div>
+          <h3>Clasificatoria</h3>
+          <ul>
+            <li>Los participantes son agrupados en SERIES de cinco campos cada una (hasta 25 jugadores por serie), según su puntaje promedio acumulado en la temporada.</li>
+            <li>Cada jugador disputa cuatro partidos rotando de compañero con los demás integrantes de su campo.</li>
+            <li>Se establece un orden del 1 al 5 dentro de cada campo, según: (1) partidos ganados, (2) cociente de puntos, (3) ranking histórico.</li>
+          </ul>
+        </div>
+        <div class="ronda">
+          <div class="tag amarillo">Ronda 2</div>
+          <h3>Final</h3>
+          <ul>
+            <li>Los jugadores se reorganizan dentro de su misma SERIE, según la posición obtenida en la ronda clasificatoria.</li>
+            <li>Por ejemplo, en la Serie B:
+              <ul>
+                <li>Campo 6: primeros lugares de los campos 6–10.</li>
+                <li>Campo 7: segundos lugares, y así sucesivamente.</li>
+              </ul>
+            </li>
+            <li>Se define el KING o QUEEN de cada campo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="s05">
+      <h2><span>05</span>Sistema de SERIES y ranking</h2>
+      <ul>
+        <li>Las SERIES se determinan por el puntaje promedio acumulado de cada jugador en la temporada.</li>
+        <li>La SERIE A reúne a los 25 jugadores con mejor promedio; le siguen las SERIES B, C y D.</li>
+        <li>Jugadores nuevos reciben un puntaje provisional que se ajusta tras su primera participación.</li>
+        <li><strong>COMODÍN:</strong> un jugador puede ascender de SERIE si queda primero o segundo en los campos 6, 11 o 16 de la ronda final. Esta promoción es válida solo para la fecha siguiente.</li>
+      </ul>
+      <img class="foto" src="img/bases/foto-2.jpg" alt="Campos de vóley en la Playa Sombrillas" loading="lazy">
+    </section>
+
+    <section id="s06">
+      <h2><span>06</span>Puntaje y ranking general</h2>
+      <ul>
+        <li>En cada jornada, los jugadores reciben un puntaje según su ubicación final en cada ronda, considerando la SERIE y el CAMPO.</li>
+        <li>El ranking general se calcula a partir de la suma de los ocho mejores puntajes obtenidos en la temporada.</li>
+        <li>El ranking se actualiza y publica semanalmente. <a href="ranking.html">Ver ranking</a></li>
+      </ul>
+    </section>
+
+    <section id="s07">
+      <h2><span>07</span>Conducta, autogestión y respeto</h2>
+      <ul>
+        <li>No hay árbitros externos: los jugadores anotan puntos, hacen cumplir las reglas y resuelven disputas mediante el diálogo.</li>
+        <li>La rotación constante promueve el respeto y la reputación como capital social.</li>
+        <li>La disciplina, colaboración y buena onda son requisitos para poder jugar.</li>
+        <li>El incumplimiento de normas puede derivar en advertencias, sanciones o suspensión temporal.</li>
+      </ul>
+    </section>
+
+    <section id="s08">
+      <h2><span>08</span>Reconocimiento y cultura comunitaria</h2>
+      <ul>
+        <li>Al finalizar cada jornada se reconocen simbólicamente a los ganadores de cada campo (KING o QUEEN).</li>
+        <li>Cada sábado inicia con un círculo de bienvenida para recibir nuevos jugadores y compartir anuncios comunitarios.</li>
+      </ul>
+      <img class="foto" src="img/bases/foto-3.jpg" alt="Círculo de bienvenida en Uma Arena" loading="lazy">
+    </section>
+
+    <section id="s09">
+      <h2><span>09</span>Modificaciones y contingencias</h2>
+      <ul>
+        <li>El equipo organizador puede modificar la estructura de campos, series o calendario por causas logísticas o climáticas.</li>
+        <li>Cualquier cambio será comunicado a través del canal oficial de WhatsApp.</li>
+      </ul>
+    </section>
+
+    <section id="s10">
+      <h2><span>10</span>Disposiciones finales</h2>
+      <p>Estas bases constituyen el marco de funcionamiento del UMA Arena. Participar implica la aceptación plena de estas disposiciones.</p>
+    </section>
+
+    <section id="s11">
+      <h2><span>11</span>Puntajes asignados por SERIE y CAMPO</h2>
+      <p>Las siguientes tablas muestran los puntajes otorgados a los jugadores según su posición final en cada campo, diferenciando por SERIE y RONDA. El valor asignado considera la importancia relativa del campo y la competencia interna en cada SERIE.</p>
+      <div id="tablas"></div>
+    </section>
+
+    <div class="final">
+      <a class="btn-pdf azul" href="media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar bases en PDF
+        <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </article>
+</div>
+
+<!-- MENÚ CELULAR -->
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
+  <div class="mhead">
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a href="index.html">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a class="on" href="bases.html">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+    <a data-link="nosotros">Nosotros</a>
+  </nav>
+</aside>
+
+<script>
+/* Links del menú (los mismos que en index.html) */
+const LINKS = {
+  inscripciones: "https://www.muevete.pe/playa/sombrillas1/inscripciones",
+  ranking:       "ranking.html",
+  nosotros:      "https://www.muevete.pe/nosotros",
+  bases:         "bases.html",
+  umaGo:         "",
+  ronda1:        "https://www.muevete.pe/playa/sombrillas1/ronda/1",
+  ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
+};
+
+(function(){
+  const $=s=>document.querySelector(s);
+  document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
+
+  // ===== TABLAS DE PUNTAJES =====
+  const PUNTAJES={
+    A:{q:[10800,9600,8400,7200,6900],c:[[12000,10800,9600,8400,7200],[9600,8400,7200,6900,6600],[8400,7200,6900,6600,6300],[7200,6900,6600,6300,6000],[6900,6600,6300,6000,5850]]},
+    B:{q:[7200,6900,6600,6300,6000],c:[[8400,7200,6900,6600,6300],[6900,6600,6300,6000,5850],[6600,6300,6000,5850,5700],[6300,6000,5850,5700,5550],[6000,5850,5700,5550,5400]]},
+    C:{q:[6600,6300,6000,5850,5700],c:[[6900,6600,6300,6000,5850],[6300,6000,5850,5700,5550],[6000,5850,5700,5550,5400],[5850,5700,5550,5400,5250],[5700,5550,5400,5250,5100]]},
+    D:{q:[6300,6000,5850,5700,5550],c:[[6600,6300,6000,5850,5700],[6000,5850,5700,5550,5400],[5850,5700,5550,5400,5250],[5700,5550,5400,5250,5100],[5550,5400,5250,5100,4950]]}
+  };
+  const campo0={A:1,B:6,C:11,D:16};
+  $('#tablas').innerHTML=Object.entries(PUNTAJES).map(([s,d])=>{
+    const cs=[0,1,2,3,4].map(i=>'C'+(campo0[s]+i));
+    const filas=[0,1,2,3,4].map(p=>`<tr><th scope="row">${p+1}</th><td class="q">${d.q[p]}</td>${d.c.map(col=>`<td>${col[p]}</td>`).join('')}</tr>`).join('');
+    return `<div class="serie ${s==='A'?'oro':''}"><h3>SERIE ${s}</h3><div class="scroll"><table>
+      <thead><tr><th rowspan="2" scope="col">Puesto</th><th scope="col">Ronda 1</th><th colspan="5" scope="colgroup">Ronda 2</th></tr>
+      <tr><th class="q" scope="col">Quali ${s}</th>${cs.map(c=>`<th scope="col">${c}</th>`).join('')}</tr></thead>
+      <tbody>${filas}</tbody></table></div></div>`;
+  }).join('');
+
+  // índice: resaltar la sección visible y cerrarlo en celular al elegir
+  const links=[...document.querySelectorAll('.indice a')];
+  const det=$('#indice');
+  if(matchMedia('(max-width:980px)').matches) det.open=false;
+  links.forEach(a=>a.addEventListener('click',()=>{ if(matchMedia('(max-width:980px)').matches) det.open=false; }));
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)); } }),{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('.contenido section').forEach(s=>io.observe(s));
+
+  // menú celular
+  const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
+  const menu=open=>{clearTimeout(cierre);
+    if(open){mp.hidden=false;mf.hidden=false;mp.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('mopen'));}
+    else{document.body.classList.remove('mopen');cierre=setTimeout(()=>{mp.hidden=true;mf.hidden=true;},340);}};
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); mf.onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+})();
+</script>
+</body>
+</html>

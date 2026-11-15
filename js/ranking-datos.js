@@ -11,9 +11,11 @@
       order: 'puesto.asc'
     });
     if (limite) p.set('limit', String(limite));
-    const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/ranking?' + p, {
-      headers: { apikey: db.anonKey, Authorization: 'Bearer ' + db.anonKey }
-    });
+    // Las claves nuevas (sb_publishable_...) van solo en "apikey".
+    // Las anon antiguas (JWT, empiezan con "eyJ") también van en Authorization.
+    const headers = { apikey: db.anonKey };
+    if (db.anonKey.startsWith('eyJ')) headers.Authorization = 'Bearer ' + db.anonKey;
+    const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/ranking?' + p, { headers });
     if (!r.ok) throw new Error('Supabase ' + r.status);
     return r.json();
   }
