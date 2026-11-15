@@ -1,5 +1,15 @@
 /* Datos de inscripciones (lectura pública: solo nombre, foto y estado de próximas fechas) */
 (function(){
+  // Fotos de Wix en miniatura (en vez de la foto original de varios MB)
+  window.fotoChica = window.fotoChica || function(url, px = 96){
+    if (!url) return '';
+    let m = /^wix:image:\/\/v1\/([^/#]+)/.exec(url);
+    let id = m ? m[1] : null;
+    if (!id){ m = /^https:\/\/static\.wixstatic\.com\/media\/([^/?#]+)$/.exec(url); id = m ? m[1] : null; }
+    if (!id) return url;
+    const ext = (/\.(png|webp|gif)$/i.exec(id) || [,'jpg'])[1];
+    return `https://static.wixstatic.com/media/${id}/v1/fill/w_${px},h_${px},al_c,q_80,enc_auto/foto.${ext}`;
+  };
   const headersDe = key => {
     const h = { apikey: key };
     if (key.startsWith('eyJ')) h.Authorization = 'Bearer ' + key;
@@ -73,7 +83,7 @@
     });
     const r = await fetch(db.url.replace(/\/$/,'') + '/rest/v1/inscripciones?' + p, { headers: headersDe(db.anonKey) });
     if (!r.ok) throw new Error('Supabase ' + r.status);
-    return (await r.json()).map(x => ({ id: x.id, nombre: x.jugador, foto: x.profile_picture || '', creado: x.created_at }));
+    return (await r.json()).map(x => ({ id: x.id, nombre: x.jugador, foto: x.profile_picture ? window.fotoChica(x.profile_picture) : '', creado: x.created_at }));
   };
 
   // Cuántos inscritos activos hay (número público, sin datos de jugadores)
