@@ -6,6 +6,11 @@
 <title>muévete.pe | Voley Playa | Lima, Perú</title>
 <meta name="description" content="muévete.pe: promovemos la comunidad del Vóley Playa. +90 participantes por fecha. Juegan principiantes, avanzados y expertos.">
 <meta name="theme-color" content="#0046B8">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta property="og:title" content="muévete.pe | Voley Playa | Lima, Perú">
+<meta property="og:image" content="img/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;1,600&family=Roboto:wght@700&display=swap" rel="stylesheet">
@@ -24,6 +29,7 @@
   --roboto:"Roboto",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{font-family:var(--poppins);font-weight:600;background:var(--azul);color:var(--blanco);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
@@ -38,8 +44,8 @@ img,video{display:block;max-width:100%}
 /* ---------- HEADER ---------- */
 .top{position:absolute;inset:0 0 auto 0;z-index:20}
 .top .wrap{display:flex;align-items:flex-start;justify-content:space-between;padding:19px 21px 0}
-.logo-box{background:var(--azul);border-radius:5px;padding:9px 14px;width:107px;height:74px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(179,179,179,.6)}
-.logo-box img{max-height:60px;width:auto}
+.logo-box{display:block;width:74px;height:74px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(179,179,179,.6)}
+.logo-box img{width:100%;height:100%;object-fit:cover}
 .right{display:flex;gap:38px;align-items:flex-start;padding-top:7px}
 .menu{display:flex;background:var(--azul-menu);border-radius:5px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
@@ -57,9 +63,9 @@ img,video{display:block;max-width:100%}
 .hero-bg video,.hero-bg img{width:100%;height:100%;object-fit:cover}
 .hero-bg .ph{border:0;background:repeating-linear-gradient(135deg,#e9e9e9 0 16px,#f2f2f2 16px 32px);color:#888;align-items:flex-end;padding-bottom:20px}
 .hero-in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px}
-.hero-logo{width:575px;max-width:82vw;aspect-ratio:575/401}
-.hero-logo img{width:100%;height:100%;object-fit:contain}
-.temporada{display:flex;align-items:flex-end;gap:40px;margin-top:-18px}
+.hero-logo{width:500px;max-width:78vw}
+.hero-logo img{width:100%;height:auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.18))}
+.temporada{display:flex;align-items:flex-end;gap:40px;margin-top:22px}
 .temporada h1{font-style:italic;font-size:45px;line-height:49.5px;letter-spacing:.02em;color:var(--amarillo);text-align:right;font-weight:600}
 .by{display:flex;align-items:flex-end;gap:12px;font-style:italic;font-size:40px;line-height:44px;letter-spacing:.02em;color:var(--blanco)}
 .by .spon{width:235px;height:90px}
@@ -119,8 +125,8 @@ h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bo
 .top5 .center-btn{margin-top:20px;justify-content:flex-end;width:272px}
 
 .foot-logo{display:flex;justify-content:center;padding:28px 0 0}
-.foot-logo > div{width:278px;height:211px}
-.foot-logo img{width:100%;height:100%;object-fit:contain}
+.foot-logo > div{width:260px}
+.foot-logo img{width:100%;height:auto}
 
 /* ---------- FOOTER ---------- */
 footer{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:start;padding:12px 44px 46px;font-family:var(--roboto);font-weight:700;font-size:16px}
@@ -183,22 +189,16 @@ const CONFIG = {
   whatsapp: "51964214852",
   waTexto: "Hola Konrad,\nNecesito ayuda con",
 
-  fechas: ["2026-10-17","2026-10-24","2026-11-07","2026-11-14","2026-11-21"],
-
-  // tendencia: "sube", "baja" o "" (sin flecha). perfil: link al "+" de cada jugador
-  top5: [
-    { nombre:"Isaac Alonso",     foto:"", tendencia:"",     perfil:"" },
-    { nombre:"Diego Luque",      foto:"", tendencia:"",     perfil:"" },
-    { nombre:"Alvaro Rodriguez", foto:"", tendencia:"sube", perfil:"" },
-    { nombre:"Anthony Rosas",    foto:"", tendencia:"baja", perfil:"" },
-    { nombre:"Favio Noce",       foto:"", tendencia:"baja", perfil:"" },
-  ],
+  // Las fechas y el Top 5 se editan en data/fechas.json y data/top5.json
+  datosFechas: "data/fechas.json",
+  datosTop5:   "data/top5.json",
 
   // ---- FOTOS Y VIDEOS: ruta o URL de cada archivo (vacío = recuadro de muestra) ----
   media: {
-    logo:          "",   // logo muévete.pe (se usa en la cabecera, portada y abajo)
-    heroVideo:     "",   // video de fondo de la portada (.mp4)
-    heroFoto:      "",   // imagen de la portada mientras carga el video
+    logoIcono:     "img/logo-icono.png",   // logo cuadrado de la cabecera
+    logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
+    heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
+    heroFoto:      "media/fondo.jpg",      // imagen mientras carga el video (opcional)
     sponsorHero:   "",   // logo Electrolife blanco (al lado de "by")
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
@@ -288,6 +288,10 @@ const CONFIG = {
       <div class="col-fechas fechas">
         <h2>Próximas fechas:</h2>
         <div class="lista" id="fechas"></div>
+        <!-- REPETIDOR: ítem de fecha (se repite una vez por cada fecha de data/fechas.json) -->
+        <template id="tpl-fecha">
+          <div class="fila"><span data-f="dia"></span><span data-f="fecha"></span><span><span data-f="sede"></span><span class="hoy" data-f="hoy" hidden>HOY</span></span></div>
+        </template>
         <div class="ven">
           <p>¡Ven y <em>muévete</em> con nosotros!</p>
           <a class="btn" data-link="inscripciones">inscribirme <svg><use href="#list"/></svg></a>
@@ -296,6 +300,11 @@ const CONFIG = {
       <div class="col-top top5">
         <h2>Top 5 <span data-t="temporada"></span>:</h2>
         <div class="lista" id="top5"></div>
+        <!-- REPETIDOR: ítem de jugador (se repite una vez por cada jugador de data/top5.json) -->
+        <template id="tpl-jugador">
+          <div class="fila"><span data-f="puesto"></span><span class="av" data-f="av"></span><span class="nm" data-f="nombre"></span>
+            <span class="ics"><svg data-f="sube" hidden><use href="#up"/></svg><svg data-f="baja" hidden><use href="#down"/></svg><a data-f="perfil"><svg><use href="#circplus"/></svg></a></span></div>
+        </template>
         <div class="center-btn"><a class="btn" data-link="ranking">ranking <svg><use href="#plus"/></svg></a></div>
       </div>
       <div class="col-foto" id="fotoInicio"></div>
@@ -337,7 +346,7 @@ const CONFIG = {
   $('#yr').textContent=new Date().getFullYear();
 
   // logos y medios
-  $('#logoTop').innerHTML=img(M.logo,'logo muévete','logo');
+  $('#logoTop').innerHTML=img(M.logoIcono,'muévete.pe','logo');
   $('#heroLogo').innerHTML=img(M.logo,'logo muévete.pe','logo muévete.pe',true);
   $('#logoFoot').innerHTML=img(M.logo,'logo muévete','logo muévete');
   $('#sponHero').innerHTML=img(M.sponsorHero,'Electrolife','logo Electrolife (blanco)',true);
@@ -345,13 +354,22 @@ const CONFIG = {
   $('#icRanking').innerHTML=M.iconRanking?`<img src="${M.iconRanking}" alt="ranking muévete">`:'<svg><use href="#podio"/></svg>';
   $('#fotoInicio').innerHTML=img(M.fotoInicio,'muévete vóley playa','foto inicio');
   const hb=$('#heroBg');
-  if(M.heroVideo) hb.innerHTML=`<video src="${M.heroVideo}" ${M.heroFoto?`poster="${M.heroFoto}"`:''} autoplay muted loop playsinline></video>`;
-  else if(M.heroFoto) hb.innerHTML=`<img src="${M.heroFoto}" alt="">`;
-  else hb.innerHTML=ph('video de portada');
+  const sinFondo=()=>{hb.innerHTML=ph('sube tu video como media/fondo.mp4')};
+  const conFoto=()=>{ if(!M.heroFoto) return sinFondo(); const i=new Image(); i.alt=''; i.onerror=sinFondo; i.src=M.heroFoto; hb.replaceChildren(i); };
+  if(M.heroVideo){ const v=document.createElement('video'); Object.assign(v,{autoplay:true,muted:true,loop:true,playsInline:true});
+    v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.onerror=conFoto; v.src=M.heroVideo; hb.replaceChildren(v); v.play().catch(()=>{}); }
+  else conFoto();
 
   // whatsapp
   const wa=$('#wa'); wa.href=`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.waTexto)}`;
   wa.innerHTML=M.whatsappIcono?`<img src="${M.whatsappIcono}" alt="Contacto Whatsapp">`:'<svg><use href="#wa"/></svg>';
+
+  // ===== REPETIDORES =====
+  // repetir(lista, plantilla, contenedor, rellenar): clona la plantilla por cada ítem
+  const repetir=(items,tpl,box,fill)=>{box.replaceChildren(...items.map((it,i)=>{const n=tpl.content.firstElementChild.cloneNode(true);
+    const f=k=>n.querySelector(`[data-f="${k}"]`); fill(n,f,it,i); return n;}));};
+  const cargar=u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw r.status;return r.json()});
+  const errorLista=box=>box.innerHTML='<div class="fila">No se pudo cargar la lista</div>';
 
   // fechas
   const now=new Date(), [fh,fm]=C.horaFin.split(':').map(Number);
@@ -359,19 +377,30 @@ const CONFIG = {
   const jugada=f=>{const d=d0(f);d.setHours(fh,fm);return now>d};
   const esHoy=f=>d0(f).toDateString()===now.toDateString();
   const dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-  const fechas=[...C.fechas].sort(); const prox=fechas.find(f=>!jugada(f));
-  $('#fechas').innerHTML=fechas.map(f=>{const d=d0(f);
-    const cls=jugada(f)?'pasada':(f===prox?'prox':'');
-    const corta=`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}`;
-    return `<div class="fila ${cls}"><span>${dias[d.getDay()]}</span><span>${corta}</span><span>${C.sede}${esHoy(f)&&!jugada(f)?'<span class="hoy">HOY</span>':''}</span></div>`}).join('');
+  cargar(C.datosFechas).then(lista=>{
+    lista=[...lista].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    const prox=(lista.find(x=>!jugada(x.fecha))||{}).fecha;
+    repetir(lista,$('#tpl-fecha'),$('#fechas'),(n,f,it)=>{const d=d0(it.fecha);
+      if(jugada(it.fecha)) n.classList.add('pasada'); else if(it.fecha===prox) n.classList.add('prox');
+      f('dia').textContent=dias[d.getDay()];
+      f('fecha').textContent=`${d.getDate()}/${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}`;
+      f('sede').textContent=it.sede||C.sede;
+      f('hoy').hidden=!(esHoy(it.fecha)&&!jugada(it.fecha));
+    });
+  }).catch(()=>errorLista($('#fechas')));
 
   // top 5
   const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
-  $('#top5').innerHTML=C.top5.map((p,i)=>`<div class="fila"><span>${i+1}</span>
-    <span class="av">${p.foto?`<img src="${p.foto}" alt="foto perfil">`:ini(p.nombre)}</span>
-    <span class="nm">${p.nombre}</span>
-    <span class="ics">${p.tendencia==='sube'?'<svg><use href="#up"/></svg>':p.tendencia==='baja'?'<svg><use href="#down"/></svg>':''}
-      <a href="${p.perfil||C.links.ranking}" aria-label="Ver ${p.nombre}"><svg><use href="#circplus"/></svg></a></span></div>`).join('');
+  cargar(C.datosTop5).then(lista=>{
+    lista=[...lista].sort((a,b)=>(a.puesto||99)-(b.puesto||99)).slice(0,5);
+    repetir(lista,$('#tpl-jugador'),$('#top5'),(n,f,it,i)=>{
+      f('puesto').textContent=it.puesto||i+1;
+      f('nombre').textContent=it.nombre;
+      if(it.foto){const im=new Image();im.src=it.foto;im.alt='foto perfil';f('av').append(im)} else f('av').textContent=ini(it.nombre);
+      f('sube').toggleAttribute('hidden',it.tendencia!=='sube'); f('baja').toggleAttribute('hidden',it.tendencia!=='baja');
+      f('perfil').href=it.perfil||C.links.ranking; f('perfil').setAttribute('aria-label','Ver '+it.nombre);
+    });
+  }).catch(()=>errorLista($('#top5')));
 
   // aliados
   $('#spons').innerHTML=C.aliados.map(a=>`<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.nombre}">${a.logo?`<img src="${a.logo}" alt="${a.nombre}">`:ph('logo '+a.nombre)}</a>`).join('');
