@@ -21,7 +21,7 @@
 [hidden]{display:none!important}
 body{font-family:var(--poppins);font-weight:600;background:var(--fondo);color:var(--negro);-webkit-font-smoothing:antialiased;min-height:100vh}
 a{color:inherit;text-decoration:none}
-button,input,select{font:inherit;color:inherit}
+button{font:inherit;color:inherit}
 
 /* ---------- MENÚ (igual que el inicio) ---------- */
 .right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(23px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:20}
@@ -81,15 +81,7 @@ h1{font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
 .campo.ancho{grid-column:2 / span 2}
 .campo.c2 > input{width:180px}
 .doble{display:flex;gap:14px}
-input,select{height:44px;border:1.5px solid #D5D9E0;border-radius:12px;background:#fff;padding:0 14px;font-size:15px;font-weight:500;width:100%;min-width:0;outline:none;
-  box-shadow:0 1px 2px rgba(16,24,40,.05);transition:border-color .15s,box-shadow .15s}
-input::placeholder{color:#9AA1AD;font-weight:500}
-input:hover,select:hover{border-color:#B7BEC9}
-input:focus,select:focus{border-color:var(--azul-menu);box-shadow:0 0 0 4px rgba(0,81,194,.15)}
-input[type=date]{color:#000}
-input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
-select{appearance:none;-webkit-appearance:none;padding-right:30px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center/16px}
-.codigo{width:112px;flex:none;font-weight:600}
+.campo select.codigo{width:auto;flex:none}
 .emergencia{grid-column:1 / -1;display:grid;grid-template-columns:200px 180px;column-gap:24px}
 .emergencia .lbl{grid-column:1 / -1;margin-bottom:8px;font-size:15px}
 .acciones{display:flex;justify-content:flex-end;margin-top:200px;padding-right:0}
@@ -122,6 +114,33 @@ select{appearance:none;-webkit-appearance:none;padding-right:30px;background:#ff
 .mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
 .msub{padding-left:14px}
 .msub a{min-height:46px;padding-left:26px}
+
+/* ---------- Menú en la misma posición en todas las páginas ---------- */
+html{scrollbar-gutter:stable}
+.top .wrap{max-width:none;position:static}
+.right{top:calc(24px + env(safe-area-inset-top,0px));right:calc(20px + env(safe-area-inset-right,0px));gap:38px}
+.menu a,.menu a:first-child,.menu a:last-child{font-size:16px;letter-spacing:0}
+.cuenta{height:60px;gap:14px;font-size:16px;letter-spacing:.02em;padding:0 22px!important}
+.mhead .cuenta{height:46px;font-size:19px;gap:22px;padding:0 18px!important}
+
+/* Campos con el estilo nativo del navegador */
+.campo input,.campo select,.emergencia input{font-size:16px;width:100%;box-sizing:border-box}
+.doble select{width:auto}
+
+/* Burbuja del menú que se desliza de página en página (escritorio) */
+@media (min-width:981px){@view-transition{navigation:auto}}
+.menu{position:relative}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
+.menu a{position:relative;z-index:1}
+.menu.con-pill a.on{background:transparent}
+.menu a:nth-of-type(1){view-transition-name:menu-1}
+.menu a:nth-of-type(2){view-transition-name:menu-2}
+.menu a:nth-of-type(3){view-transition-name:menu-3}
+.menu a:nth-of-type(4){view-transition-name:menu-4}
+::view-transition-group(menu-pill){animation-duration:.4s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 </style>
 </head>
 <body>
@@ -272,5 +291,6 @@ async function guardarPerfil(datos){ /* conectar con la base de datos */ }
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
 })();
 </script>
+<script src="js/menu-pill.js"></script>
 </body>
 </html>

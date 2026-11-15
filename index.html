@@ -307,6 +307,29 @@ footer a:hover{color:var(--amarillo)}
 .mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
 .msub{padding-left:14px}
 .msub a{min-height:46px;padding-left:26px}
+
+/* ---------- Menú en la misma posición en todas las páginas ---------- */
+html{scrollbar-gutter:stable}
+.top .wrap{max-width:none;position:static}
+.right{top:calc(24px + env(safe-area-inset-top,0px));right:calc(20px + env(safe-area-inset-right,0px));gap:38px}
+.menu a,.menu a:first-child,.menu a:last-child{font-size:16px;letter-spacing:0}
+.cuenta{height:60px;gap:14px;font-size:16px;letter-spacing:.02em;padding:0 22px!important}
+.mhead .cuenta{height:46px;font-size:19px;gap:22px;padding:0 18px!important}
+
+/* Burbuja del menú que se desliza de página en página (escritorio) */
+@media (min-width:981px){@view-transition{navigation:auto}}
+.menu{position:relative}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
+.menu a{position:relative;z-index:1}
+.menu.con-pill a.on{background:transparent}
+.menu a:nth-of-type(1){view-transition-name:menu-1}
+.menu a:nth-of-type(2){view-transition-name:menu-2}
+.menu a:nth-of-type(3){view-transition-name:menu-3}
+.menu a:nth-of-type(4){view-transition-name:menu-4}
+::view-transition-group(menu-pill){animation-duration:.4s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 </style>
 </head>
 <body>
@@ -618,5 +641,6 @@ const CONFIG = {
   mp.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>menu(false)));
 })();
 </script>
+<script src="js/menu-pill.js"></script>
 </body>
 </html>
