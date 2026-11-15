@@ -68,7 +68,7 @@ body.mopen{overflow:hidden}
 main{max-width:1040px;margin:0 auto;padding:122px 20px 80px}
 h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .sub{margin-top:8px;font-size:15px;font-weight:500;color:#5B6370}
-.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
 .pill:hover{filter:brightness(1.06)}
 .pill:active{transform:scale(.97)}
 .pill svg{width:18px;height:18px}
@@ -88,6 +88,9 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .campo li{display:flex;align-items:center;gap:9px}
 .campo li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amarillo);flex:none;opacity:.85}
 .campo .pill{margin-top:auto;align-self:flex-end}
+.campo .prog{font-size:12px;font-weight:600;color:#BFD0F5;margin:-6px 0 12px}
+.aviso{margin-top:28px;text-align:center;font-weight:500;color:#5B6370}
+.aviso:empty{display:none}
 @media (max-width:980px){.campos{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.campos{grid-template-columns:1fr;gap:14px}.campo{padding:20px 20px 16px}.campo ul{font-size:16px}}
 
@@ -167,11 +170,13 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 <main>
   <h1 id="titulo">Ronda 1</h1>
   <p class="sub">Elige tu campo para ver los partidos y la tabla.</p>
+  <p class="aviso" id="aviso">Cargando campos…</p>
   <section class="campos" id="campos"></section>
   <template id="tpl-campo">
     <article class="campo">
       <h2>Campo <b data-f="n"></b></h2>
       <ul data-f="jug"></ul>
+      <p class="prog" data-f="prog"></p>
       <a class="pill" data-f="link">partidos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg></a>
     </article>
   </template>
@@ -198,6 +203,8 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   </nav>
 </aside>
 
+<script src="js/config.js"></script>
+<script src="js/partidos-datos.js"></script>
 <script>
 const LINKS = {
   inscripciones: "inscripciones.html",
@@ -212,38 +219,39 @@ const LINKS = {
   const $=s=>document.querySelector(s);
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
-  // ===== DATOS DE MUESTRA (después vendrán de la base de datos) =====
-  const CAMPOS={
-    1:['Diego Luque','Jesus Armijo','Walfrido Ruiz','Claudia Leon','Ayrton Herrera'],
-    2:['Alvaro Rodriguez','Christian Valqui','Sandro Sandoval','Carlos Echegaray','Miguel Montero'],
-    3:['Anthony Rosas','Jack Vega','Marcos Diaz','Coqui Panizo','Bennie Reyes'],
-    4:['Henry Guevara','Diego Ccosi','Diego Yaringaño','Rafael Alvarez','César Luis Lara'],
-    5:['Diego Cordova','Martin Cespedes','Britney Zegarra','Jean Burga','Deyanira De la Cruz'],
-    6:['Angel Vily','Karla Chalco','Felipe Mejia','Florencio Trejo','Josue Giron'],
-    7:['Kevin Valdez','Jhon Huari','Kris Bernachea','Arturo Inoñan','Rodrigo Gutierrez'],
-    8:['Mariano Backer','Edder Muñoz','Cristiam Escobar','Rosangela Pizarro','Yusuke Takahashi'],
-    9:['Pedro Lumbre','Fernando Cáceda','Ricardo Gonzales','Daniel Campos','Tonylee Go'],
-    10:['Antonio Tang','Jose Chate','Cristina Del Aguila','Ernesto Moreno','Pola Pandal'],
-    11:['David Angel','Marcelo León','Alejandro Asmat','Jonathan Porras','Luis Zavala'],
-    12:['Andrea Quispe','David Abanto','Rafael Andrade','Leonardo Guevara','Cristina Chicata'],
-    13:['Camila Quispe','Ximena Barrientos','Lauri Paredes','Paula Ruiz','Jorge Chávez'],
-    14:['Luiggi Bellido','Brayan Guerrero','Marcia Santa Cruz','Marina Jacobsen'],
-    15:['Fernando Ruiz','Anghie Becerra','Jhon Crisbax','Brian Colonia Mendoza']
-  };
-
-  const ronda=new URLSearchParams(location.search).get('ronda')||'1';
+  const ronda=+(new URLSearchParams(location.search).get('ronda')||1);
   $('#titulo').textContent='Ronda '+ronda; document.title='Ronda '+ronda+' | muévete.pe';
   document.querySelectorAll(`[data-link="ronda${ronda}"]`).forEach(a=>a.classList.add('on'));
-  const tpl=$('#tpl-campo'), frag=document.createDocumentFragment();
-  Object.keys(CAMPOS).map(Number).sort((a,b)=>a-b).forEach(n=>{
-    const c=tpl.content.firstElementChild.cloneNode(true), f=k=>c.querySelector(`[data-f="${k}"]`);
-    f('n').textContent=n;
-    CAMPOS[n].forEach(j=>{const li=document.createElement('li');li.textContent=j;f('jug').append(li)});
-    f('link').href=`campo.html?ronda=${ronda}&campo=${n}`;
-    f('link').setAttribute('aria-label',`Ver partidos del campo ${n}`);
-    frag.append(c);
-  });
-  $('#campos').append(frag);
+  $('#mdrop').setAttribute('aria-expanded','true'); $('#msub').classList.add('open');
+  const tpl=$('#tpl-campo');
+  let firma='';
+  async function cargar(){
+    let ps;
+    try{ ps=await cargarPartidos({ronda}); }
+    catch(e){ if(!firma) $('#aviso').textContent='No se pudieron cargar los campos. Intenta de nuevo en un momento.'; return; }
+    const nueva=ps.map(p=>p.id+p.act).join();
+    if(nueva===firma) return; firma=nueva;
+    const porCampo=new Map();
+    ps.forEach(p=>{ if(!porCampo.has(p.campo)) porCampo.set(p.campo,[]); porCampo.get(p.campo).push(p); });
+    $('#aviso').textContent=porCampo.size?'':'Todavía no hay campos armados para esta ronda.';
+    const frag=document.createDocumentFragment();
+    [...porCampo.keys()].sort((a,b)=>a-b).forEach(n=>{
+      const lista=porCampo.get(n);
+      const c=tpl.content.firstElementChild.cloneNode(true), f=k=>c.querySelector(`[data-f="${k}"]`);
+      f('n').textContent=n;
+      jugadoresDelCampo(lista).forEach(j=>{const li=document.createElement('li');li.textContent=j;f('jug').append(li)});
+      const hechos=lista.filter(p=>p.fin).length;
+      f('prog').textContent=hechos===lista.length?'Todos los partidos finalizados':`${hechos} de ${lista.length} partidos finalizados`;
+      f('link').href=`campo.html?ronda=${ronda}&campo=${n}`;
+      f('link').setAttribute('aria-label',`Ver partidos del campo ${n}`);
+      frag.append(c);
+    });
+    $('#campos').replaceChildren(frag);
+  }
+  cargar();
+  // se actualiza sola cada 30 s mientras la página está abierta
+  setInterval(()=>{ if(!document.hidden) cargar(); },30000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cargar(); });
 
   // menú celular
   const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;

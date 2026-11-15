@@ -68,7 +68,7 @@ body.mopen{overflow:hidden}
 main{max-width:1040px;margin:0 auto;padding:122px 20px 80px}
 h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .sub{margin-top:8px;font-size:15px;font-weight:500;color:#5B6370}
-.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
 .pill:hover{filter:brightness(1.06)}
 .pill:active{transform:scale(.97)}
 .pill svg{width:18px;height:18px}
@@ -125,7 +125,13 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .estado-pend::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amarillo)}
 .partido.fin .p-pie{display:none}
 .lista{align-items:start}
-.partido .ayuda{margin-right:auto;font-size:12px;font-weight:500;color:#BFD0F5}
+.partido .ayuda{margin-right:auto;font-size:12px;font-weight:500;color:#BFD0F5;padding-right:10px}
+.partido .ayuda.error{color:#FFB59A;font-weight:600}
+.num .guion{color:#BFD0F5;opacity:.7}
+.nota{background:#fff;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:500;color:#3A3F47;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.nota a{color:var(--azul-menu);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.aviso{text-align:center;font-weight:500;color:#5B6370;padding:20px 0;grid-column:1 / -1}
+.pill.confirmar{background:#fff;color:var(--azul-menu)}
 
 @media (max-width:980px){.cuerpo{grid-template-columns:1fr}.tabla{position:static}.lista{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.lista{grid-template-columns:1fr}}
@@ -207,11 +213,6 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 <main>
   <a class="volver" id="volver" href="ronda.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Ronda 1</a>
   <div class="cab"><h1 id="titulo">Campo 1</h1></div>
-  <div class="demo" id="demo"><b>Vista previa:</b>
-    <button data-e="mixto" class="on">Algunos finalizados</button>
-    <button data-e="pend">Todos pendientes</button>
-    <button data-e="fin">Todos finalizados</button>
-  </div>
   <div class="cuerpo">
     <section class="tabla" aria-label="Tabla de posiciones">
       <h2>Tabla</h2>
@@ -221,7 +222,8 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
     </section>
     <section class="partidos" aria-label="Partidos">
       <h2>Partidos</h2>
-      <div class="lista" id="lista"></div>
+      <p class="nota" id="nota" hidden></p>
+      <div class="lista" id="lista"><p class="aviso">Cargando partidos…</p></div>
     </section>
   </div>
   <template id="tpl-partido">
@@ -257,6 +259,9 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   </nav>
 </aside>
 
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/partidos-datos.js"></script>
 <script>
 const LINKS = {
   inscripciones: "inscripciones.html",
@@ -271,101 +276,120 @@ const LINKS = {
   const $=s=>document.querySelector(s);
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
-  // ===== DATOS DE MUESTRA (después vendrán de la base de datos) =====
-  const CAMPOS={
-    1:['Diego Luque','Jesus Armijo','Walfrido Ruiz','Claudia Leon','Ayrton Herrera'],
-    2:['Alvaro Rodriguez','Christian Valqui','Sandro Sandoval','Carlos Echegaray','Miguel Montero'],
-    3:['Anthony Rosas','Jack Vega','Marcos Diaz','Coqui Panizo','Bennie Reyes'],
-    4:['Henry Guevara','Diego Ccosi','Diego Yaringaño','Rafael Alvarez','César Luis Lara'],
-    5:['Diego Cordova','Martin Cespedes','Britney Zegarra','Jean Burga','Deyanira De la Cruz'],
-    6:['Angel Vily','Karla Chalco','Felipe Mejia','Florencio Trejo','Josue Giron'],
-    7:['Kevin Valdez','Jhon Huari','Kris Bernachea','Arturo Inoñan','Rodrigo Gutierrez'],
-    8:['Mariano Backer','Edder Muñoz','Cristiam Escobar','Rosangela Pizarro','Yusuke Takahashi'],
-    9:['Pedro Lumbre','Fernando Cáceda','Ricardo Gonzales','Daniel Campos','Tonylee Go'],
-    10:['Antonio Tang','Jose Chate','Cristina Del Aguila','Ernesto Moreno','Pola Pandal'],
-    11:['David Angel','Marcelo León','Alejandro Asmat','Jonathan Porras','Luis Zavala'],
-    12:['Andrea Quispe','David Abanto','Rafael Andrade','Leonardo Guevara','Cristina Chicata'],
-    13:['Camila Quispe','Ximena Barrientos','Lauri Paredes','Paula Ruiz','Jorge Chávez'],
-    14:['Luiggi Bellido','Brayan Guerrero','Marcia Santa Cruz','Marina Jacobsen'],
-    15:['Fernando Ruiz','Anghie Becerra','Jhon Crisbax','Brian Colonia Mendoza']
-  };
-
   const q=new URLSearchParams(location.search);
-  const ronda=q.get('ronda')||'1', campo=+(q.get('campo')||1);
-  const J=CAMPOS[campo]||CAMPOS[1];
+  const ronda=+(q.get('ronda')||1), campo=+(q.get('campo')||1);
   $('#titulo').textContent='Campo '+campo; document.title=`Campo ${campo} · Ronda ${ronda} | muévete.pe`;
   $('#volver').href='ronda.html?ronda='+ronda; $('#volver').lastChild.textContent=' Ronda '+ronda;
   document.querySelectorAll(`[data-link="ronda${ronda}"]`).forEach(a=>a.classList.add('on'));
+  $('#mdrop').setAttribute('aria-expanded','true'); $('#msub').classList.add('open');
 
-  // Cruces (5 jugadores: 5 partidos · 4 jugadores: 3 partidos) y marcadores de muestra
-  const CRUCES = J.length===5
-    ? [[[0,1],[2,3]],[[0,2],[4,3]],[[1,3],[2,4]],[[0,3],[1,4]],[[0,4],[1,2]]]
-    : [[[0,1],[2,3]],[[0,2],[1,3]],[[0,3],[1,2]]];
-  const MUESTRA=[[15,7],[15,7],[8,15],[15,7],[13,15]];
-  let partidos=[];
   const SVG_OK=`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8.2" stroke-width="1.6"/><path d="M6.4 10.3l2.4 2.4 4.8-5"/></svg>`, SVG_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
-
-  function cargar(modo){
-    partidos=CRUCES.map((c,i)=>{
-      const fin = modo==='fin' || (modo==='mixto' && i<CRUCES.length-2);
-      return {n:i+1, a:c[0], b:c[1], pa:fin?MUESTRA[i][0]:null, pb:fin?MUESTRA[i][1]:null, fin};
-    });
-    pintar();
-  }
+  const AUTH=window.MUEVETE_AUTH;
+  let partidos=[], J=[], puedo=false, sesion=null, firma='';
+  const escritos={};   // marcadores que la persona está escribiendo (no se pierden al actualizar)
 
   // Tabla calculada con los partidos finalizados
   function tabla(){
-    const t=J.map((nombre,i)=>({nombre,i,g:0,pf:0,pc:0}));
-    partidos.filter(p=>p.fin).forEach(p=>{
+    const t=new Map(J.map((nombre,i)=>[nombre,{nombre,i,g:0,pf:0,pc:0}]));
+    const de=n=>{ if(!t.has(n)) t.set(n,{nombre:n,i:t.size,g:0,pf:0,pc:0}); return t.get(n); };
+    partidos.filter(p=>p.fin&&p.pa!=null&&p.pb!=null).forEach(p=>{
       const ganaA=p.pa>p.pb;
-      p.a.forEach(i=>{t[i].pf+=p.pa;t[i].pc+=p.pb;if(ganaA)t[i].g++});
-      p.b.forEach(i=>{t[i].pf+=p.pb;t[i].pc+=p.pa;if(!ganaA)t[i].g++});
+      p.a.forEach(n=>{const x=de(n);x.pf+=p.pa;x.pc+=p.pb;if(ganaA)x.g++});
+      p.b.forEach(n=>{const x=de(n);x.pf+=p.pb;x.pc+=p.pa;if(!ganaA)x.g++});
     });
-    t.forEach(x=>{x.coc=x.pc?x.pf/x.pc:(x.pf?x.pf:0);x.dif=x.pf-x.pc});
-    return t.sort((x,y)=>y.g-x.g||y.coc-x.coc||y.dif-x.dif||x.i-y.i);
+    const L=[...t.values()];
+    L.forEach(x=>{x.coc=x.pc?x.pf/x.pc:x.pf;x.dif=x.pf-x.pc});
+    return L.sort((x,y)=>y.g-x.g||y.coc-x.coc||y.dif-x.dif||x.i-y.i);
   }
 
   function pintar(){
-    const filas=tabla().map((x,k)=>{
+    const hay=partidos.some(p=>p.fin);
+    $('#filas').replaceChildren(...tabla().map((x,k)=>{
       const d=document.createElement('div'); d.className='fila';
-      const jug=partidos.some(p=>p.fin);
-      d.innerHTML=`<span class="pos">${k+1}</span><span class="nm"></span><span>${jug?x.g:'–'}</span><span>${jug?x.coc.toFixed(3):'–'}</span><span class="${x.dif<0?'neg':''}">${jug?x.dif:'–'}</span>`;
+      d.innerHTML=`<span class="pos">${k+1}</span><span class="nm"></span><span>${hay?x.g:'–'}</span><span>${hay?x.coc.toFixed(3):'–'}</span><span class="${hay&&x.dif<0?'neg':''}">${hay?x.dif:'–'}</span>`;
       d.querySelector('.nm').textContent=x.nombre; return d;
-    });
-    $('#filas').replaceChildren(...filas);
+    }));
 
+    const pend=partidos.some(p=>!p.fin);
+    const nota=$('#nota');
+    nota.hidden=!(pend&&!puedo);
+    if(pend&&!puedo) nota.innerHTML=sesion
+      ? 'Solo los jugadores de este campo pueden registrar los marcadores.'
+      : '¿Juegas en este campo? <a href="mi-cuenta.html">Inicia sesión</a> para registrar los marcadores.';
+
+    if(!partidos.length){ $('#lista').innerHTML='<p class="aviso">Todavía no hay partidos para este campo.</p>'; return; }
     const tpl=$('#tpl-partido');
     $('#lista').replaceChildren(...partidos.map(p=>{
       const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
       f('n').textContent=p.n;
-      const eq=(el,ids)=>ids.forEach(i=>{const s=document.createElement('span');s.textContent=J[i];el.append(s)});
+      const eq=(el,ids)=>ids.forEach(j=>{const s=document.createElement('span');s.textContent=j;el.append(s)});
       eq(f('ea'),p.a); eq(f('eb'),p.b);
       if(p.fin){
         n.classList.add('fin');
         const ganaA=p.pa>p.pb;
-        f('pa').textContent=p.pa; f('pb').textContent=p.pb;
+        f('pa').textContent=p.pa??'–'; f('pb').textContent=p.pb??'–';
         f(ganaA?'la':'lb').classList.add('gana');
         f(ganaA?'lb':'la').classList.add('pierde');
         f('estado').innerHTML=`<span class="estado-fin">${SVG_OK} Finalizado</span>`;
-      } else {
-        f('estado').innerHTML='<span class="estado-pend">Pendiente</span>';
-        const inp=lado=>{const i=document.createElement('input');i.type='number';i.inputMode='numeric';i.min=0;i.max=99;i.placeholder='0';i.setAttribute('aria-label',`Puntos del equipo ${lado} en el partido ${p.n}`);return i};
-        const ia=inp('A'), ib=inp('B'); f('pa').append(ia); f('pb').append(ib);
-        const b=document.createElement('button'); b.type='button'; b.className='pill'; b.innerHTML='Finalizar '+SVG_CHECK; b.disabled=true;
-        const ayuda=Object.assign(document.createElement('span'),{className:'ayuda',textContent:'Ingresa el marcador'});
-        const revisar=()=>{const a=ia.value,c=ib.value; b.disabled=!(a!==''&&c!==''&&+a!==+c); ayuda.textContent=(a!==''&&c!==''&&+a===+c)?'No puede haber empate':'Ingresa el marcador'};
-        ia.oninput=ib.oninput=revisar;
-        b.onclick=()=>{p.pa=+ia.value;p.pb=+ib.value;p.fin=true;pintar()};
-        f('pie').append(ayuda,b);
+        return n;
       }
+      f('estado').innerHTML='<span class="estado-pend">Pendiente</span>';
+      if(!puedo){
+        f('pa').innerHTML='<span class="guion">–</span>'; f('pb').innerHTML='<span class="guion">–</span>';
+        n.querySelector('.p-pie').remove();
+        return n;
+      }
+      const inp=lado=>{const i=document.createElement('input');i.type='number';i.inputMode='numeric';i.min=0;i.max=99;i.placeholder='0';i.setAttribute('aria-label',`Puntos del equipo ${lado} en el partido ${p.n}`);return i};
+      const ia=inp('A'), ib=inp('B'); f('pa').append(ia); f('pb').append(ib);
+      const prev=escritos[p.id]; if(prev){ia.value=prev[0];ib.value=prev[1];}
+      const b=document.createElement('button'); b.type='button'; b.className='pill';
+      const ayuda=Object.assign(document.createElement('span'),{className:'ayuda'});
+      let confirmando=false;
+      const normal=()=>{confirmando=false;b.classList.remove('confirmar');b.innerHTML='Finalizar '+SVG_CHECK};
+      const revisar=()=>{
+        escritos[p.id]=[ia.value,ib.value]; normal(); ayuda.classList.remove('error');
+        const a=ia.value,c=ib.value, ok=a!==''&&c!==''&&+a>=0&&+c>=0&&+a<=99&&+c<=99;
+        b.disabled=!(ok&&+a!==+c);
+        ayuda.textContent=(ok&&+a===+c)?'No puede haber empate':'Ingresa el marcador';
+      };
+      ia.oninput=ib.oninput=revisar; revisar();
+      b.onclick=async()=>{
+        if(!confirmando){ confirmando=true; b.classList.add('confirmar'); b.innerHTML=`Confirmar ${ia.value}–${ib.value} ${SVG_CHECK}`; ayuda.textContent='¿Seguro? Luego no se puede cambiar'; return; }
+        b.disabled=true; b.textContent='guardando…';
+        try{
+          await AUTH.db('rpc/finalizar_partido',{method:'POST',body:JSON.stringify({p_id:p.id,p_score_a:+ia.value,p_score_b:+ib.value})});
+          delete escritos[p.id]; firma=''; await cargar();
+        }catch(e){
+          normal(); b.disabled=false; ayuda.classList.add('error');
+          ayuda.textContent=e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':e.message;
+        }
+      };
+      f('pie').append(ayuda,b);
       return n;
     }));
   }
 
-  document.querySelectorAll('#demo button').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('#demo button').forEach(x=>x.classList.toggle('on',x===b)); cargar(b.dataset.e);
-  });
-  cargar('mixto');
+  async function cargar(){
+    let ps;
+    try{ ps=await cargarPartidos({ronda,campo}); }
+    catch(e){ if(!firma) $('#lista').innerHTML='<p class="aviso">No se pudieron cargar los partidos. Intenta de nuevo en un momento.</p>'; return; }
+    const nueva=ps.map(p=>p.id+p.act).join()+'|'+puedo;
+    if(nueva===firma) return; firma=nueva;
+    // no repintar mientras alguien escribe un marcador
+    if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.partido')&&partidos.length){ firma=''; return; }
+    partidos=ps; J=jugadoresDelCampo(ps); pintar();
+  }
+
+  (async()=>{
+    try{ sesion=AUTH?await AUTH.sesion():null; }catch(e){ sesion=null; }
+    if(sesion){
+      try{ puedo=!!(await AUTH.db('rpc/juego_en_campo',{method:'POST',body:JSON.stringify({p_ronda:ronda,p_playa:'sombrillas1',p_campo:campo})})); }
+      catch(e){ puedo=false; }
+    }
+    await cargar();
+  })();
+  setInterval(()=>{ if(!document.hidden) cargar(); },20000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cargar(); });
 
   // menú celular
   const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
