@@ -131,8 +131,8 @@ body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bot
 .trio{display:grid;grid-template-columns:490px 412px 1fr;column-gap:0;margin-top:19px;align-items:start}
 .col-fechas{padding:24px 0 0 133px}
 .col-top{padding:24px 0 0 46px}
-.col-foto{height:270px;margin:24px 0 0 24px}
-@media (min-width:1367px){.col-foto{margin-right:calc((1366px - 100vw) / 2)}}
+.col-foto{height:270px;margin:24px 0 0 24px;border-radius:14px;overflow:hidden}
+@media (min-width:1367px){.col-foto{margin-right:calc((1366px - 100vw) / 2);border-radius:14px 0 0 14px}}
 html{overflow-x:clip}
 .col-foto img{width:100%;height:100%;object-fit:cover;object-position:28% 70%}
 h2{font-size:25px;letter-spacing:.02em;font-weight:600;line-height:1.2;margin-bottom:12px}
@@ -166,7 +166,7 @@ footer a{text-decoration:underline;text-underline-offset:2px}
 footer a:hover{color:var(--amarillo)}
 .f-links{display:grid;gap:6px;justify-items:start}
 .f-links .sep{height:12px}
-.spons{display:flex;align-items:center;justify-content:space-around;gap:20px;padding-top:4px}
+.spons{display:grid;grid-template-columns:repeat(3,1fr);align-items:center;justify-items:center;gap:20px;padding-top:4px}
 .spons a{display:flex;align-items:center;justify-content:center;height:80px;text-decoration:none}
 .spons a img{height:72px;width:auto;max-width:190px;object-fit:contain;transition:opacity .15s}
 .spons a:hover img{opacity:.8}
@@ -179,7 +179,7 @@ footer a:hover{color:var(--amarillo)}
 @media (max-width:1180px){
   .trio{grid-template-columns:1fr 1fr;row-gap:40px;padding:0 30px}
   .col-fechas,.col-top{padding:24px 0 0 !important;justify-self:center}
-  .col-foto{grid-column:1/-1;height:360px;margin:0 -30px}
+  .col-foto{grid-column:1/-1;height:360px;margin:0}
 }
 @media (max-width:980px){
   .panel{display:none}
@@ -196,14 +196,26 @@ footer a:hover{color:var(--amarillo)}
   .pilares{grid-template-columns:1fr;row-gap:36px;padding:44px 20px 0}
   .pilar p{margin-top:14px}
   .trio{grid-template-columns:1fr;padding:0 20px}
-  .col-fechas,.col-top{justify-self:center}
-  .col-foto{margin:0 -20px;height:300px}
+  .col-fechas,.col-top{justify-self:stretch}
+  .col-foto{margin:0;height:240px}
+  .lista,.ven,.top5 .center-btn{width:100%}
+  .lista{gap:6px}
+  .fila{height:42px;font-size:16px;padding:0 10px 0 16px}
+  .fechas .fila{grid-template-columns:1fr 1fr 1.25fr}
+  .fechas .fila span:nth-child(2){padding-right:0;text-align:left}
+  .fechas .fila span:nth-child(3){padding-left:0}
+  .top5 .fila{grid-template-columns:24px 34px 1fr auto}
+  .top5 .av{width:28px;height:28px}
+  .top5 .nm{padding-left:4px}
+  .top5 .ics{gap:7px}
+  .top5 .ics svg{width:25px;height:25px}
+  h2{font-size:26px}
   .foot-logo{padding-top:44px}
   .foot-logo > div{width:170px}
   footer{grid-template-columns:1fr 1fr;column-gap:12px;row-gap:44px;padding:44px 12px calc(24px + env(safe-area-inset-bottom,0px));font-size:15px}
-  .spons{grid-column:1 / -1;grid-row:1;justify-content:space-between;gap:10px;padding:0 6px}
+  .spons{grid-column:1 / -1;grid-row:1;gap:10px;padding:0}
   .spons a{height:50px}
-  .spons a img{height:46px;max-width:31vw}
+  .spons a img{height:46px;max-width:29vw}
   .spons a:nth-child(3) img{height:34px}
   .f-links{grid-column:1;grid-row:2;gap:8px;justify-items:start;text-align:left}
   .f-links .sep{height:10px}
