@@ -136,6 +136,32 @@ input[type=date]{-webkit-appearance:none;appearance:none;text-align:left}
 input[type=date]::-webkit-date-and-time-value{text-align:left}
 @media (max-width:760px){input,select{font-size:16px}}
 
+/* ---------- LOGIN ---------- */
+body.cargando main{visibility:hidden}
+.vista[hidden]{display:none!important}
+.login{max-width:440px;margin:24px auto 0;background:var(--azul-menu);color:#fff;border-radius:22px;padding:34px 34px 28px;box-shadow:0 10px 30px rgba(0,40,120,.18)}
+.login h2{font-size:24px;font-weight:700;text-align:center}
+.login .sub{font-size:14px;font-weight:500;text-align:center;color:#D6E2FA;margin-top:6px;line-height:1.45}
+.login form{display:grid;gap:16px;margin-top:22px}
+.login label{display:block;font-size:15px;font-weight:600;margin-bottom:8px}
+.login input{width:100%;height:50px;border:0;border-radius:12px;font-size:16px;padding:0 16px}
+.login input:focus{box-shadow:0 0 0 3px rgba(255,219,3,.7)}
+.clave{position:relative}
+.clave input{padding-right:52px}
+.ver{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:999px;background:transparent;color:#5B6370;cursor:pointer;display:grid;place-items:center}
+.ver:hover{background:#EEF2F9}
+.ver svg{width:20px;height:20px}
+.btn-amarillo{background:var(--amarillo);color:#000;height:48px;font-size:16px;padding:0 30px;justify-self:center;margin-top:6px}
+.btn-amarillo[disabled]{filter:grayscale(.4) brightness(.9);cursor:default}
+.login .enlace{background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:center;padding:4px}
+.login .aviso{display:none;background:#FFE7E0;color:#9C2A00;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:600}
+.login .aviso.ok{background:#E3F6E8;color:#17602D}
+.login .aviso.si{display:block}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#1A1D21;color:#fff;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.toast.si{opacity:1;transform:translate(-50%,0)}
+.toast.error{background:#C23A00}
+@media (max-width:760px){.login{padding:28px 22px 24px;margin-top:10px}}
+
 /* Burbuja del menú que se desliza de página en página (escritorio) */
 @media (min-width:981px){@view-transition{navigation:auto}}
 .menu{position:relative}
@@ -152,7 +178,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 </style>
 </head>
-<body>
+<body class="cargando">
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -175,6 +201,22 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 </div>
 
 <main>
+  <!-- LOGIN -->
+  <section class="vista login" id="vLogin" hidden>
+    <h2 id="lTitulo">Inicia sesión</h2>
+    <p class="sub" id="lSub">Entra con tu correo y contraseña para ver y editar tu perfil.</p>
+    <form id="fLogin" novalidate>
+      <div class="aviso" id="lAviso" role="alert"></div>
+      <div data-modo="login olvido"><label for="lCorreo">Correo electrónico</label><input id="lCorreo" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="tucorreo@ejemplo.com"></div>
+      <div data-modo="login"><label for="lClave">Contraseña</label><div class="clave"><input id="lClave" type="password" autocomplete="current-password" placeholder="••••••••"><button class="ver" type="button" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div data-modo="nueva"><label for="lNueva">Nueva contraseña</label><div class="clave"><input id="lNueva" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><button class="ver" type="button" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <button class="btn btn-amarillo" id="lBoton" type="submit">ingresar</button>
+      <button class="enlace" type="button" id="lOlvido" data-modo="login">¿Olvidaste tu contraseña?</button>
+      <button class="enlace" type="button" id="lVolver" data-modo="olvido">Volver a iniciar sesión</button>
+    </form>
+  </section>
+
+  <section class="vista" id="vPerfil" hidden>
   <h1>Tu perfil:</h1>
 
   <form class="perfil" id="perfil" autocomplete="on">
@@ -223,7 +265,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <div class="acciones">
     <button class="btn btn-rojo" id="cerrarSesion" type="button">cerrar sesión <svg><use href="#salir"/></svg></button>
   </div>
+  </section>
 </main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- MENÚ CELULAR -->
 <div class="mfondo" id="mfondo" hidden></div>
@@ -246,6 +290,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   </nav>
 </aside>
 
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
@@ -258,32 +304,140 @@ const LINKS = {
   ronda2:        "https://www.muevete.pe/playa/sombrillas1/ronda/2",
 };
 
-/* ===== Conexión con la base de datos (pendiente) =====
-   cargarPerfil(): debe devolver los datos del usuario que inició sesión.
-   guardarPerfil(datos): debe guardar los cambios.
-   Por ahora no hay base de datos conectada: la página no guarda nada. */
-async function cargarPerfil(){ return null; }
-async function guardarPerfil(datos){ /* conectar con la base de datos */ }
+/* ===== Perfil del usuario (Supabase) ===== */
+const AUTH=window.MUEVETE_AUTH;
+const CAMPOS='id,dni,correo,nombre,apellido,fecha_nacimiento,country_code,celular,instagram,contacto_emergencia,celular_emergencia,foto_perfil';
+let PERFIL=null;
+
+// Las fotos de Wix vienen como wix:image://v1/ARCHIVO/... → se pasan a la URL pública
+function urlFoto(f){
+  if(!f) return '';
+  const m=/^wix:image:\/\/v1\/([^/#]+)/.exec(f);
+  return m?'https://static.wixstatic.com/media/'+m[1]:f;
+}
+
+async function cargarPerfil(){
+  const filas=await AUTH.db('usuarios?select='+CAMPOS+'&limit=1');
+  const p=filas&&filas[0]; if(!p) return null;
+  PERFIL=p;
+  return {
+    documento:p.dni, correo:p.correo,
+    nombre:p.nombre, apellido:p.apellido,
+    nacimiento:p.fecha_nacimiento,
+    codigo:p.country_code?'+'+String(p.country_code).replace(/\D/g,''):'+51',
+    celular:p.celular, instagram:p.instagram,
+    emergencia_nombre:p.contacto_emergencia, emergencia_celular:p.celular_emergencia,
+    foto:urlFoto(p.foto_perfil)
+  };
+}
+
+async function guardarPerfil(d){
+  if(!PERFIL) return;
+  const limpio=v=>(v||'').trim()||null;
+  const cambios={
+    nombre:limpio(d.nombre), apellido:limpio(d.apellido),
+    jugador:[d.nombre,d.apellido].map(x=>(x||'').trim()).filter(Boolean).join(' ')||null,
+    fecha_nacimiento:d.nacimiento||null,
+    country_code:(d.codigo||'').replace(/\D/g,'')||null,
+    celular:limpio(d.celular), instagram:limpio((d.instagram||'').replace(/^@/,'')),
+    contacto_emergencia:limpio(d.emergencia_nombre), celular_emergencia:limpio(d.emergencia_celular)
+  };
+  await AUTH.db('usuarios?id=eq.'+PERFIL.id,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify(cambios)});
+}
 
 (function(){
   const $=s=>document.querySelector(s);
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
-  // rellenar el formulario si hay datos
-  cargarPerfil().then(p=>{
+  let tt;
+  const toast=(t,err)=>{const e=$('#toast');e.textContent=t;e.classList.toggle('error',!!err);e.classList.add('si');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('si'),err?4000:1800)};
+
+  /* ---------- vistas ---------- */
+  const vLogin=$('#vLogin'), vPerfil=$('#vPerfil');
+  const aviso=(t,ok)=>{const a=$('#lAviso');a.textContent=t||'';a.classList.toggle('si',!!t);a.classList.toggle('ok',!!ok)};
+  let modo='login';
+  const TEXTOS={
+    login:['Inicia sesión','Entra con tu correo y contraseña para ver y editar tu perfil.','ingresar'],
+    olvido:['Recupera tu contraseña','Te enviaremos un correo con un enlace para crear una nueva.','enviar enlace'],
+    nueva:['Crea tu nueva contraseña','Escribe la contraseña que usarás desde ahora.','guardar contraseña']
+  };
+  function ponerModo(m){
+    modo=m; aviso('');
+    const [t,sub,b]=TEXTOS[m];
+    $('#lTitulo').textContent=t; $('#lSub').textContent=sub; $('#lBoton').textContent=b;
+    document.querySelectorAll('[data-modo]').forEach(e=>e.hidden=!e.dataset.modo.split(' ').includes(m));
+  }
+  function verLogin(m){
+    vPerfil.hidden=true; vLogin.hidden=false; ponerModo(m||'login');
+    document.body.classList.remove('cargando');
+    document.title='Iniciar sesión | muévete.pe';
+    if(matchMedia('(pointer:fine)').matches) setTimeout(()=>$(m==='nueva'?'#lNueva':'#lCorreo').focus(),50);
+  }
+  async function verPerfil(){
+    let p;
+    try{ p=await cargarPerfil(); }
+    catch(e){ if(e.message==='sin-sesion') return verLogin(); toast(e.message,true); }
+    vLogin.hidden=true; vPerfil.hidden=false;
+    document.body.classList.remove('cargando');
+    document.title='Mi cuenta | muévete.pe';
     if(!p) return;
     document.querySelectorAll('[data-campo]').forEach(e=>e.textContent=p[e.dataset.campo]||'—');
     const f=$('#perfil');
-    for(const [k,v] of Object.entries(p)){ if(f.elements[k]) f.elements[k].value=v??''; }
-    const nac=document.getElementById('nacimiento'); if('valorFecha' in nac) nac.valorFecha=p.nacimiento||'';
-    if(p.foto) $('#fotoPerfil').src=p.foto;
+    const sel=f.elements.codigo;
+    if(p.codigo&&![...sel.options].some(o=>o.value===p.codigo)) sel.add(new Option(p.codigo,p.codigo));
+    for(const [k,v] of Object.entries(p)){ if(f.elements[k]&&k!=='nacimiento') f.elements[k].value=v??''; }
+    const nac=document.getElementById('nacimiento');
+    if('valorFecha' in nac) nac.valorFecha=p.nacimiento||''; else nac.value=p.nacimiento||'';
+    $('#fotoPerfil').src=p.foto||'img/avatar.png';
+  }
+
+  /* ---------- formulario de login ---------- */
+  document.querySelectorAll('.ver').forEach(b=>b.onclick=()=>{const i=b.previousElementSibling;const v=i.type==='password';i.type=v?'text':'password';b.setAttribute('aria-label',v?'Ocultar contraseña':'Mostrar contraseña')});
+  $('#lOlvido').onclick=()=>{ponerModo('olvido');$('#lCorreo').focus()};
+  $('#lVolver').onclick=()=>{ponerModo('login');$('#lCorreo').focus()};
+  $('#fLogin').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const correo=$('#lCorreo').value.trim(), btn=$('#lBoton'), txt=btn.textContent;
+    if(modo!=='nueva'&&!/^\S+@\S+\.\S+$/.test(correo)) return aviso('Escribe un correo válido.');
+    if(modo==='login'&&!$('#lClave').value) return aviso('Escribe tu contraseña.');
+    if(modo==='nueva'&&$('#lNueva').value.length<6) return aviso('La contraseña debe tener al menos 6 caracteres.');
+    btn.disabled=true; btn.textContent='un momento…';
+    try{
+      if(modo==='login'){ await AUTH.entrar(correo,$('#lClave').value); $('#lClave').value=''; await verPerfil(); }
+      else if(modo==='olvido'){ await AUTH.recuperar(correo); aviso('Listo. Si el correo está registrado, te llegará un enlace en unos minutos.',true); }
+      else { await AUTH.cambiarClave($('#lNueva').value); $('#lNueva').value=''; toast('Contraseña actualizada'); await verPerfil(); }
+    }catch(err){ aviso(err.message); }
+    finally{ btn.disabled=false; btn.textContent=txt; }
   });
 
-  // guardar al cambiar un campo
+  /* ---------- arranque ---------- */
+  (async()=>{
+    if(window.MUEVETE_AUTH_ERROR){ verLogin(); aviso('El enlace venció o ya fue usado. Pide uno nuevo.'); return; }
+    const s=await AUTH.sesion();
+    if(!s) return verLogin();
+    if(AUTH.recuperando()) return verLogin('nueva');
+    verPerfil();
+  })();
+
+  /* ---------- guardar al cambiar un campo ---------- */
+  let guardando=Promise.resolve();
   $('#perfil').addEventListener('change',e=>{
     if(e.target.id==='subirFoto') return;
-    guardarPerfil(Object.fromEntries(new FormData($('#perfil'))));
+    const datos=Object.fromEntries(new FormData($('#perfil')));
+    guardando=guardando.then(()=>guardarPerfil(datos)).then(()=>toast('Guardado ✓')).catch(err=>{
+      if(err.message==='sin-sesion'){ toast('Tu sesión venció. Vuelve a ingresar.',true); verLogin(); }
+      else toast('No se pudo guardar: '+err.message,true);
+    });
   });
+
+  /* ---------- cerrar sesión ---------- */
+  $('#cerrarSesion').onclick=async()=>{
+    await AUTH.salir(); PERFIL=null;
+    $('#perfil').reset();
+    document.querySelectorAll('[data-campo]').forEach(e=>e.textContent='—');
+    $('#fotoPerfil').src='img/avatar.png';
+    verLogin();
+  };
 
   // vista previa de la foto
   $('#subirFoto').addEventListener('change',e=>{
