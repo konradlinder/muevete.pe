@@ -83,4 +83,21 @@
       '</footer>' +
     '</div>';
   document.body.appendChild(pie);
+
+  // Botón flotante de WhatsApp (abajo a la derecha), salvo en el panel de admin
+  var WA_NUMERO = '51964214852';
+  var WA_TEXTO = 'Hola Konrad,\nNecesito ayuda con';
+  if (!/admin\.html$/.test(location.pathname) && !document.getElementById('wa')) {
+    var est = document.createElement('style');
+    est.textContent = '.wa-flota{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:transform .15s}' +
+      '.wa-flota:hover{transform:scale(1.06)}.wa-flota svg{width:30px;height:30px}' +
+      '@media (max-width:760px){.wa-flota{width:54px;height:54px;right:calc(16px + env(safe-area-inset-right,0px))}}';
+    document.head.appendChild(est);
+    var wa = document.createElement('a');
+    wa.className = 'wa-flota'; wa.target = '_blank'; wa.rel = 'noopener';
+    wa.href = 'https://wa.me/' + WA_NUMERO + '?text=' + encodeURIComponent(WA_TEXTO);
+    wa.setAttribute('aria-label', 'Escríbenos por WhatsApp');
+    wa.innerHTML = '<svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.1.9 2.9 1 4 .8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.2-.3-.3-.7-.5z"/></svg>';
+    document.body.appendChild(wa);
+  }
 })();

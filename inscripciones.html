@@ -234,6 +234,19 @@ html{scrollbar-gutter:stable}
 .app-ico img{width:100%;height:100%;border-radius:14px;display:block}
 .burger{border-radius:12px!important}
 @media (max-width:980px){.app-ico{width:52px;height:52px;border-radius:12px;left:calc(16px + env(safe-area-inset-left,0px))}.app-ico img{border-radius:12px}}
+
+/* Celular: título al lado del ícono de la app; fecha y hora en la misma línea */
+@media (max-width:980px){
+  main{padding-top:calc(23px + env(safe-area-inset-top,0px))}
+  main > h1:first-child{min-height:52px;display:flex;align-items:center;padding-left:64px;padding-right:64px;font-size:clamp(26px,8vw,34px);white-space:nowrap}
+}
+@media (max-width:760px){
+  .datos{flex-direction:row;flex-wrap:wrap;gap:12px 18px;font-size:19px}
+  .datos > span{gap:7px}
+  .datos svg{width:24px!important;height:24px!important}
+  .datos > span:first-child{flex-basis:100%}
+  .datos > span:not(:first-child){white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -469,7 +482,7 @@ const LINKS = {
     maxEspera: 25,            // num_espera
     hora: "6:30 – 10:30 a. m.",
     evento: "Uma Arena: competencia vóley playa individual",
-    comunidad: "",            // ← link de la comunidad de WhatsApp
+    comunidad: "https://chat.whatsapp.com/BYnHJ9Fttr3IpxusHlgLrD",   // comunidad de WhatsApp
     yape: "906233577",
     multaPendiente: 20,       // S/ (estado "Multa")
     reglas: [
@@ -482,8 +495,19 @@ const LINKS = {
 
   const aviso=t=>{const a=$('#aviso');a.textContent=t;a.classList.add('on');clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove('on'),2200)};
   $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; $('#tEvento').textContent=TORNEO.evento;
+  // En celular, fecha y hora en formato corto para que entren en una línea (21/11/26 · 6:30–10:30 am)
+  const celular=matchMedia('(max-width:760px)');
+  const compactar=()=>{
+    const h=$('#tHora'), f=$('#tFecha');
+    h.dataset.largo=h.dataset.largo&&h.textContent===h.dataset.corto?h.dataset.largo:h.textContent;
+    f.dataset.largo=f.dataset.largo&&f.textContent===f.dataset.corto?f.dataset.largo:f.textContent;
+    h.dataset.corto=h.dataset.largo.replace(/\s*–\s*/,'–').replace(/\s*a\.\s*m\./g,' am').replace(/\s*p\.\s*m\./g,' pm');
+    f.dataset.corto=f.dataset.largo.replace(/^(\d{2}\/\d{2}\/)\d{2}(\d{2})$/,'$1$2');
+    h.textContent=celular.matches?h.dataset.corto:h.dataset.largo; f.textContent=celular.matches?f.dataset.corto:f.dataset.largo;
+  };
+  window.compactarDatos=compactar; celular.addEventListener('change',compactar);
   const ponerFecha=()=>{ if(!TORNEO.fecha){ $('#tFecha').textContent='Por anunciar'; $('#txtInscrito').textContent=`Te esperamos en el horario de ${TORNEO.hora} en ${TORNEO.sede}.`; return; }
-    const [y,m,d]=TORNEO.fecha.split('-'); $('#tFecha').textContent=`${d}/${m}/${y}`;
+    const [y,m,d]=TORNEO.fecha.split('-'); $('#tFecha').textContent=`${d}/${m}/${y}`; delete $('#tFecha').dataset.largo; setTimeout(()=>window.compactarDatos&&window.compactarDatos());
   $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
     $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} en el horario de ${TORNEO.hora} en ${TORNEO.sede}.`; };
   $('#reglas').innerHTML=TORNEO.reglas.map(([a,b])=>`<li><b>${a}</b><span>${b}</span></li>`).join('');
@@ -549,7 +573,7 @@ const LINKS = {
       if(cfg.ubicacion) TORNEO.sede=cfg.ubicacion;
       if(cfg.num_jugadores!=null) TORNEO.cupo=cfg.num_jugadores;
       if(cfg.num_espera!=null) TORNEO.maxEspera=cfg.num_espera;
-      $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
+      $('#tSede').textContent=TORNEO.sede; $('#tHora').textContent=TORNEO.hora; delete $('#tHora').dataset.largo; $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede; window.compactarDatos&&window.compactarDatos();
     }
     try{ if(!TORNEO.fecha) TORNEO.fecha=await proximaFecha(); }catch(e){}
     ponerFecha();
