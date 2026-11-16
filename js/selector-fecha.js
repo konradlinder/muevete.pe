@@ -56,8 +56,9 @@
   }
 
   function mejorar(orig){
-    var hoy=new Date(), max=orig.max||iso(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());
-    var min=orig.min||'1920-01-01';
+    var hoy=new Date(), futuro=orig.hasAttribute('data-futuro');
+    var max=orig.max||(futuro?(hoy.getFullYear()+3)+'-12-31':iso(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()));
+    var min=orig.min||(futuro?(hoy.getFullYear()-2)+'-01-01':'1920-01-01');
     var fMax=deIso(max), fMin=deIso(min);
 
     // campo oculto que guarda el valor real (AAAA-MM-DD) con el mismo name
@@ -88,11 +89,12 @@
     function fijar(v){
       oculto.value=v; orig.value=aTexto(v);
       oculto.dispatchEvent(new Event('change',{bubbles:true}));
+      orig.dispatchEvent(new CustomEvent('fecha',{bubbles:true,detail:v}));
     }
 
     function abrir(foco){
       if(pop) return;
-      var f=deIso(oculto.value)||{a:Math.min(fMax.a,hoy.getFullYear()-25),m:0};
+      var f=deIso(oculto.value)||(futuro?{a:hoy.getFullYear(),m:hoy.getMonth()}:{a:Math.min(fMax.a,hoy.getFullYear()-25),m:0});
       vista={a:f.a,m:f.m};
       pop=document.createElement('div'); pop.className='sf-pop'; pop.setAttribute('role','dialog'); pop.setAttribute('aria-label','Elegir fecha');
       caja.appendChild(pop);
@@ -167,7 +169,7 @@
       if(e.inputType&&e.inputType.indexOf('delete')===0){ orig.value=orig.value.replace(/[^\d\/]/g,''); }
       else orig.value=n.length>4?n.slice(0,2)+'/'+n.slice(2,4)+'/'+n.slice(4):n.length>2?n.slice(0,2)+'/'+n.slice(2):n;
       var v=deTexto(orig.value);
-      if(v&&v<=max&&v>=min){ oculto.value=v; if(pop){var f=deIso(v);vista={a:f.a,m:f.m};pintar()} }
+      if(v&&v<=max&&v>=min){ oculto.value=v; orig.dispatchEvent(new CustomEvent('fecha',{bubbles:true,detail:v})); if(pop){var f=deIso(v);vista={a:f.a,m:f.m};pintar()} }
       else if(!orig.value) oculto.value='';
     });
     orig.addEventListener('blur',function(){

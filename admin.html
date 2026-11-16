@@ -101,7 +101,20 @@ main{max-width:1100px}
 .card + .card{margin-top:14px}
 .card h2{font-size:18px;font-weight:700;margin-bottom:4px}
 .card .desc{font-size:14px;color:#5B6370;font-weight:500;margin-bottom:16px}
-.campos-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px 16px}
+.campos-f{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.campos-f .ancho{grid-column:1 / -1}
+.campo-f{min-width:0}
+input[type=date],input[type=time]{min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;text-align:left}
+input::-webkit-date-and-time-value{text-align:left}
+.buscar{position:relative}
+.buscar input{padding-right:48px!important}
+.limpiar{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:999px;background:#EEF0F4;color:#3A3F47;display:grid;place-items:center;cursor:pointer}
+.limpiar:hover{background:#E1E5EC}
+.limpiar svg{width:14px;height:14px}
+.limpiar[hidden]{display:none}
+.p-adm .eq{grid-template-columns:1fr 70px!important;align-items:center}
+.p-adm .nombres{font-size:14px;font-weight:600;line-height:1.35;background:#fff;border-radius:12px;padding:8px 12px;min-height:46px;display:flex;flex-direction:column;justify-content:center}
+.elige{text-align:center;color:#6B7280;font-weight:500;padding:26px 0;grid-column:1 / -1}
 .campo-f label{display:block;font-size:13px;font-weight:600;color:#3A3F47;margin-bottom:6px}
 .campo-f input,.campo-f select{width:100%}
 .switches{display:grid;gap:10px;margin-top:18px}
@@ -292,9 +305,9 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <h2>Configurar evento</h2>
         <p class="desc">Fecha, horario y cupos de la próxima fecha. Se ven en Inscripciones y en el inicio.</p>
         <div class="campos-f">
-          <div class="campo-f"><label for="cFecha">Fecha del evento</label><input id="cFecha" type="date"></div>
-          <div class="campo-f"><label for="cHora">Hora de inicio</label><input id="cHora" type="time" step="300"></div>
-          <div class="campo-f"><label for="cFin">Hora de fin (aprox.)</label><input id="cFin" type="time" step="300"></div>
+          <div class="campo-f ancho"><label for="cFecha">Fecha del evento</label><input id="cFecha" type="date" data-selector-fecha data-futuro></div>
+          <div class="campo-f"><label for="cHora">Hora de inicio</label><select id="cHora"></select></div>
+          <div class="campo-f"><label for="cFin">Hora de fin (aprox.)</label><select id="cFin"></select></div>
           <div class="campo-f"><label for="cCupos">Número de jugadores</label><input id="cCupos" type="number" min="1" max="500" inputmode="numeric"></div>
           <div class="campo-f"><label for="cEspera">Lista de espera</label><input id="cEspera" type="number" min="0" max="200" inputmode="numeric"></div>
         </div>
@@ -311,7 +324,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
       <div class="card">
         <h2>Inscribir usuario</h2>
         <p class="desc" id="iDesc">Busca por nombre o DNI.</p>
-        <div class="barra"><div class="buscar"><input id="iBuscar" type="search" placeholder="Nombre o DNI" autocomplete="off"></div></div>
+        <div class="barra"><div class="buscar"><input id="iBuscar" type="text" placeholder="Nombre o DNI" autocomplete="off" enterkeyhint="search"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
         <div class="lista-adm" id="iLista"><p class="vacio-adm">Escribe al menos 2 letras o números.</p></div>
       </div>
     </section>
@@ -322,11 +335,9 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <h2>Tomar asistencia</h2>
         <p class="desc">Marca a cada inscrito. Se guarda al tocar.</p>
         <div class="switches" style="margin:0 0 14px"><label class="sw"><span>Asistencia abierta<small>Permite marcar la asistencia en la mesa</small></span><input type="checkbox" role="switch" id="aAbierta"></label></div>
-        <div class="barra">
-          <input id="aFecha" type="date" style="flex:0 0 170px">
-          <div class="buscar"><input id="aBuscar" type="search" placeholder="Buscar nombre" autocomplete="off"></div>
-        </div>
+        <div class="campos-f" style="margin-bottom:14px"><div class="campo-f"><label for="aFecha">Fecha</label><input id="aFecha" type="date" data-selector-fecha data-futuro></div></div>
         <div class="chips" id="aChips"></div>
+        <div class="barra"><div class="buscar"><input id="aBuscar" type="text" placeholder="Buscar por nombre o DNI" autocomplete="off" enterkeyhint="search"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
         <div class="lista-adm" id="aLista"><p class="vacio-adm">Cargando…</p></div>
       </div>
     </section>
@@ -335,12 +346,12 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
     <section class="tab" id="t-puntajes" hidden>
       <div class="card">
         <h2>Modificar puntajes</h2>
-        <p class="desc">Corrige jugadores o marcadores de cualquier partido, sin límite de tiempo.</p>
+        <p class="desc">Corrige el marcador de cualquier partido, sin límite de tiempo.</p>
         <div class="barra">
-          <select id="pRonda" style="flex:0 0 140px"><option value="1">Ronda 1</option><option value="2">Ronda 2</option></select>
-          <select id="pCampo" style="flex:0 0 150px"></select>
+          <select id="pRonda" style="flex:1 1 140px" aria-label="Ronda"><option value="" selected disabled>Elige la ronda</option><option value="1">Ronda 1</option><option value="2">Ronda 2</option></select>
+          <select id="pCampo" style="flex:1 1 150px" aria-label="Campo" disabled><option value="" selected disabled>Elige el campo</option></select>
         </div>
-        <div class="partidos-adm" id="pLista"></div>
+        <div class="partidos-adm" id="pLista"><p class="elige">Elige una ronda y un campo para ver sus partidos.</p></div>
       </div>
     </section>
 
@@ -387,6 +398,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/partidos-datos.js"></script>
+<script src="js/selector-fecha.js"></script>
 <script>
 const LINKS = {
   inscripciones: "inscripciones.html",
@@ -412,6 +424,17 @@ const LINKS = {
   let tt; const toast=(t,err)=>{const e=$('#toast');e.textContent=t;e.classList.toggle('error',!!err);e.classList.add('si');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('si'),err?4500:2000)};
   const fallo=e=>toast(e&&e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':(e&&e.message)||'Error',true);
   let CFG=null;
+  // fechas: el selector moderno (escritorio) guarda el valor en valorFecha; en celular es el input nativo
+  const leerFecha=id=>{ const e=$(id); return ('valorFecha' in e)?e.valorFecha:e.value; };
+  const ponerFecha=(id,v)=>{ const e=$(id); if('valorFecha' in e) e.valorFecha=v||''; else e.value=v||''; };
+  const alCambiarFecha=(id,fn)=>{ const e=$(id); e.addEventListener('change',fn); e.addEventListener('fecha',fn); };
+  // horas cada 5 minutos, de 4:00 a 23:55
+  const horas=sel=>{ let h=''; for(let m=4*60;m<24*60;m+=5){ const v=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); const H=Math.floor(m/60), t=`${H%12||12}:${String(m%60).padStart(2,'0')} ${H<12?'a. m.':'p. m.'}`; h+=`<option value="${v}">${t}</option>`; } sel.innerHTML='<option value="">—</option>'+h; };
+  horas($('#cHora')); horas($('#cFin'));
+  // botón × para borrar la búsqueda
+  document.querySelectorAll('.buscar').forEach(b=>{ const i=b.querySelector('input'), x=b.querySelector('.limpiar'); if(!x) return;
+    const ver=()=>x.hidden=!i.value; i.addEventListener('input',ver);
+    x.onclick=()=>{ i.value=''; ver(); i.dispatchEvent(new Event('input')); i.focus(); }; });
 
   /* ---------- pestañas ---------- */
   const abrir=t=>{
@@ -433,16 +456,16 @@ const LINKS = {
     const r=await rpc('admin_config',{p_playa:PLAYA}); CFG=r&&r[0];
     if(!CFG) throw new Error('No existe la configuración de '+PLAYA);
     if(CFG.title) $('#titulo').textContent=CFG.title;
-    $('#cFecha').value=CFG.siguiente_fecha||''; $('#cHora').value=hhmm(CFG.asistencia_mesa); $('#cFin').value=hhmm(CFG.hora_fin);
+    ponerFecha('#cFecha',CFG.siguiente_fecha); $('#cHora').value=hhmm(CFG.asistencia_mesa); $('#cFin').value=hhmm(CFG.hora_fin);
     $('#cCupos').value=CFG.num_jugadores??''; $('#cEspera').value=CFG.num_espera??'';
     $('#cAbierta').checked=!!CFG.is_active; $('#cMant').checked=!!CFG.mantenimiento; $('#aAbierta').checked=!!CFG.asistencia_is_active;
-    if(!$('#aFecha').value) $('#aFecha').value=CFG.siguiente_fecha||'';
+    if(!leerFecha('#aFecha')) ponerFecha('#aFecha',CFG.siguiente_fecha);
     ponerResumen();
   }
   $('#cGuardar').onclick=async()=>{
     const b=$('#cGuardar'); b.disabled=true; b.textContent='guardando…';
     try{
-      await rpc('admin_configurar',{p_playa:PLAYA,p_fecha:$('#cFecha').value||null,p_hora:$('#cHora').value||null,p_hora_fin:$('#cFin').value||null,
+      await rpc('admin_configurar',{p_playa:PLAYA,p_fecha:leerFecha('#cFecha')||null,p_hora:$('#cHora').value||null,p_hora_fin:$('#cFin').value||null,
         p_jugadores:+$('#cCupos').value,p_espera:+$('#cEspera').value,p_abierta:$('#cAbierta').checked,p_mantenimiento:$('#cMant').checked});
       await cargarConfigAdmin(); $('#cEstado').textContent='Guardado ✓'; toast('Evento actualizado');
     }catch(e){ fallo(e); }
@@ -477,14 +500,14 @@ const LINKS = {
 
   /* ---------- ASISTENCIA ---------- */
   let ASIS=[];
-  $('#aFecha').addEventListener('change',()=>cargarAsistencia());
+  alCambiarFecha('#aFecha',()=>cargarAsistencia());
   $('#aBuscar').addEventListener('input',()=>pintarAsistencia());
   $('#aAbierta').addEventListener('change',async e=>{
     try{ await rpc('admin_abrir_asistencia',{p_playa:PLAYA,p_abierta:e.target.checked}); toast(e.target.checked?'Asistencia abierta':'Asistencia cerrada'); }
     catch(err){ e.target.checked=!e.target.checked; fallo(err); }
   });
   async function cargarAsistencia(){
-    const f=$('#aFecha').value; if(!f){ $('#aLista').innerHTML='<p class="vacio-adm">Elige una fecha.</p>'; return; }
+    const f=leerFecha('#aFecha'); if(!f){ $('#aLista').innerHTML='<p class="vacio-adm">Elige una fecha.</p>'; return; }
     try{ ASIS=await rpc('admin_lista',{p_playa:PLAYA,p_fecha:f,p_temporada:TEMPORADA}); }catch(e){ fallo(e); return; }
     pintarAsistencia();
   }
@@ -493,12 +516,13 @@ const LINKS = {
     const q=sinT($('#aBuscar').value.trim());
     const c=k=>ASIS.filter(x=>x.asistencia===k).length;
     $('#aChips').innerHTML=`<span class="chip">Inscritos <b>${ASIS.filter(x=>!x.espera).length}</b></span><span class="chip">En espera <b>${ASIS.filter(x=>x.espera).length}</b></span><span class="chip verde">Asisten <b>${c('asiste')}</b></span><span class="chip ambar">Tarde <b>${c('tarde')}</b></span><span class="chip rojo">Tarde NJ <b>${c('tarde NJ')}</b></span><span class="chip">Juegan <b>${c('asiste')+c('tarde')}</b></span>`;
-    const L=ASIS.filter(x=>!q||sinT(x.jugador).includes(q));
+    const qd=q.replace(/\D/g,'');
+    const L=ASIS.filter(x=>!q||sinT(x.jugador).includes(q)||(qd&&String(x.dni||'').includes(qd)));
     if(!L.length){ $('#aLista').innerHTML=`<p class="vacio-adm">${ASIS.length?'Nadie coincide con la búsqueda.':'No hay inscritos en esta fecha.'}</p>`; return; }
     $('#aLista').replaceChildren(...L.map(x=>{
       const d=document.createElement('div'); d.className='fila-adm '+(x.asistencia||'').replace(' ','').toLowerCase();
       const tel=(x.celular||'').replace(/\D/g,'');
-      d.innerHTML=`<span class="pos">${x.posicion}</span><span class="nm">${esc(x.jugador)}${x.espera?'<span class="badge le">L.E.</span>':''}<small>${x.puesto?'Puesto '+x.puesto+' · ':''}${tel?`<a href="https://wa.me/${tel.length===9?'51'+tel:tel}" target="_blank" rel="noopener">${esc(x.celular)}</a>`:'sin celular'}</small></span><span class="der"></span>`;
+      d.innerHTML=`<span class="pos">${x.posicion}</span><span class="nm">${esc(x.jugador)}${x.espera?'<span class="badge le">L.E.</span>':''}<small>${x.dni?'DNI '+esc(x.dni)+' · ':''}${x.puesto?'Puesto '+x.puesto+' · ':''}${tel?`<a href="https://wa.me/${tel.length===9?'51'+tel:tel}" target="_blank" rel="noopener">${esc(x.celular)}</a>`:'sin celular'}</small></span><span class="der"></span>`;
       const seg=document.createElement('div'); seg.className='seg'; seg.setAttribute('role','radiogroup'); seg.setAttribute('aria-label','Asistencia de '+x.jugador);
       [['asiste','Asiste'],['tarde','Tarde'],['tarde NJ','Tarde NJ'],['','×']].forEach(([v,t])=>{
         const b=document.createElement('button'); b.type='button'; b.dataset.v=v; b.textContent=t; b.setAttribute('role','radio');
@@ -519,29 +543,30 @@ const LINKS = {
 
   /* ---------- PUNTAJES ---------- */
   let PART=[];
-  $('#pRonda').onchange=()=>cargarPuntajes(true);
-  $('#pCampo').onchange=()=>pintarPuntajes();
-  async function cargarPuntajes(cambioRonda){
+  $('#pRonda').onchange=async()=>{
+    const sel=$('#pCampo'); sel.disabled=true; sel.innerHTML='<option value="" selected disabled>Cargando…</option>';
+    $('#pLista').innerHTML='<p class="elige">Elige un campo para ver sus partidos.</p>';
     try{ PART=await cargarPartidos({ronda:+$('#pRonda').value,playa:PLAYA}); }catch(e){ fallo(e); return; }
     const campos=[...new Set(PART.map(p=>p.campo))].sort((a,b)=>a-b);
-    const sel=$('#pCampo'), v=sel.value;
-    sel.innerHTML=campos.map(c=>`<option value="${c}">Campo ${c}</option>`).join('');
-    if(!cambioRonda&&campos.includes(+v)) sel.value=v;
-    pintarPuntajes();
-  }
+    sel.innerHTML='<option value="" selected disabled>Elige el campo</option>'+campos.map(c=>`<option value="${c}">Campo ${c}</option>`).join('');
+    sel.disabled=!campos.length;
+    if(!campos.length) $('#pLista').innerHTML='<p class="elige">Esta ronda todavía no tiene partidos.</p>';
+  };
+  $('#pCampo').onchange=()=>pintarPuntajes();
+  async function cargarPuntajes(){ /* no se muestra nada hasta elegir ronda y campo */ }
+  async function recargarCampo(){ try{ PART=await cargarPartidos({ronda:+$('#pRonda').value,playa:PLAYA}); }catch(e){} pintarPuntajes(); }
   function pintarPuntajes(){
     const campo=+$('#pCampo').value, box=$('#pLista');
+    if(!campo){ box.innerHTML='<p class="elige">Elige un campo para ver sus partidos.</p>'; return; }
     const L=PART.filter(p=>p.campo===campo).sort((a,b)=>a.n-b.n);
-    if(!L.length){ box.innerHTML='<p class="vacio-adm">No hay partidos en esta ronda.</p>'; return; }
-    const jug=jugadoresDelCampo(L);
-    const dl=`dl-${campo}`;
-    box.innerHTML=`<datalist id="${dl}">${jug.map(j=>`<option value="${esc(j)}">`).join('')}</datalist>`;
+    if(!L.length){ box.innerHTML='<p class="elige">No hay partidos en este campo.</p>'; return; }
+    box.innerHTML='';
     L.forEach(p=>{
       const d=document.createElement('div'); d.className='p-adm';
       const est=p.fin?'<span class="estado-mini fin">FINALIZADO</span>':p.vivo?'<span class="estado-mini vivo">EN VIVO</span>':'<span class="estado-mini">PENDIENTE</span>';
       d.innerHTML=`<h3>Partido ${p.n} ${est}</h3>
-        <div class="eq"><input list="${dl}" data-k="a1" value="${esc(p.a[0]||'')}" aria-label="Jugador A1"><input list="${dl}" data-k="a2" value="${esc(p.a[1]||'')}" aria-label="Jugador A2"><input class="sc" data-k="sa" type="number" min="0" max="99" inputmode="numeric" value="${p.pa??''}" aria-label="Puntos equipo A"></div>
-        <div class="eq"><input list="${dl}" data-k="b1" value="${esc(p.b[0]||'')}" aria-label="Jugador B1"><input list="${dl}" data-k="b2" value="${esc(p.b[1]||'')}" aria-label="Jugador B2"><input class="sc" data-k="sb" type="number" min="0" max="99" inputmode="numeric" value="${p.pb??''}" aria-label="Puntos equipo B"></div>
+        <div class="eq"><div class="nombres">${p.a.map(esc).join('<br>')}</div><input class="sc" data-k="sa" type="number" min="0" max="99" inputmode="numeric" value="${p.pa??''}" aria-label="Puntos de ${esc(p.a.join(' y '))}"></div>
+        <div class="eq"><div class="nombres">${p.b.map(esc).join('<br>')}</div><input class="sc" data-k="sb" type="number" min="0" max="99" inputmode="numeric" value="${p.pb??''}" aria-label="Puntos de ${esc(p.b.join(' y '))}"></div>
         <div class="pie-adm"><label class="fin"><input type="checkbox" data-k="fin" ${p.fin?'checked':''}> Finalizado</label><button class="pill chica btn-azul" type="button">guardar</button></div>`;
       const g=k=>d.querySelector(`[data-k="${k}"]`);
       const btn=d.querySelector('button');
@@ -549,8 +574,8 @@ const LINKS = {
         const num=k=>g(k).value===''?null:+g(k).value;
         btn.disabled=true; btn.textContent='…';
         try{
-          await rpc('admin_editar_partido',{p_id:p.id,p_a1:g('a1').value,p_a2:g('a2').value,p_b1:g('b1').value,p_b2:g('b2').value,p_score_a:num('sa'),p_score_b:num('sb'),p_finalizado:g('fin').checked});
-          toast(`Partido ${p.n} guardado`); await cargarPuntajes();
+          await rpc('admin_editar_partido',{p_id:p.id,p_a1:p.a[0]||'',p_a2:p.a[1]||'',p_b1:p.b[0]||'',p_b2:p.b[1]||'',p_score_a:num('sa'),p_score_b:num('sb'),p_finalizado:g('fin').checked});
+          toast(`Partido ${p.n} guardado`); await recargarCampo();
         }catch(e){ fallo(e); btn.disabled=false; btn.textContent='guardar'; }
       };
       box.append(d);
@@ -577,14 +602,14 @@ const LINKS = {
     let existentes=[]; try{ existentes=await cargarPartidos({ronda:rondaSel,playa:PLAYA}); }catch(e){}
     const aviso=existentes.length?` Ya hay ${existentes.length} partidos guardados en la ronda ${rondaSel}: al guardar se reemplazan.`:'';
     nota.innerHTML=rondaSel===1
-      ? `Toma a quienes marcaron <b>Asiste</b> o <b>Tarde</b> el ${fechaLarga($('#aFecha').value||CFG.siguiente_fecha)}, los ordena por su puesto en el ranking (sin puesto al final) y los reparte en zigzag en campos de 5.${aviso}`
+      ? `Toma a quienes marcaron <b>Asiste</b> o <b>Tarde</b> el ${fechaLarga(leerFecha('#aFecha')||CFG.siguiente_fecha)}, los ordena por su puesto en el ranking (sin puesto al final) y los reparte en zigzag en campos de 5.${aviso}`
       : `Ordena a los jugadores por su posición en la tabla de su campo de la ronda 1 (primeros de cada campo, luego segundos…) y los reparte en zigzag en campos de 5. <b>Regla provisional:</b> confírmala antes de usarla.${aviso}`;
     if(!PREV){ $('#rCampos').innerHTML=''; $('#rChips').innerHTML=''; $('#rAcciones').hidden=true; }
   }
   $('#rGenerar').onclick=async()=>{
     const b=$('#rGenerar'); b.disabled=true;
     try{
-      const fecha=$('#aFecha').value||CFG.siguiente_fecha;
+      const fecha=leerFecha('#aFecha')||CFG.siguiente_fecha;
       const lista=await rpc('admin_lista',{p_playa:PLAYA,p_fecha:fecha,p_temporada:TEMPORADA});
       const porNombre=new Map(lista.map(x=>[sinT(x.jugador),x]));
       let orden;
