@@ -1,0 +1,25 @@
+{
+  "name": "muévete.pe",
+  "short_name": "muévete",
+  "description": "Comunidad de vóley playa en Lima: inscripciones, ranking, rondas y partidos.",
+  "lang": "es-PE",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0051C2",
+  "theme_color": "#0051C2",
+  "icons": [
+    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Inscripciones", "url": "/sombrillas/inscripciones", "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Ronda 1", "url": "/sombrillas/ronda1", "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Ranking", "url": "/ranking", "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Uma Go", "url": "/uma-go", "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

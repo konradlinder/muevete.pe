@@ -1,4 +1,4 @@
-/* Carga del ranking: desde Supabase si está configurado (js/config.js),
+/* Carga del ranking: desde Supabase si está configurado (/js/config.js),
    si no, desde data/ranking.json. Devuelve siempre el mismo formato. */
 (function(){
   // Fotos de Wix en miniatura (en vez de la foto original de varios MB)
@@ -36,7 +36,7 @@
   }
 
   async function desdeArchivo(limite){
-    const r = await fetch('data/ranking.json', { cache: 'no-cache' });
+    const r = await fetch('/data/ranking.json', { cache: 'no-cache' });
     if (!r.ok) throw new Error('JSON ' + r.status);
     const d = (await r.json()).sort((a,b)=>a.puesto-b.puesto);
     return limite ? d.slice(0, limite) : d;

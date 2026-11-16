@@ -2,7 +2,7 @@
 (function(){
   const limpiar = t => (t || '').replace(/\s+/g, ' ').trim();
 
-  window.cargarPartidos = async function({ ronda = 1, campo = null, playa = 'sombrillas1' } = {}){
+  window.cargarPartidos = async function({ ronda = 1, campo = null, playa = (window.RUTA && RUTA.playa) || 'sombrillas' } = {}){
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const p = new URLSearchParams({

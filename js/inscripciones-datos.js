@@ -23,7 +23,7 @@
   };
 
   // Configuración de una playa (tabla configuraciones) + estado de mantenimiento
-  window.cargarConfig = async function(playa = 'sombrillas1'){
+  window.cargarConfig = async function(playa = (window.RUTA && RUTA.playa) || 'sombrillas'){
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const p = new URLSearchParams({
@@ -52,7 +52,7 @@
         return (await r.json()).map(x => ({ fecha: x.fecha, dia: x.dia, evento: x.estado }));
       } catch (e) { console.warn('No se pudo leer proximos_eventos, uso respaldo:', e); }
     }
-    const r = await fetch('data/fechas.json', { cache: 'no-cache' });
+    const r = await fetch('/data/fechas.json', { cache: 'no-cache' });
     return (await r.json()).filter(x => x.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha)).slice(0, limite);
   };
 
@@ -71,7 +71,7 @@
   };
 
   // Inscripciones no canceladas de una fecha y playa, en orden de llegada
-  window.cargarInscritos = async function({ fecha, playa = 'sombrillas1' }){
+  window.cargarInscritos = async function({ fecha, playa = (window.RUTA && RUTA.playa) || 'sombrillas' }){
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const p = new URLSearchParams({
@@ -87,7 +87,7 @@
   };
 
   // Cuántos inscritos activos hay (número público, sin datos de jugadores)
-  window.contarInscritos = async function({ fecha, playa = 'sombrillas1' }){
+  window.contarInscritos = async function({ fecha, playa = (window.RUTA && RUTA.playa) || 'sombrillas' }){
     const db = window.MUEVETE_DB || {};
     if (!db.url || !db.anonKey) throw new Error('Supabase no configurado');
     const h = Object.assign({ 'Content-Type': 'application/json' }, headersDe(db.anonKey));

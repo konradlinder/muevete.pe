@@ -1,0 +1,26 @@
+# muévete.pe · rutas para Cloudflare Pages
+# "200" = muestra esa página sin cambiar la dirección que ve el usuario.
+# {playa} es el campo "playa" de configuraciones (ej. sombrillas). La página lee la playa,
+# la ronda y el campo desde la dirección (js/ruta.js).
+
+# Nombre anterior de la playa
+/sombrillas1/*          /sombrillas/:splat        301
+
+# Por playa
+/:playa/inscripciones   /inscripciones            200
+/:playa/bases           /bases                    200
+/:playa/admin           /admin                    200
+/:playa/ronda1          /ronda                    200
+/:playa/ronda2          /ronda                    200
+/:playa/ronda1/:campo   /campo                    200
+/:playa/ronda2/:campo   /campo                    200
+
+# Cortas: llevan a la playa principal (sombrillas)
+/ronda1                 /ronda                    200
+/ronda2                 /ronda                    200
+/ronda1/:campo          /campo                    200
+/ronda2/:campo          /campo                    200
+
+# Direcciones antiguas
+/terminos               /terminos-y-condiciones   301
+/terminos.html          /terminos-y-condiciones   301

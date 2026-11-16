@@ -2,13 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<script src="/js/ruta.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0051C2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="muévete">
+<script src="/js/app.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bases Uma Arena | muévete.pe</title>
 <meta name="description" content="Bases de Uma Arena, la competencia individual de vóley playa de muévete.pe: inscripción, formato, series, puntajes y ranking.">
-<link rel="icon" href="img/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -225,27 +233,27 @@ html{scrollbar-gutter:stable}
 </svg>
 
 <!-- MENÚ -->
-<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+<a class="app-ico" href="/" aria-label="Ir al inicio de muévete.pe"><img src="/img/favicon-192.png" alt="" width="60" height="60"></a>
 <div class="right">
   <div class="panel">
     <nav class="menu" aria-label="Menú principal">
-      <a href="index.html">Inicio</a>
+      <a href="/">Inicio</a>
       <a data-link="inscripciones">Inscripciones</a>
       <a data-link="ranking">Ranking</a>
-      <a class="on" href="bases.html" aria-current="page">Bases</a>
+      <a class="on" href="/sombrillas/bases" aria-current="page">Bases</a>
     </nav>
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
   </div>
   <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
 </div>
 
 <header class="hero">
   <div class="hero-in">
-    <img class="uma" src="img/bases/uma-logo.png" alt="UMA Arena · Organizado por muévete.pe">
+    <img class="uma" src="/img/bases/uma-logo.png" alt="UMA Arena · Organizado por muévete.pe">
     <div>
       <h1>Bases<br>Uma Arena</h1>
       <p class="sub">Competencia individual<br>de vóley playa</p>
-      <a class="btn-pdf" href="media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar PDF
+      <a class="btn-pdf" href="/media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar PDF
         <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </div>
@@ -284,7 +292,7 @@ html{scrollbar-gutter:stable}
         <div class="tarjeta">
           <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 9.5h1.5v5.5M14.5 9.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 0 1.5-2.5"/></svg></div>
           <h3>Edad y registro</h3>
-          <p>Pueden participar personas mayores de 16 años que se registren previamente en la plataforma oficial: <a href="index.html">www.muevete.pe</a>.</p>
+          <p>Pueden participar personas mayores de 16 años que se registren previamente en la plataforma oficial: <a href="/">www.muevete.pe</a>.</p>
         </div>
         <div class="tarjeta">
           <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20v-1.2A5 5 0 0 1 10 14h4a5 5 0 0 1 5 4.8V20"/></svg></div>
@@ -307,7 +315,7 @@ html{scrollbar-gutter:stable}
           <p>Los jugadores deberán ayudar a armar y desarmar los campos cuidando que no falten piezas.</p>
         </div>
       </div>
-      <img class="foto" src="img/bases/foto-1.jpg" alt="Grupo de jugadores de Uma Arena en la playa" loading="lazy">
+      <img class="foto" src="/img/bases/foto-1.jpg" alt="Grupo de jugadores de Uma Arena en la playa" loading="lazy">
     </section>
 
     <section id="s03">
@@ -363,7 +371,7 @@ html{scrollbar-gutter:stable}
         <li>Jugadores nuevos reciben un puntaje provisional que se ajusta tras su primera participación.</li>
         <li><strong>COMODÍN:</strong> un jugador puede ascender de SERIE si queda primero o segundo en los campos 6, 11 o 16 de la ronda final. Esta promoción es válida solo para la fecha siguiente.</li>
       </ul>
-      <img class="foto" src="img/bases/foto-2.jpg" alt="Campos de vóley en la Playa Sombrillas" loading="lazy">
+      <img class="foto" src="/img/bases/foto-2.jpg" alt="Campos de vóley en la Playa Sombrillas" loading="lazy">
     </section>
 
     <section id="s06">
@@ -371,7 +379,7 @@ html{scrollbar-gutter:stable}
       <ul>
         <li>En cada jornada, los jugadores reciben un puntaje según su ubicación final en cada ronda, considerando la SERIE y el CAMPO.</li>
         <li>El ranking general se calcula a partir de la suma de los ocho mejores puntajes obtenidos en la temporada.</li>
-        <li>El ranking se actualiza y publica semanalmente. <a href="ranking.html">Ver ranking</a></li>
+        <li>El ranking se actualiza y publica semanalmente. <a href="/ranking">Ver ranking</a></li>
       </ul>
     </section>
 
@@ -391,7 +399,7 @@ html{scrollbar-gutter:stable}
         <li>Al finalizar cada jornada se reconocen simbólicamente a los ganadores de cada campo (KING o QUEEN).</li>
         <li>Cada sábado inicia con un círculo de bienvenida para recibir nuevos jugadores y compartir anuncios comunitarios.</li>
       </ul>
-      <img class="foto" src="img/bases/foto-3.jpg" alt="Círculo de bienvenida en Uma Arena" loading="lazy">
+      <img class="foto" src="/img/bases/foto-3.jpg" alt="Círculo de bienvenida en Uma Arena" loading="lazy">
     </section>
 
     <section id="s09">
@@ -414,7 +422,7 @@ html{scrollbar-gutter:stable}
     </section>
 
     <div class="final">
-      <a class="btn-pdf azul" href="media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar bases en PDF
+      <a class="btn-pdf azul" href="/media/bases-uma-arena.pdf" target="_blank" rel="noopener">Descargar bases en PDF
         <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </article>
@@ -424,11 +432,11 @@ html{scrollbar-gutter:stable}
 <div class="mfondo" id="mfondo" hidden></div>
 <aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
   <div class="mhead">
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
     <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
   </div>
   <nav class="mnav">
-    <a href="index.html">Inicio</a>
+    <a href="/">Inicio</a>
     <a data-link="inscripciones">Inscripciones</a>
     <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="msub" id="msub">
@@ -436,7 +444,7 @@ html{scrollbar-gutter:stable}
       <a data-link="ronda2">Ronda 2</a>
     </div>
     <a data-link="ranking">Ranking</a>
-    <a class="on" href="bases.html">Bases</a>
+    <a class="on" href="/sombrillas/bases">Bases</a>
     <a data-link="umaGo">Uma Go</a>
   </nav>
 </aside>
@@ -444,13 +452,13 @@ html{scrollbar-gutter:stable}
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
-  inscripciones: "inscripciones.html",
-  ranking:       "ranking.html",
+  inscripciones: "/sombrillas/inscripciones",
+  ranking:       "/ranking",
   nosotros:      "https://www.muevete.pe/nosotros",
-  bases:         "bases.html",
-  umaGo:         "uma-go.html",
-  ronda1:        "ronda.html?ronda=1",
-  ronda2:        "ronda.html?ronda=2",
+  bases:         "/sombrillas/bases",
+  umaGo:         "/uma-go",
+  ronda1:        "/sombrillas/ronda1",
+  ronda2:        "/sombrillas/ronda2",
 };
 
 (function(){
@@ -492,7 +500,7 @@ const LINKS = {
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
 })();
 </script>
-<script src="js/pie.js"></script>
-<script src="js/menu-pill.js"></script>
+<script src="/js/pie.js"></script>
+<script src="/js/menu-pill.js"></script>
 </body>
 </html>

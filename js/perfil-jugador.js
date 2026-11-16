@@ -2,7 +2,7 @@
    Uso: abrirPerfil({ nombre, foto, fotoGrande, puesto, top8, menorTop8, promedio, ganados })
         o abrirPerfil('Nombre Apellido') → busca sus datos en el ranking (requiere js/ranking-datos.js). */
 (function(){
-  var LOGO = 'img/logo-muevete.png';
+  var LOGO = '/img/logo-muevete.png';
 
   var css = document.createElement('style');
   css.textContent = [
@@ -51,7 +51,7 @@
   function tecla(e){ if (e.key === 'Escape') cerrar(); }
 
   function pintar(fondo, j, cargando){
-    var foto = j.fotoGrande || j.foto || 'img/avatar.png';
+    var foto = j.fotoGrande || j.foto || '/img/avatar.png';
     var datos = (j.puesto != null)
       ? '<div class="pj-datos">' +
           '<div class="pj-dato">Puesto <b>' + num(j.puesto) + '</b></div>' +
@@ -65,7 +65,7 @@
       '<div class="pj-foto"><img alt="" src="' + esc(foto) + '"></div>' +
       '<h2 id="pj-nombre">' + esc(j.nombre || 'Jugador') + '</h2>' + datos;
     var img = fondo.querySelector('.pj-foto img');
-    img.onerror = function(){ if (j.foto && img.getAttribute('src') !== j.foto) { img.src = j.foto; } else { img.onerror = null; img.src = 'img/avatar.png'; } };
+    img.onerror = function(){ if (j.foto && img.getAttribute('src') !== j.foto) { img.src = j.foto; } else { img.onerror = null; img.src = '/img/avatar.png'; } };
   }
 
   window.abrirPerfil = function(j){

@@ -2,13 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<script src="/js/ruta.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0051C2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="muévete">
+<script src="/js/app.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inscripciones | Sombrillas 6:30 a. m. | muévete.pe</title>
 <meta name="description" content="Inscríbete a la próxima fecha de Uma Arena, competencia individual de vóley playa en Playa Sombrillas, Barranco.">
-<link rel="icon" href="img/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,16 +269,16 @@ html{scrollbar-gutter:stable}
 </svg>
 
 <!-- MENÚ -->
-<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+<a class="app-ico" href="/" aria-label="Ir al inicio de muévete.pe"><img src="/img/favicon-192.png" alt="" width="60" height="60"></a>
 <div class="right">
   <div class="panel">
     <nav class="menu" aria-label="Menú principal">
-      <a href="index.html">Inicio</a>
-      <a class="on" href="inscripciones.html" aria-current="page">Inscripciones</a>
+      <a href="/">Inicio</a>
+      <a class="on" href="/sombrillas/inscripciones" aria-current="page">Inscripciones</a>
       <a data-link="ranking">Ranking</a>
       <a data-link="bases">Bases</a>
     </nav>
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
   </div>
   <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
 </div>
@@ -401,7 +409,7 @@ html{scrollbar-gutter:stable}
     <!-- 6. SIN SESIÓN -->
     <div class="estado" data-estado="sesion">
       <div class="tit">¡Regístrate y participa!</div>
-      <div class="acciones-c"><a class="pill amarillo" href="mi-cuenta.html">ingresar a mi cuenta
+      <div class="acciones-c"><a class="pill amarillo" href="/mi-cuenta">ingresar a mi cuenta
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7.5" r="4.5"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" stroke-linejoin="round"/></svg></a></div>
       <div class="separa"></div>
       <p class="txt" style="margin-top:0">Únete a nuestra comunidad para estar atento a la apertura de inscripciones.</p>
@@ -433,12 +441,12 @@ html{scrollbar-gutter:stable}
 <div class="mfondo" id="mfondo" hidden></div>
 <aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
   <div class="mhead">
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
     <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
   </div>
   <nav class="mnav">
-    <a href="index.html">Inicio</a>
-    <a class="on" href="inscripciones.html">Inscripciones</a>
+    <a href="/">Inicio</a>
+    <a class="on" href="/sombrillas/inscripciones">Inscripciones</a>
     <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="msub" id="msub">
       <a data-link="ronda1">Ronda 1</a>
@@ -450,20 +458,20 @@ html{scrollbar-gutter:stable}
   </nav>
 </aside>
 
-<script src="js/config.js"></script>
-<script src="js/ranking-datos.js"></script>
-<script src="js/inscripciones-datos.js"></script>
-<script src="js/perfil-jugador.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/ranking-datos.js"></script>
+<script src="/js/inscripciones-datos.js"></script>
+<script src="/js/perfil-jugador.js"></script>
 <script>
 /* Links del menú (los mismos que en index.html) */
 const LINKS = {
-  inscripciones: "inscripciones.html",
-  ranking:       "ranking.html",
+  inscripciones: "/sombrillas/inscripciones",
+  ranking:       "/ranking",
   nosotros:      "https://www.muevete.pe/nosotros",
-  bases:         "bases.html",
-  umaGo:         "uma-go.html",
-  ronda1:        "ronda.html?ronda=1",
-  ronda2:        "ronda.html?ronda=2",
+  bases:         "/sombrillas/bases",
+  umaGo:         "/uma-go",
+  ronda1:        "/sombrillas/ronda1",
+  ronda2:        "/sombrillas/ronda2",
 };
 
 (function(){
@@ -476,7 +484,7 @@ const LINKS = {
   const TORNEO = {
     sede: "Playa Sombrillas, Barranco",
     fecha: "",                // vacío = la próxima fecha de data/fechas.json
-    playa: "sombrillas1",     // sombrillas1 = turno 6:30 a. m.
+    playa: RUTA.playa,        // de la URL: /sombrillas/inscripciones
     minLista:10,      // la lista se muestra a todos desde este número de inscritos
   cupo: 100,                // num_jugadores
     maxEspera: 25,            // num_espera
@@ -544,7 +552,7 @@ const LINKS = {
   const fila=(j,i,clase)=>{const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
     if(clase) n.classList.add(clase);
     f('n').textContent=i+1;
-    const im=new Image(); im.alt=''; im.loading='lazy'; im.onerror=()=>{im.onerror=null;im.src='img/avatar.png'}; im.src=j.foto||'img/avatar.png'; f('av').append(im);
+    const im=new Image(); im.alt=''; im.loading='lazy'; im.onerror=()=>{im.onerror=null;im.src='/img/avatar.png'}; im.src=j.foto||'/img/avatar.png'; f('av').append(im);
     f('nombre').textContent=j.nombre; f('nombre').title=j.nombre; if(j.yo) f('nombre').insertAdjacentHTML('beforeend','<span class="yo">tú</span>');
     const mas=f('mas');
     if(j.yo) mas.remove();
@@ -628,7 +636,7 @@ const LINKS = {
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
 })();
 </script>
-<script src="js/pie.js"></script>
-<script src="js/menu-pill.js"></script>
+<script src="/js/pie.js"></script>
+<script src="/js/menu-pill.js"></script>
 </body>
 </html>

@@ -1,20 +1,20 @@
 /* Footer común (igual al del inicio) para todas las páginas internas.
-   Uso: <script src="js/pie.js"></script> al final del <body>. */
+   Uso: <script src="/js/pie.js"></script> al final del <body>. */
 (function(){
   if (document.querySelector('.pc')) return;
   var LINKS = {
-    bases:    'bases.html',
-    ronda1:   'ronda.html?ronda=1',
-    ronda2:   'ronda.html?ronda=2',
-    terminos: 'terminos.html',
-    admin:    'admin.html',
+    bases:    '/sombrillas/bases',
+    ronda1:   '/sombrillas/ronda1',
+    ronda2:   '/sombrillas/ronda2',
+    terminos: '/terminos-y-condiciones',
+    admin:    '/sombrillas/admin',
     owner:    'https://www.muevete.pe/owner'
   };
   var SEDE = 'Uma Arena';
   var ALIADOS = [
-    { nombre:'Arena Voleibol Club', url:'https://www.instagram.com/arena_voleibolclub/', logo:'img/sponsor-arena.svg' },
-    { nombre:'Electrolife',         url:'https://www.instagram.com/electrolifeperu/',    logo:'img/sponsor-electrolife.svg' },
-    { nombre:'Diablo Atelier',      url:'https://www.instagram.com/diabloatelier/',      logo:'img/sponsor-diablo-atelier.svg' }
+    { nombre:'Arena Voleibol Club', url:'https://www.instagram.com/arena_voleibolclub/', logo:'/img/sponsor-arena.svg' },
+    { nombre:'Electrolife',         url:'https://www.instagram.com/electrolifeperu/',    logo:'/img/sponsor-electrolife.svg' },
+    { nombre:'Diablo Atelier',      url:'https://www.instagram.com/diabloatelier/',      logo:'/img/sponsor-diablo-atelier.svg' }
   ];
 
   if (!document.querySelector('link[href*="family=Roboto"]')) {
@@ -63,7 +63,7 @@
   pie.className = 'pc';
   pie.innerHTML =
     '<div class="pc-in">' +
-      '<div class="pc-logo"><img src="img/logo-muevete.png" alt="logo muévete" loading="lazy"></div>' +
+      '<div class="pc-logo"><img src="/img/logo-muevete.png" alt="logo muévete" loading="lazy"></div>' +
       '<footer class="pc-f">' +
         '<div class="pc-links">' +
           '<a href="' + LINKS.bases + '">bases ' + esc(SEDE) + '</a>' +

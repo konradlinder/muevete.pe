@@ -2,13 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<script src="/js/ruta.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0051C2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="muévete">
+<script src="/js/app.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Campo | muévete.pe</title>
 <meta name="description" content="Partidos y tabla del campo en el Uma Arena de muévete.pe.">
-<link rel="icon" href="img/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
 <link rel="preconnect" href="https://static.wixstatic.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -231,22 +239,22 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 </svg>
 
 <!-- MENÚ -->
-<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+<a class="app-ico" href="/" aria-label="Ir al inicio de muévete.pe"><img src="/img/favicon-192.png" alt="" width="60" height="60"></a>
 <div class="right">
   <div class="panel">
     <nav class="menu" aria-label="Menú principal">
-      <a href="index.html">Inicio</a>
+      <a href="/">Inicio</a>
       <a data-link="inscripciones">Inscripciones</a>
       <a data-link="ranking">Ranking</a>
       <a data-link="bases">Bases</a>
     </nav>
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
   </div>
   <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
 </div>
 
 <main>
-  <a class="volver" id="volver" href="ronda.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Ronda 1</a>
+  <a class="volver" id="volver" href="/sombrillas/ronda1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Ronda 1</a>
   <div class="cab"><h1 id="titulo">Campo 1</h1></div>
   <div class="cuerpo">
     <section class="tabla" aria-label="Tabla de posiciones">
@@ -277,11 +285,11 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 <div class="mfondo" id="mfondo" hidden></div>
 <aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
   <div class="mhead">
-    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <a class="cuenta" href="/mi-cuenta">Mi cuenta <svg><use href="#user"/></svg></a>
     <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
   </div>
   <nav class="mnav">
-    <a href="index.html">Inicio</a>
+    <a href="/">Inicio</a>
     <a data-link="inscripciones">Inscripciones</a>
     <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="msub" id="msub">
@@ -294,28 +302,27 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   </nav>
 </aside>
 
-<script src="js/config.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/partidos-datos.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/partidos-datos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const LINKS = {
-  inscripciones: "inscripciones.html",
-  ranking:       "ranking.html",
-  bases:         "bases.html",
-  umaGo:         "uma-go.html",
-  ronda1:        "ronda.html?ronda=1",
-  ronda2:        "ronda.html?ronda=2",
+  inscripciones: "/sombrillas/inscripciones",
+  ranking:       "/ranking",
+  bases:         "/sombrillas/bases",
+  umaGo:         "/uma-go",
+  ronda1:        "/sombrillas/ronda1",
+  ronda2:        "/sombrillas/ronda2",
 };
 
 (function(){
   const $=s=>document.querySelector(s);
   document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
 
-  const q=new URLSearchParams(location.search);
-  const ronda=+(q.get('ronda')||1), campo=+(q.get('campo')||1);
+  const ronda=RUTA.ronda||1, campo=RUTA.campo||1;
   $('#titulo').textContent='Campo '+campo; document.title=`Campo ${campo} · Ronda ${ronda} | muévete.pe`;
-  $('#volver').href='ronda.html?ronda='+ronda; $('#volver').lastChild.textContent=' Ronda '+ronda;
+  $('#volver').href=RUTA.ronda_url(ronda); $('#volver').lastChild.textContent=' Ronda '+ronda;
   document.querySelectorAll(`[data-link="ronda${ronda}"]`).forEach(a=>a.classList.add('on'));
   $('#mdrop').setAttribute('aria-expanded','true'); $('#msub').classList.add('open');
 
@@ -525,7 +532,7 @@ const LINKS = {
     const pend=partidos.some(p=>!p.fin);
     const nota=$('#nota');
     nota.hidden=!(pend&&!puedo);
-    if(pend&&!puedo) nota.innerHTML='<a href="mi-cuenta.html">Inicia sesión</a> para anotar los marcadores.';
+    if(pend&&!puedo) nota.innerHTML='<a href="/mi-cuenta">Inicia sesión</a> para anotar los marcadores.';
     if(!partidos.length){ $('#lista').innerHTML='<p class="aviso">Todavía no hay partidos para este campo.</p>'; return; }
     $('#lista').replaceChildren(...partidos.map(card));
   }
@@ -618,7 +625,7 @@ const LINKS = {
   $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
 })();
 </script>
-<script src="js/pie.js"></script>
-<script src="js/menu-pill.js"></script>
+<script src="/js/pie.js"></script>
+<script src="/js/menu-pill.js"></script>
 </body>
 </html>

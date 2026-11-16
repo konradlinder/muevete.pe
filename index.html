@@ -2,15 +2,23 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<script src="/js/ruta.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0051C2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="muévete">
+<script src="/js/app.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>muévete.pe | Voley Playa | Lima, Perú</title>
 <meta name="description" content="muévete.pe: promovemos la comunidad del Vóley Playa. +90 participantes por fecha. Juegan principiantes, avanzados y expertos.">
-<link rel="icon" href="img/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <meta property="og:title" content="muévete.pe | Voley Playa | Lima, Perú">
-<meta property="og:image" content="img/icon-512.png">
+<meta property="og:image" content="/img/icon-512.png">
 <link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -367,40 +375,40 @@ const CONFIG = {
   waTexto: "Hola Konrad,\nNecesito ayuda con",
 
   // Las fechas se editan en data/fechas.json. El Top 5 sale del ranking (Supabase, ver js/config.js)
-  datosFechas: "data/fechas.json",
+  datosFechas: "/data/fechas.json",
 
   // ---- FOTOS Y VIDEOS: ruta o URL de cada archivo (vacío = recuadro de muestra) ----
   media: {
-    logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
-    heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
-    heroVideoMovil:"media/fondo-movil.mp4", // versión liviana para celulares
-    heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
-    avatar:        "img/avatar.png",       // foto por defecto de los jugadores sin foto
-    sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
+    logo:          "/img/logo-muevete.png", // logo completo (portada y abajo)
+    heroVideo:     "/media/fondo.mp4",      // video de fondo de la portada
+    heroVideoMovil:"/media/fondo-movil.mp4", // versión liviana para celulares
+    heroFoto:      "/media/fondo-poster.jpg", // imagen mientras carga el video
+    avatar:        "/img/avatar.png",       // foto por defecto de los jugadores sin foto
+    sponsorHero:   "/img/sponsor-electrolife.svg",   // logo al lado de "by"
     iconComunidad: "",   // ícono "contamos con +90 participantes"
     iconRanking:   "",   // ícono "juegan principiantes, avanzados y expertos"
-    fotoInicio:    "img/inicio.jpg",   // foto a la derecha de Top 5
+    fotoInicio:    "/img/inicio.jpg",   // foto a la derecha de Top 5
     whatsappIcono: "",   // ícono del botón flotante (opcional)
   },
 
   aliados: [
-    { nombre:"Arena Voleibol Club", url:"https://www.instagram.com/arena_voleibolclub/", logo:"img/sponsor-arena.svg" },
-    { nombre:"Electrolife",         url:"https://www.instagram.com/electrolifeperu/",    logo:"img/sponsor-electrolife.svg" },
-    { nombre:"Diablo Atelier",      url:"https://www.instagram.com/diabloatelier/",      logo:"img/sponsor-diablo-atelier.svg" },
+    { nombre:"Arena Voleibol Club", url:"https://www.instagram.com/arena_voleibolclub/", logo:"/img/sponsor-arena.svg" },
+    { nombre:"Electrolife",         url:"https://www.instagram.com/electrolifeperu/",    logo:"/img/sponsor-electrolife.svg" },
+    { nombre:"Diablo Atelier",      url:"https://www.instagram.com/diabloatelier/",      logo:"/img/sponsor-diablo-atelier.svg" },
   ],
 
   links: {
     inicio:        "#inicio",
-    inscripciones: "inscripciones.html",
-    ranking:       "ranking.html",
+    inscripciones: "/sombrillas/inscripciones",
+    ranking:       "/ranking",
     nosotros:      "https://www.muevete.pe/nosotros",
-    bases:         "bases.html",
-    miCuenta:      "mi-cuenta.html",
-    umaGo:         "uma-go.html",
-    ronda1:        "ronda.html?ronda=1",
-    ronda2:        "ronda.html?ronda=2",
-    terminos:      "terminos.html",
-    admin630:      "admin.html",
+    bases:         "/sombrillas/bases",
+    miCuenta:      "/mi-cuenta",
+    umaGo:         "/uma-go",
+    ronda1:        "/sombrillas/ronda1",
+    ronda2:        "/sombrillas/ronda2",
+    terminos:      "/terminos-y-condiciones",
+    admin630:      "/sombrillas/admin",
     owner:         "https://www.muevete.pe/owner",
   },
 };
@@ -423,7 +431,7 @@ const CONFIG = {
 <!-- HEADER -->
 <header class="top">
   <div class="wrap">
-    <a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+    <a class="app-ico" href="/" aria-label="Ir al inicio de muévete.pe"><img src="/img/favicon-192.png" alt="" width="60" height="60"></a>
 <div class="right" id="right">
       <div class="panel" id="panel">
       <nav class="menu" aria-label="Menú principal">
@@ -548,10 +556,10 @@ const CONFIG = {
 </aside>
 <a class="wa" id="wa" target="_blank" rel="noopener" aria-label="Contacto WhatsApp"></a>
 
-<script src="js/config.js"></script>
-<script src="js/ranking-datos.js"></script>
-<script src="js/inscripciones-datos.js"></script>
-<script src="js/perfil-jugador.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/ranking-datos.js"></script>
+<script src="/js/inscripciones-datos.js"></script>
+<script src="/js/perfil-jugador.js"></script>
 <script>
 (function(){
   try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
@@ -635,7 +643,7 @@ const CONFIG = {
   (async()=>{
     const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'], MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     let fecha=null, cfg=null;
-    try{ cfg=await cargarConfig('sombrillas1'); }catch(e){}
+    try{ cfg=await cargarConfig(RUTA.playa); }catch(e){}
     if(cfg){ fecha=cfg.siguiente_fecha; if(cfg.ubicacion) $('#pxSede').textContent=cfg.ubicacion; if(cfg.asistencia_mesa) $('#pxHora').textContent=horaRango(cfg.asistencia_mesa,cfg.hora_fin);
       const ch=$('#chipEstado'); ch.hidden=false; const ab=cfg.is_active&&!cfg.mantenimiento; ch.classList.toggle('abierta',ab); ch.textContent=ab?'Inscripciones abiertas':'Inscripciones cerradas'; }
     if(!fecha){ try{ fecha=await proximaFecha(C.horaFin); }catch(e){} }
@@ -663,6 +671,6 @@ const CONFIG = {
   mp.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>menu(false)));
 })();
 </script>
-<script src="js/menu-pill.js"></script>
+<script src="/js/menu-pill.js"></script>
 </body>
 </html>
