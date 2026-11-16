@@ -25,14 +25,14 @@
 
   var css = document.createElement('style');
   css.textContent = [
-    '.pc{background:#0046B8;color:#F7F7F7;margin-top:40px;font-family:"Roboto",sans-serif}',
+    '.pc{background:#0069DC;color:#F7F7F7;margin-top:40px;font-family:"Roboto",sans-serif}',
     '.pc *{box-sizing:border-box}',
     '.pc-in{max-width:1366px;margin:0 auto}',
     '.pc-logo{display:flex;justify-content:center;padding:44px 0 0}',
     '.pc-logo img{width:260px;height:auto}',
     '.pc-f{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:start;padding:12px 44px 46px;font-weight:700;font-size:16px}',
     '.pc-f a{color:inherit;text-decoration:underline;text-underline-offset:2px}',
-    '.pc-f a:hover{color:#FFDB03}',
+    '.pc-f a:hover{color:#FFDF00}',
     '.pc-links{display:grid;gap:6px;justify-items:start}',
     '.pc-links .sep{height:12px}',
     '.pc-spons{display:grid;grid-template-columns:repeat(3,1fr);align-items:center;justify-items:center;gap:20px;padding-top:4px}',

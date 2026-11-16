@@ -4,7 +4,7 @@
      en el resto de páginas (y al bajar de la portada) esa franja queda azul
    - en la portada muestra "Instalar app" junto al ícono de arriba a la izquierda */
 (function(){
-  var AZUL = '#0051C2';
+  var AZUL = '#0069DC';
   var html = document.documentElement;
 
   // 1. Service worker
@@ -22,7 +22,7 @@
     'html.sobre-portada .franja-app{opacity:0}' +
     '.instalar{position:fixed;z-index:21;top:calc(34px + env(safe-area-inset-top,0px));left:calc(92px + env(safe-area-inset-left,0px));display:flex;align-items:center;gap:6px;animation:instEntra .35s ease}' +
     '@keyframes instEntra{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}' +
-    '.instalar .inst-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 13px;border:0;border-radius:999px;background:#FFDB03;color:#000;font:700 14px Poppins,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;white-space:nowrap}' +
+    '.instalar .inst-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 13px;border:0;border-radius:999px;background:#FFDF00;color:#000;font:700 14px Poppins,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;white-space:nowrap}' +
     '.instalar .inst-btn svg{width:18px;height:18px}' +
     '.instalar .inst-x{width:30px;height:30px;border:0;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;display:grid;place-items:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}' +
     '.instalar .inst-x svg{width:13px;height:13px}' +
