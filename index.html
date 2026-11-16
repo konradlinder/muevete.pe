@@ -369,6 +369,7 @@ const CONFIG = {
   media: {
     logo:          "img/logo-muevete.png", // logo completo (portada y abajo)
     heroVideo:     "media/fondo.mp4",      // video de fondo de la portada
+    heroVideoMovil:"media/fondo-movil.mp4", // versión liviana para celulares
     heroFoto:      "media/fondo-poster.jpg", // imagen mientras carga el video
     avatar:        "img/avatar.png",       // foto por defecto de los jugadores sin foto
     sponsorHero:   "img/sponsor-electrolife.svg",   // logo al lado de "by"
@@ -573,7 +574,7 @@ const CONFIG = {
   if(M.heroVideo){
     // video declarado como HTML (más compatible con iPhone/Safari)
     hb.innerHTML=`<video autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture ${M.heroFoto?`poster="${M.heroFoto}"`:''}>
-      <source src="${M.heroVideo}" type="video/mp4"></video>`;
+      <source src="${(M.heroVideoMovil&&matchMedia('(max-width:760px)').matches)?M.heroVideoMovil:M.heroVideo}" type="video/mp4"></video>`;
     const v=hb.querySelector('video'); v.muted=true; v.defaultMuted=true;
     v.querySelector('source').addEventListener('error',conFoto);
     const intentar=()=>{const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});};
