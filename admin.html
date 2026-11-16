@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin Sombrillas | muévete.pe</title>
+<meta name="description" content="Panel de administrador de muévete.pe.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
+<link rel="preconnect" href="https://static.wixstatic.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0046B8; --azul-menu:#0051C2; --amarillo:#FFDB03; --blanco:#F7F7F7;
+  --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
+  --poppins:"Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:var(--poppins);font-weight:600;background:var(--fondo);color:var(--negro);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+
+/* ---------- MENÚ (igual que el inicio) ---------- */
+.right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(23px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:20}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
+.menu a:hover{color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:first-child{padding-left:30px}
+.menu a:last-child{padding-right:30px}
+.cuenta{padding:0 20px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 12px;font-size:16px;letter-spacing:.02em;color:#fff}
+.cuenta svg{width:24px;height:24px}
+.cuenta.on,.cuenta:hover{color:var(--amarillo)}
+.panel{display:flex;gap:38px;align-items:flex-start}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger svg{width:26px;height:26px}
+
+/* menú celular */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column;color:var(--blanco)}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+body.mopen{overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+
+
+/* ---------- RONDAS Y CAMPOS ---------- */
+main{max-width:1040px;margin:0 auto;padding:122px 20px 80px}
+h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.sub{margin-top:8px;font-size:15px;font-weight:500;color:#5B6370}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
+.pill:hover{filter:brightness(1.06)}
+.pill:active{transform:scale(.97)}
+.pill svg{width:18px;height:18px}
+.pill[disabled]{background:transparent;color:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35);cursor:default;transform:none;filter:none}
+.demo{margin:22px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border:1.5px dashed #C9D2E3;border-radius:14px;background:#fff}
+.demo b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7A808A;margin-right:4px}
+.demo button{border:1.5px solid #D5D9E0;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.demo button.on{background:var(--azul-menu);border-color:var(--azul-menu);color:#fff}
+@media (max-width:980px){.panel{display:none}.burger{display:grid;place-items:center}main{padding:calc(23px + env(safe-area-inset-top,0px)) 16px 40px}main > h1:first-child{min-height:52px;display:flex;align-items:center;padding-right:64px;padding-left:64px}.volver{margin-top:6px;margin-left:64px}}
+@media (max-width:760px){h1{font-size:34px}}
+/* celular: el contenido empieza a la altura del botón del menú */
+@media (max-width:980px){main{padding-top:calc(29px + env(safe-area-inset-top,0px))}}
+
+/* ---------- ADMIN ---------- */
+main{max-width:1100px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7DA6}
+.adm-cab h1{margin-top:4px}
+.gate{margin-top:26px;background:#fff;border-radius:20px;padding:26px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.gate p{font-weight:500;color:#3A3F47;margin-bottom:14px}
+.btn-azul{background:var(--azul-menu)!important;color:#fff!important}
+.tabs{display:flex;gap:6px;margin-top:22px;overflow-x:auto;padding:4px;background:#fff;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.06);scrollbar-width:none;position:sticky;top:96px;z-index:15}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;border:0;background:transparent;border-radius:999px;height:42px;padding:0 18px;font:600 14px var(--poppins);color:#3A3F47;cursor:pointer;white-space:nowrap}
+.tabs button:hover{background:#EEF2F9}
+.tabs button.on{background:var(--azul-menu);color:var(--amarillo)}
+.tab{margin-top:18px}
+.tab[hidden]{display:none}
+.card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card + .card{margin-top:14px}
+.card h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.card .desc{font-size:14px;color:#5B6370;font-weight:500;margin-bottom:16px}
+.campos-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px 16px}
+.campo-f label{display:block;font-size:13px;font-weight:600;color:#3A3F47;margin-bottom:6px}
+.campo-f input,.campo-f select{width:100%}
+.switches{display:grid;gap:10px;margin-top:18px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#F6F7F9;border-radius:14px;padding:12px 14px;font-weight:600;font-size:15px;cursor:pointer}
+.sw small{display:block;font-size:12px;font-weight:500;color:#6B7280;margin-top:2px}
+.sw input{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:30px;border-radius:999px;background:#C9CFD9;position:relative;cursor:pointer;transition:background .2s;margin:0;border:0;padding:0}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked{background:#22A55A}
+.sw input:checked::after{transform:translateX(20px)}
+.sw input:focus-visible{outline:2px solid var(--azul-menu);outline-offset:2px}
+.acciones{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:18px;flex-wrap:wrap}
+.acciones .estado{margin-right:auto;font-size:13px;font-weight:500;color:#5B6370}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#F1F3F7;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:600;color:#3A3F47}
+.chip b{font-size:15px;color:#000}
+.chip.verde b{color:#15803D}.chip.ambar b{color:#B45309}.chip.rojo b{color:#B91C1C}
+.barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.barra .buscar{flex:1 1 220px}
+.barra input{width:100%}
+.lista-adm{display:grid;gap:6px}
+.fila-adm{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;background:#F6F7F9;border-radius:12px;min-height:54px;padding:8px 10px 8px 12px}
+.fila-adm .pos{font-size:13px;color:#6B7280;text-align:center}
+.fila-adm .nm{font-weight:600;font-size:15px;min-width:0}
+.fila-adm .nm small{display:block;font-size:12px;font-weight:500;color:#6B7280;margin-top:1px}
+.fila-adm .nm small a{color:inherit}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:2px;background:#E5E7EB;color:#4B5563}
+.badge.le{background:#FDE68A;color:#78350F}
+.fila-adm.asiste{background:#E8F7EE}.fila-adm.tarde{background:#FFF6E0}.fila-adm.tardenj{background:#FDECEC}
+.seg{display:inline-flex;background:#fff;border-radius:999px;padding:3px;gap:2px;box-shadow:inset 0 0 0 1.5px #E1E5EC}
+.seg button{border:0;background:transparent;border-radius:999px;height:34px;padding:0 12px;font:600 13px var(--poppins);color:#3A3F47;cursor:pointer;white-space:nowrap}
+.seg button:hover{background:#F1F3F7}
+.seg button.on[data-v="asiste"]{background:#22A55A;color:#fff}
+.seg button.on[data-v="tarde"]{background:#F59E0B;color:#fff}
+.seg button.on[data-v="tarde NJ"]{background:#DC2626;color:#fff}
+.seg button[data-v=""]{width:34px;padding:0;color:#9AA1AC}
+.pill.chica{height:34px;padding:0 14px;font-size:13px}
+.pill.gris{background:#fff;color:#3A3F47;box-shadow:inset 0 0 0 1.5px #D5D9E0}
+.pill.peligro{background:#fff;color:#B91C1C;box-shadow:inset 0 0 0 1.5px #F3B4B4}
+.ok-txt{font-size:13px;font-weight:700;color:#15803D;white-space:nowrap}
+.vacio-adm{text-align:center;color:#6B7280;font-weight:500;padding:22px 0}
+.partidos-adm{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}
+#rSel button.on{background:var(--azul-menu);color:var(--amarillo)}
+.p-adm{background:#F6F7F9;border-radius:16px;padding:14px}
+.p-adm h3{font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.p-adm .eq{display:grid;grid-template-columns:1fr 1fr 64px;gap:6px;margin-bottom:6px}
+.p-adm .eq input{width:100%;height:40px;font-size:14px;padding:0 10px}
+.p-adm .eq input.sc{text-align:center;font-weight:700;font-size:17px}
+.p-adm .pie-adm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.p-adm label.fin{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.estado-mini{font-size:11px;font-weight:700;letter-spacing:.05em;color:#6B7280}
+.estado-mini.vivo{color:#DC2626}.estado-mini.fin{color:#15803D}
+.grid-campos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:6px}
+.gc{background:var(--azul-menu);color:#fff;border-radius:16px;padding:14px}
+.gc h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.gc h3 b{color:var(--amarillo)}
+.gc .jug-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:0;text-align:left;background:rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:7px 10px;font:600 13px var(--poppins);cursor:pointer;margin-top:5px}
+.gc .jug-chip small{color:#BFD0F5;font-weight:500;font-size:11px}
+.gc .jug-chip:hover{background:rgba(255,255,255,.18)}
+.gc .jug-chip.sel{background:var(--amarillo);color:#000}
+.gc .jug-chip.sel small{color:#6B5A00}
+.gc.corto{box-shadow:0 0 0 3px #F59E0B}
+.nota-adm{background:#FFF8E1;border-radius:14px;padding:12px 14px;font-size:13px;font-weight:500;color:#5C4A00;margin-bottom:14px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1A1D21;color:#fff;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;max-width:90vw;text-align:center}
+.toast.si{opacity:1;transform:translate(-50%,0)}
+.toast.error{background:#B91C1C}
+@media (max-width:980px){main{padding-top:calc(92px + env(safe-area-inset-top,0px))!important}.tabs{top:88px}}
+.quitar{width:34px;height:34px;flex:none;border:0;border-radius:999px;background:#fff;color:#B91C1C;box-shadow:inset 0 0 0 1.5px #F3B4B4;display:grid;place-items:center;cursor:pointer}
+.quitar:hover{background:#FDECEC}
+.quitar svg{width:16px;height:16px}
+.fila-adm .der{display:flex;align-items:center;gap:8px}
+@media (max-width:640px){
+  .card{padding:18px 16px}
+  .fila-adm{grid-template-columns:26px 1fr;row-gap:8px}
+  .fila-adm .der{grid-column:1 / -1;flex-wrap:nowrap}
+  .seg{flex:1;min-width:0;justify-content:space-between}
+  .seg button{flex:1;padding:0 4px;font-size:12.5px}
+  .adm-cab h1{font-size:30px}
+  .tabs button{padding:0 14px;font-size:13.5px}
+  .partidos-adm{grid-template-columns:1fr}
+  .tabs{border-radius:16px}
+}
+
+/* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
+.menu{padding:0;align-items:stretch}
+.menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:not(.on):hover{color:var(--amarillo)}
+.mnav{padding:0 10px;gap:2px}
+.mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
+.msub{padding-left:14px}
+.msub a{min-height:46px;padding-left:26px}
+
+/* ---------- Menú en la misma posición en todas las páginas ---------- */
+html{scrollbar-gutter:stable}
+.top .wrap{max-width:none;position:static}
+.right{top:calc(24px + env(safe-area-inset-top,0px));right:calc(20px + env(safe-area-inset-right,0px));gap:38px}
+.menu a,.menu a:first-child,.menu a:last-child{font-size:16px;letter-spacing:0}
+.cuenta{height:60px;gap:14px;font-size:16px;letter-spacing:.02em;padding:0 22px!important}
+.mhead .cuenta{height:46px;font-size:19px;gap:22px;padding:0 18px!important}
+
+/* Campos */
+input,select{height:44px;border:1.5px solid #D5D9E0;border-radius:12px;background:#fff;padding:0 14px;font-size:15px;font-weight:500;color:#000;outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+input::placeholder{color:#9AA1AC;font-weight:400}
+input:hover,select:hover{border-color:#B9C0CC}
+input:focus,select:focus{border-color:var(--azul-menu);box-shadow:0 0 0 3px rgba(0,81,194,.15)}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center}
+#fCategoria{width:215px}
+#fNombre{width:200px}
+@media (max-width:760px){#fCategoria,#fNombre{width:0;min-width:0;flex:1;height:48px;font-size:17px}}
+
+/* Rendimiento: las filas fuera de pantalla no se dibujan hasta que se acercan */
+#filas > [hidden]{display:none!important}
+#filas > *{content-visibility:auto;contain-intrinsic-size:auto 35px}
+
+/* Burbuja del menú que se desliza de página en página (escritorio) */
+@media (min-width:981px){@view-transition{navigation:auto}}
+.menu{position:relative}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
+.menu a{position:relative;z-index:1}
+.menu.con-pill a.on{background:transparent}
+.menu a:nth-of-type(1){view-transition-name:menu-1}
+.menu a:nth-of-type(2){view-transition-name:menu-2}
+.menu a:nth-of-type(3){view-transition-name:menu-3}
+.menu a:nth-of-type(4){view-transition-name:menu-4}
+::view-transition-group(menu-pill){animation-duration:.4s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* Ícono de la app arriba a la izquierda (aquí irá luego el aviso "instalar") */
+.app-ico{position:fixed;top:calc(24px + env(safe-area-inset-top,0px));left:calc(20px + env(safe-area-inset-left,0px));z-index:20;width:60px;height:60px;border-radius:14px;box-shadow:0 1px 4px rgba(179,179,179,.6);display:block;transition:transform .15s}
+.app-ico:hover{transform:scale(1.04)}
+.app-ico img{width:100%;height:100%;border-radius:14px;display:block}
+.burger{border-radius:12px!important}
+@media (max-width:980px){.app-ico{width:52px;height:52px;border-radius:12px;left:calc(16px + env(safe-area-inset-left,0px))}.app-ico img{border-radius:12px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="salir" viewBox="0 0 24 24"><circle cx="10" cy="7.5" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 21v-1.5a5 5 0 0 1 5-5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 15.5l5 5M21 15.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#1E9E3A"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#E2561B"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- MENÚ -->
+<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+<div class="right">
+  <div class="panel">
+    <nav class="menu" aria-label="Menú principal">
+      <a href="index.html">Inicio</a>
+      <a data-link="inscripciones">Inscripciones</a>
+      <a data-link="ranking">Ranking</a>
+      <a data-link="bases">Bases</a>
+    </nav>
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+  </div>
+  <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</div>
+
+<main>
+  <div class="adm-cab">
+    <p class="eyebrow">Panel de administrador</p>
+    <h1 id="titulo">Sombrillas 6:30 a. m.</h1>
+    <p class="sub" id="resumen">Cargando…</p>
+  </div>
+
+  <section class="gate" id="gate" hidden>
+    <p id="gateTxt">Inicia sesión con una cuenta de administrador.</p>
+    <a class="pill btn-azul" href="mi-cuenta.html">ir a mi cuenta</a>
+  </section>
+
+  <div id="app" hidden>
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button role="tab" data-tab="evento" class="on">Evento</button>
+      <button role="tab" data-tab="inscribir">Inscribir</button>
+      <button role="tab" data-tab="asistencia">Asistencia</button>
+      <button role="tab" data-tab="puntajes">Puntajes</button>
+      <button role="tab" data-tab="rondas">Rondas</button>
+    </nav>
+
+    <!-- EVENTO -->
+    <section class="tab" id="t-evento">
+      <div class="card">
+        <h2>Configurar evento</h2>
+        <p class="desc">Fecha, horario y cupos de la próxima fecha. Se ven en Inscripciones y en el inicio.</p>
+        <div class="campos-f">
+          <div class="campo-f"><label for="cFecha">Fecha del evento</label><input id="cFecha" type="date"></div>
+          <div class="campo-f"><label for="cHora">Hora de inicio</label><input id="cHora" type="time" step="300"></div>
+          <div class="campo-f"><label for="cFin">Hora de fin (aprox.)</label><input id="cFin" type="time" step="300"></div>
+          <div class="campo-f"><label for="cCupos">Número de jugadores</label><input id="cCupos" type="number" min="1" max="500" inputmode="numeric"></div>
+          <div class="campo-f"><label for="cEspera">Lista de espera</label><input id="cEspera" type="number" min="0" max="200" inputmode="numeric"></div>
+        </div>
+        <div class="switches">
+          <label class="sw"><span>Inscripciones abiertas<small>Los jugadores pueden inscribirse desde la web</small></span><input type="checkbox" role="switch" id="cAbierta"></label>
+          <label class="sw"><span>Modo mantenimiento<small>Muestra el aviso de mantenimiento en Inscripciones</small></span><input type="checkbox" role="switch" id="cMant"></label>
+        </div>
+        <div class="acciones"><span class="estado" id="cEstado"></span><button class="pill btn-azul" type="button" id="cGuardar">guardar cambios</button></div>
+      </div>
+    </section>
+
+    <!-- INSCRIBIR -->
+    <section class="tab" id="t-inscribir" hidden>
+      <div class="card">
+        <h2>Inscribir usuario</h2>
+        <p class="desc" id="iDesc">Busca por nombre o DNI.</p>
+        <div class="barra"><div class="buscar"><input id="iBuscar" type="search" placeholder="Nombre o DNI" autocomplete="off"></div></div>
+        <div class="lista-adm" id="iLista"><p class="vacio-adm">Escribe al menos 2 letras o números.</p></div>
+      </div>
+    </section>
+
+    <!-- ASISTENCIA -->
+    <section class="tab" id="t-asistencia" hidden>
+      <div class="card">
+        <h2>Tomar asistencia</h2>
+        <p class="desc">Marca a cada inscrito. Se guarda al tocar.</p>
+        <div class="switches" style="margin:0 0 14px"><label class="sw"><span>Asistencia abierta<small>Permite marcar la asistencia en la mesa</small></span><input type="checkbox" role="switch" id="aAbierta"></label></div>
+        <div class="barra">
+          <input id="aFecha" type="date" style="flex:0 0 170px">
+          <div class="buscar"><input id="aBuscar" type="search" placeholder="Buscar nombre" autocomplete="off"></div>
+        </div>
+        <div class="chips" id="aChips"></div>
+        <div class="lista-adm" id="aLista"><p class="vacio-adm">Cargando…</p></div>
+      </div>
+    </section>
+
+    <!-- PUNTAJES -->
+    <section class="tab" id="t-puntajes" hidden>
+      <div class="card">
+        <h2>Modificar puntajes</h2>
+        <p class="desc">Corrige jugadores o marcadores de cualquier partido, sin límite de tiempo.</p>
+        <div class="barra">
+          <select id="pRonda" style="flex:0 0 140px"><option value="1">Ronda 1</option><option value="2">Ronda 2</option></select>
+          <select id="pCampo" style="flex:0 0 150px"></select>
+        </div>
+        <div class="partidos-adm" id="pLista"></div>
+      </div>
+    </section>
+
+    <!-- RONDAS -->
+    <section class="tab" id="t-rondas" hidden>
+      <div class="card">
+        <h2>Crear rondas</h2>
+        <p class="desc">Arma los campos y sus partidos. Revisa la vista previa antes de guardar.</p>
+        <div class="barra">
+          <div class="seg" id="rSel"><button data-r="1" class="on">Ronda 1</button><button data-r="2">Ronda 2</button></div>
+          <button class="pill btn-azul" type="button" id="rGenerar">generar campos</button>
+        </div>
+        <div class="nota-adm" id="rNota"></div>
+        <div class="chips" id="rChips"></div>
+        <div class="grid-campos" id="rCampos"></div>
+        <div class="acciones" id="rAcciones" hidden><span class="estado">Toca un jugador y luego otro para intercambiarlos.</span><button class="pill gris" type="button" id="rDescartar">descartar</button><button class="pill btn-azul" type="button" id="rGuardar">guardar ronda</button></div>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</main>
+
+<!-- MENÚ CELULAR -->
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
+  <div class="mhead">
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a href="index.html">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a data-link="bases">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+  </nav>
+</aside>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/partidos-datos.js"></script>
+<script>
+const LINKS = {
+  inscripciones: "inscripciones.html",
+  ranking:       "ranking.html",
+  bases:         "bases.html",
+  umaGo:         "",
+  ronda1:        "ronda.html?ronda=1",
+  ronda2:        "ronda.html?ronda=2",
+};
+
+(function(){
+  const $=s=>document.querySelector(s);
+  document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
+
+  const PLAYA='sombrillas1';
+  const AUTH=window.MUEVETE_AUTH, DB=window.MUEVETE_DB||{};
+  const TEMPORADA=DB.temporada||'Primavera 2026';
+  const rpc=(f,b)=>AUTH.db('rpc/'+f,{method:'POST',body:JSON.stringify(b||{})});
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'], MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const fechaLarga=f=>{ if(!f) return 'sin fecha'; const [y,m,d]=f.split('-').map(Number); const dt=new Date(y,m-1,d); return `${DIAS[dt.getDay()]} ${d} de ${MES[m-1]}`; };
+  const hhmm=t=>t?String(t).slice(0,5):'';
+  let tt; const toast=(t,err)=>{const e=$('#toast');e.textContent=t;e.classList.toggle('error',!!err);e.classList.add('si');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('si'),err?4500:2000)};
+  const fallo=e=>toast(e&&e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':(e&&e.message)||'Error',true);
+  let CFG=null;
+
+  /* ---------- pestañas ---------- */
+  const abrir=t=>{
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+    document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='t-'+t);
+    try{ sessionStorage.setItem('admin.tab',t); }catch(e){}
+    if(t==='asistencia') cargarAsistencia();
+    if(t==='puntajes') cargarPuntajes();
+    if(t==='rondas') prepararRondas();
+  };
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
+
+  /* ---------- EVENTO ---------- */
+  function ponerResumen(){
+    $('#resumen').textContent=CFG?`Próxima fecha: ${fechaLarga(CFG.siguiente_fecha)} · ${hhmm(CFG.asistencia_mesa)} · inscripciones ${CFG.is_active?'abiertas':'cerradas'}${CFG.mantenimiento?' · en mantenimiento':''}`:'';
+    $('#iDesc').textContent=`Busca por nombre o DNI. Se inscribe para el ${fechaLarga(CFG&&CFG.siguiente_fecha)}.`;
+  }
+  async function cargarConfigAdmin(){
+    const r=await rpc('admin_config',{p_playa:PLAYA}); CFG=r&&r[0];
+    if(!CFG) throw new Error('No existe la configuración de '+PLAYA);
+    if(CFG.title) $('#titulo').textContent=CFG.title;
+    $('#cFecha').value=CFG.siguiente_fecha||''; $('#cHora').value=hhmm(CFG.asistencia_mesa); $('#cFin').value=hhmm(CFG.hora_fin);
+    $('#cCupos').value=CFG.num_jugadores??''; $('#cEspera').value=CFG.num_espera??'';
+    $('#cAbierta').checked=!!CFG.is_active; $('#cMant').checked=!!CFG.mantenimiento; $('#aAbierta').checked=!!CFG.asistencia_is_active;
+    if(!$('#aFecha').value) $('#aFecha').value=CFG.siguiente_fecha||'';
+    ponerResumen();
+  }
+  $('#cGuardar').onclick=async()=>{
+    const b=$('#cGuardar'); b.disabled=true; b.textContent='guardando…';
+    try{
+      await rpc('admin_configurar',{p_playa:PLAYA,p_fecha:$('#cFecha').value||null,p_hora:$('#cHora').value||null,p_hora_fin:$('#cFin').value||null,
+        p_jugadores:+$('#cCupos').value,p_espera:+$('#cEspera').value,p_abierta:$('#cAbierta').checked,p_mantenimiento:$('#cMant').checked});
+      await cargarConfigAdmin(); $('#cEstado').textContent='Guardado ✓'; toast('Evento actualizado');
+    }catch(e){ fallo(e); }
+    b.disabled=false; b.textContent='guardar cambios';
+  };
+
+  /* ---------- INSCRIBIR ---------- */
+  let tBus;
+  $('#iBuscar').addEventListener('input',()=>{ clearTimeout(tBus); tBus=setTimeout(buscarUsuarios,300); });
+  async function buscarUsuarios(){
+    const q=$('#iBuscar').value.trim(), box=$('#iLista');
+    if(q.length<2){ box.innerHTML='<p class="vacio-adm">Escribe al menos 2 letras o números.</p>'; return; }
+    box.innerHTML='<p class="vacio-adm">Buscando…</p>';
+    let r; try{ r=await rpc('admin_buscar_usuarios',{p_texto:q,p_playa:PLAYA,p_fecha:CFG.siguiente_fecha}); }catch(e){ fallo(e); return; }
+    if(q!==$('#iBuscar').value.trim()) return;
+    if(!r.length){ box.innerHTML='<p class="vacio-adm">No se encontró a nadie con ese nombre o DNI.</p>'; return; }
+    box.replaceChildren(...r.map(u=>{
+      const d=document.createElement('div'); d.className='fila-adm';
+      d.innerHTML=`<span class="pos">•</span><span class="nm">${esc(u.jugador||'Sin nombre')}<small>DNI ${esc(u.dni||'—')} · ${esc(u.celular||'sin celular')}</small></span><span class="der"></span>`;
+      const der=d.querySelector('.der');
+      if(u.inscrito){ der.innerHTML='<span class="ok-txt">Inscrito ✓</span>'; }
+      else{
+        const b=document.createElement('button'); b.type='button'; b.className='pill chica btn-azul'; b.textContent='inscribir';
+        b.onclick=async()=>{ b.disabled=true; b.textContent='…';
+          try{ await rpc('admin_inscribir',{p_usuario:u.id,p_playa:PLAYA,p_fecha:CFG.siguiente_fecha}); der.innerHTML='<span class="ok-txt">Inscrito ✓</span>'; toast(`${u.jugador} inscrito`); }
+          catch(e){ fallo(e); b.disabled=false; b.textContent='inscribir'; } };
+        der.append(b);
+      }
+      return d;
+    }));
+  }
+
+  /* ---------- ASISTENCIA ---------- */
+  let ASIS=[];
+  $('#aFecha').addEventListener('change',()=>cargarAsistencia());
+  $('#aBuscar').addEventListener('input',()=>pintarAsistencia());
+  $('#aAbierta').addEventListener('change',async e=>{
+    try{ await rpc('admin_abrir_asistencia',{p_playa:PLAYA,p_abierta:e.target.checked}); toast(e.target.checked?'Asistencia abierta':'Asistencia cerrada'); }
+    catch(err){ e.target.checked=!e.target.checked; fallo(err); }
+  });
+  async function cargarAsistencia(){
+    const f=$('#aFecha').value; if(!f){ $('#aLista').innerHTML='<p class="vacio-adm">Elige una fecha.</p>'; return; }
+    try{ ASIS=await rpc('admin_lista',{p_playa:PLAYA,p_fecha:f,p_temporada:TEMPORADA}); }catch(e){ fallo(e); return; }
+    pintarAsistencia();
+  }
+  const sinT=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  function pintarAsistencia(){
+    const q=sinT($('#aBuscar').value.trim());
+    const c=k=>ASIS.filter(x=>x.asistencia===k).length;
+    $('#aChips').innerHTML=`<span class="chip">Inscritos <b>${ASIS.filter(x=>!x.espera).length}</b></span><span class="chip">En espera <b>${ASIS.filter(x=>x.espera).length}</b></span><span class="chip verde">Asisten <b>${c('asiste')}</b></span><span class="chip ambar">Tarde <b>${c('tarde')}</b></span><span class="chip rojo">Tarde NJ <b>${c('tarde NJ')}</b></span><span class="chip">Juegan <b>${c('asiste')+c('tarde')}</b></span>`;
+    const L=ASIS.filter(x=>!q||sinT(x.jugador).includes(q));
+    if(!L.length){ $('#aLista').innerHTML=`<p class="vacio-adm">${ASIS.length?'Nadie coincide con la búsqueda.':'No hay inscritos en esta fecha.'}</p>`; return; }
+    $('#aLista').replaceChildren(...L.map(x=>{
+      const d=document.createElement('div'); d.className='fila-adm '+(x.asistencia||'').replace(' ','').toLowerCase();
+      const tel=(x.celular||'').replace(/\D/g,'');
+      d.innerHTML=`<span class="pos">${x.posicion}</span><span class="nm">${esc(x.jugador)}${x.espera?'<span class="badge le">L.E.</span>':''}<small>${x.puesto?'Puesto '+x.puesto+' · ':''}${tel?`<a href="https://wa.me/${tel.length===9?'51'+tel:tel}" target="_blank" rel="noopener">${esc(x.celular)}</a>`:'sin celular'}</small></span><span class="der"></span>`;
+      const seg=document.createElement('div'); seg.className='seg'; seg.setAttribute('role','radiogroup'); seg.setAttribute('aria-label','Asistencia de '+x.jugador);
+      [['asiste','Asiste'],['tarde','Tarde'],['tarde NJ','Tarde NJ'],['','×']].forEach(([v,t])=>{
+        const b=document.createElement('button'); b.type='button'; b.dataset.v=v; b.textContent=t; b.setAttribute('role','radio');
+        if(v==='') b.setAttribute('aria-label','Quitar marca');
+        const on=(x.asistencia||'')===v&&v!==''; b.classList.toggle('on',on); b.setAttribute('aria-checked',on);
+        b.onclick=async()=>{ const antes=x.asistencia; x.asistencia=v||null; pintarAsistencia();
+          try{ await rpc('admin_marcar_asistencia',{p_id:x.id,p_estado:v||null}); }catch(e){ x.asistencia=antes; pintarAsistencia(); fallo(e); } };
+        seg.append(b);
+      });
+      const quitar=document.createElement('button'); quitar.type='button'; quitar.className='quitar'; quitar.setAttribute('aria-label','Quitar la inscripción de '+x.jugador); quitar.title='Quitar inscripción';
+      quitar.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+      quitar.onclick=async()=>{ if(!confirm(`¿Quitar la inscripción de ${x.jugador}?`)) return;
+        try{ await rpc('admin_cancelar_inscripcion',{p_id:x.id}); toast('Inscripción quitada'); cargarAsistencia(); }catch(e){ fallo(e); } };
+      d.querySelector('.der').append(seg,quitar);
+      return d;
+    }));
+  }
+
+  /* ---------- PUNTAJES ---------- */
+  let PART=[];
+  $('#pRonda').onchange=()=>cargarPuntajes(true);
+  $('#pCampo').onchange=()=>pintarPuntajes();
+  async function cargarPuntajes(cambioRonda){
+    try{ PART=await cargarPartidos({ronda:+$('#pRonda').value,playa:PLAYA}); }catch(e){ fallo(e); return; }
+    const campos=[...new Set(PART.map(p=>p.campo))].sort((a,b)=>a-b);
+    const sel=$('#pCampo'), v=sel.value;
+    sel.innerHTML=campos.map(c=>`<option value="${c}">Campo ${c}</option>`).join('');
+    if(!cambioRonda&&campos.includes(+v)) sel.value=v;
+    pintarPuntajes();
+  }
+  function pintarPuntajes(){
+    const campo=+$('#pCampo').value, box=$('#pLista');
+    const L=PART.filter(p=>p.campo===campo).sort((a,b)=>a.n-b.n);
+    if(!L.length){ box.innerHTML='<p class="vacio-adm">No hay partidos en esta ronda.</p>'; return; }
+    const jug=jugadoresDelCampo(L);
+    const dl=`dl-${campo}`;
+    box.innerHTML=`<datalist id="${dl}">${jug.map(j=>`<option value="${esc(j)}">`).join('')}</datalist>`;
+    L.forEach(p=>{
+      const d=document.createElement('div'); d.className='p-adm';
+      const est=p.fin?'<span class="estado-mini fin">FINALIZADO</span>':p.vivo?'<span class="estado-mini vivo">EN VIVO</span>':'<span class="estado-mini">PENDIENTE</span>';
+      d.innerHTML=`<h3>Partido ${p.n} ${est}</h3>
+        <div class="eq"><input list="${dl}" data-k="a1" value="${esc(p.a[0]||'')}" aria-label="Jugador A1"><input list="${dl}" data-k="a2" value="${esc(p.a[1]||'')}" aria-label="Jugador A2"><input class="sc" data-k="sa" type="number" min="0" max="99" inputmode="numeric" value="${p.pa??''}" aria-label="Puntos equipo A"></div>
+        <div class="eq"><input list="${dl}" data-k="b1" value="${esc(p.b[0]||'')}" aria-label="Jugador B1"><input list="${dl}" data-k="b2" value="${esc(p.b[1]||'')}" aria-label="Jugador B2"><input class="sc" data-k="sb" type="number" min="0" max="99" inputmode="numeric" value="${p.pb??''}" aria-label="Puntos equipo B"></div>
+        <div class="pie-adm"><label class="fin"><input type="checkbox" data-k="fin" ${p.fin?'checked':''}> Finalizado</label><button class="pill chica btn-azul" type="button">guardar</button></div>`;
+      const g=k=>d.querySelector(`[data-k="${k}"]`);
+      const btn=d.querySelector('button');
+      btn.onclick=async()=>{
+        const num=k=>g(k).value===''?null:+g(k).value;
+        btn.disabled=true; btn.textContent='…';
+        try{
+          await rpc('admin_editar_partido',{p_id:p.id,p_a1:g('a1').value,p_a2:g('a2').value,p_b1:g('b1').value,p_b2:g('b2').value,p_score_a:num('sa'),p_score_b:num('sb'),p_finalizado:g('fin').checked});
+          toast(`Partido ${p.n} guardado`); await cargarPuntajes();
+        }catch(e){ fallo(e); btn.disabled=false; btn.textContent='guardar'; }
+      };
+      box.append(d);
+    });
+  }
+
+  /* ---------- RONDAS ---------- */
+  // Cruces: 5 jugadores → 5 partidos · 4 jugadores → 3 partidos (mismo formato que Wix)
+  const CRUCES={5:[[[0,1],[2,3]],[[0,2],[4,3]],[[1,3],[2,4]],[[0,3],[1,4]],[[0,4],[1,2]]],4:[[[0,1],[2,3]],[[0,2],[1,3]],[[0,3],[1,2]]]};
+  let rondaSel=1, PREV=null, elegido=null;
+  document.querySelectorAll('#rSel button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#rSel button').forEach(x=>x.classList.toggle('on',x===b)); rondaSel=+b.dataset.r; PREV=null; prepararRondas(); });
+
+  // Reparte en bloques de 5 campos, en zigzag: 1→5, 6←10, 11→15…
+  function repartir(jugadores){
+    const N=jugadores.length, C=Math.ceil(N/5), campos=Array.from({length:C},()=>[]);
+    for(let b=0;b*25<N;b++){
+      const bloque=jugadores.slice(b*25,b*25+25), nC=Math.min(5,C-b*5);
+      bloque.forEach((j,i)=>{ const fila=Math.floor(i/nC), col=i%nC; campos[b*5+(fila%2?nC-1-col:col)].push(j); });
+    }
+    return campos;
+  }
+  async function prepararRondas(){
+    const nota=$('#rNota');
+    let existentes=[]; try{ existentes=await cargarPartidos({ronda:rondaSel,playa:PLAYA}); }catch(e){}
+    const aviso=existentes.length?` Ya hay ${existentes.length} partidos guardados en la ronda ${rondaSel}: al guardar se reemplazan.`:'';
+    nota.innerHTML=rondaSel===1
+      ? `Toma a quienes marcaron <b>Asiste</b> o <b>Tarde</b> el ${fechaLarga($('#aFecha').value||CFG.siguiente_fecha)}, los ordena por su puesto en el ranking (sin puesto al final) y los reparte en zigzag en campos de 5.${aviso}`
+      : `Ordena a los jugadores por su posición en la tabla de su campo de la ronda 1 (primeros de cada campo, luego segundos…) y los reparte en zigzag en campos de 5. <b>Regla provisional:</b> confírmala antes de usarla.${aviso}`;
+    if(!PREV){ $('#rCampos').innerHTML=''; $('#rChips').innerHTML=''; $('#rAcciones').hidden=true; }
+  }
+  $('#rGenerar').onclick=async()=>{
+    const b=$('#rGenerar'); b.disabled=true;
+    try{
+      const fecha=$('#aFecha').value||CFG.siguiente_fecha;
+      const lista=await rpc('admin_lista',{p_playa:PLAYA,p_fecha:fecha,p_temporada:TEMPORADA});
+      const porNombre=new Map(lista.map(x=>[sinT(x.jugador),x]));
+      let orden;
+      if(rondaSel===1){
+        orden=lista.filter(x=>x.asistencia==='asiste'||x.asistencia==='tarde')
+          .sort((a,b)=>(a.puesto??1e4)-(b.puesto??1e4)||a.posicion-b.posicion);
+      }else{
+        const r1=await cargarPartidos({ronda:1,playa:PLAYA});
+        if(!r1.length) throw new Error('Primero crea la ronda 1.');
+        const pend=r1.filter(p=>!p.fin).length;
+        if(pend&&!confirm(`Hay ${pend} partidos de la ronda 1 sin finalizar. ¿Generar igual?`)) return;
+        const porCampo=new Map(); r1.forEach(p=>{ if(!porCampo.has(p.campo)) porCampo.set(p.campo,[]); porCampo.get(p.campo).push(p); });
+        const filas=[];
+        [...porCampo.keys()].sort((a,b)=>a-b).forEach(c=>{
+          const ps=porCampo.get(c), J=jugadoresDelCampo(ps);
+          const t=new Map(J.map((n,i)=>[n,{n,i,g:0,pf:0,pc:0}]));
+          ps.filter(p=>p.fin&&p.pa!=null).forEach(p=>{ const gA=p.pa>p.pb;
+            p.a.forEach(n=>{const x=t.get(n);if(x){x.pf+=p.pa;x.pc+=p.pb;if(gA)x.g++}}); p.b.forEach(n=>{const x=t.get(n);if(x){x.pf+=p.pb;x.pc+=p.pa;if(!gA)x.g++}}); });
+          [...t.values()].map(x=>({...x,coc:x.pc?x.pf/x.pc:x.pf,dif:x.pf-x.pc}))
+            .sort((x,y)=>y.g-x.g||y.coc-x.coc||y.dif-x.dif||x.i-y.i)
+            .forEach((x,k)=>filas.push({nombre:x.n,campo:c,lugar:k+1}));
+        });
+        orden=filas.sort((a,b)=>a.lugar-b.lugar||a.campo-b.campo).map(f=>{ const x=porNombre.get(sinT(f.nombre))||{}; return {jugador:f.nombre,dni:x.dni||'',puesto:x.puesto??null,lugar:f.lugar,campoAnt:f.campo}; });
+      }
+      if(orden.length<4) throw new Error('Se necesitan al menos 4 jugadores.');
+      orden=orden.map((x,i)=>({nombre:x.jugador,dni:x.dni||'',ranking:x.puesto??10000,orden:i+1,extra:rondaSel===2?`${x.lugar}º C${x.campoAnt}`:(x.puesto?`#${x.puesto}`:'s/p')}));
+      PREV=repartir(orden); elegido=null; pintarPrevia();
+    }catch(e){ fallo(e); }
+    finally{ b.disabled=false; }
+  };
+  function pintarPrevia(){
+    const N=PREV.reduce((s,c)=>s+c.length,0), cortos=PREV.filter(c=>c.length<4).length;
+    $('#rChips').innerHTML=`<span class="chip">Jugadores <b>${N}</b></span><span class="chip">Campos <b>${PREV.length}</b></span><span class="chip">Partidos <b>${PREV.reduce((s,c)=>s+(CRUCES[c.length]||[]).length,0)}</b></span>${cortos?`<span class="chip rojo">Campos incompletos <b>${cortos}</b></span>`:''}`;
+    $('#rCampos').replaceChildren(...PREV.map((c,ci)=>{
+      const d=document.createElement('div'); d.className='gc'+(c.length<4?' corto':'');
+      d.innerHTML=`<h3>Campo <b>${ci+1}</b></h3>`;
+      c.forEach((j,ji)=>{ const b=document.createElement('button'); b.type='button'; b.className='jug-chip'+(elegido&&elegido[0]===ci&&elegido[1]===ji?' sel':'');
+        b.innerHTML=`<span>${esc(j.nombre)}</span><small>${esc(j.extra)}</small>`;
+        b.onclick=()=>{ if(!elegido){ elegido=[ci,ji]; }
+          else{ const [a,bb]=elegido; const tmp=PREV[a][bb]; PREV[a][bb]=PREV[ci][ji]; PREV[ci][ji]=tmp; elegido=null; }
+          pintarPrevia(); };
+        d.append(b); });
+      return d;
+    }));
+    $('#rAcciones').hidden=false;
+  }
+  $('#rDescartar').onclick=()=>{ PREV=null; elegido=null; prepararRondas(); };
+  $('#rGuardar').onclick=async()=>{
+    if(!PREV) return;
+    const malos=PREV.filter(c=>!CRUCES[c.length]);
+    if(malos.length){ toast('Cada campo debe tener 4 o 5 jugadores.',true); return; }
+    if(!confirm(`¿Guardar la ronda ${rondaSel}? Se reemplazarán los partidos actuales de esa ronda.`)) return;
+    const obj=j=>({dni:j.dni,nombre:j.nombre,orden:j.orden,ranking:j.ranking});
+    const partidos=[];
+    PREV.forEach((c,ci)=>{ const nombres=c.map(j=>j.nombre).join(', ');
+      CRUCES[c.length].forEach(([a,b],pi)=>partidos.push({campo:ci+1,partido:pi+1,
+        jugador_a1:c[a[0]].nombre,jugador_a2:c[a[1]].nombre,jugador_b1:c[b[0]].nombre,jugador_b2:c[b[1]].nombre,jugadores:nombres,
+        object_a1:obj(c[a[0]]),object_a2:obj(c[a[1]]),object_b1:obj(c[b[0]]),object_b2:obj(c[b[1]])})); });
+    const b=$('#rGuardar'); b.disabled=true; b.textContent='guardando…';
+    try{ const n=await rpc('admin_guardar_ronda',{p_ronda:rondaSel,p_playa:PLAYA,p_partidos:partidos}); toast(`Ronda ${rondaSel} guardada: ${n} partidos`); PREV=null; prepararRondas(); }
+    catch(e){ fallo(e); }
+    b.disabled=false; b.textContent='guardar ronda';
+  };
+
+  /* ---------- arranque ---------- */
+  (async()=>{
+    const gate=(t)=>{ $('#gateTxt').textContent=t; $('#gate').hidden=false; $('#resumen').textContent=''; };
+    let ses=null; try{ ses=await AUTH.sesion(); }catch(e){}
+    if(!ses) return gate('Inicia sesión con una cuenta de administrador para entrar.');
+    let ok=false; try{ ok=await rpc('es_admin'); }catch(e){}
+    if(!ok){ gate('Tu cuenta no tiene permisos de administrador.'); $('#gate .pill').textContent='ir a mi cuenta'; return; }
+    try{ await cargarConfigAdmin(); }catch(e){ fallo(e); }
+    $('#app').hidden=false;
+    let t='evento'; try{ t=sessionStorage.getItem('admin.tab')||'evento'; }catch(e){}
+    abrir(t);
+  })();
+
+  // menú celular
+  const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
+  const menu=open=>{clearTimeout(cierre);
+    if(open){mp.hidden=false;mf.hidden=false;mp.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('mopen'));}
+    else{document.body.classList.remove('mopen');cierre=setTimeout(()=>{mp.hidden=true;mf.hidden=true;},340);}};
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); mf.onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+})();
+</script>
+<script src="js/pie.js"></script>
+<script src="js/menu-pill.js"></script>
+</body>
+</html>

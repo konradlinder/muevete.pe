@@ -7,7 +7,7 @@
     ronda1:   'ronda.html?ronda=1',
     ronda2:   'ronda.html?ronda=2',
     terminos: 'terminos.html',
-    admin:    'https://www.muevete.pe/playa/sombrillas1/admin',
+    admin:    'admin.html',
     owner:    'https://www.muevete.pe/owner'
   };
   var SEDE = 'Uma Arena';
