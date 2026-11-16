@@ -280,6 +280,26 @@ input::-webkit-date-and-time-value{text-align:left}
 .edit-u .nota-u{font-size:12px;color:#8A5A00;background:#FFF8E1;border-radius:10px;padding:8px 10px;font-weight:500;line-height:1.45}
 .edit-u .pie-u{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .edit-u .borrar-u{margin-left:auto;background:none;border:0;color:#B91C1C;font:600 13px var(--poppins);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* ---------- COBROS ---------- */
+.bulk-c{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;margin:0 0 14px}
+.bulk-c select{width:100%;min-width:0}
+.bulk-c .monto-c{height:46px}
+.conf-c{background:#FFF8E1;border-radius:14px;padding:12px 14px;margin:-4px 0 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.conf-c p{margin:0;flex:1 1 240px;font-size:13.5px;font-weight:500;color:#5C4A00;line-height:1.45}
+.conf-c p b{color:#000}
+.conf-c div{display:flex;gap:8px}
+.bulk-c .pill:disabled{opacity:.45;cursor:default}
+.fila-adm.cob{grid-template-columns:1fr auto}
+.monto-c{display:flex;align-items:center;background:#fff;border-radius:10px;box-shadow:inset 0 0 0 1.5px #D7DEEA;height:42px;padding:0 4px 0 10px}
+.monto-c span{font-size:13px;font-weight:600;color:#6B7280}
+.monto-c input{width:58px;border:0!important;background:none!important;box-shadow:none!important;font:600 16px var(--poppins);text-align:right;padding:0 6px!important;height:40px;outline:0;-moz-appearance:textfield}
+.monto-c input::-webkit-outer-spin-button,.monto-c input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.monto-c:focus-within{box-shadow:inset 0 0 0 2px var(--azul-menu)}
+.monto-c.ok{box-shadow:inset 0 0 0 2px #22A55A}
+.monto-c.vacio input{color:#9CA3AF}
+.est-c{font-weight:700}
+.est-c.asiste{color:#15803D}.est-c.tarde{color:#B45309}.est-c.tardenj{color:#B91C1C}.est-c.no{color:#6B7280}
+@media (max-width:640px){.fila-adm.cob{grid-template-columns:1fr auto;row-gap:0}}
 @media (max-width:640px){.edit-u .g2{grid-template-columns:1fr}.fila-adm .acc-u{grid-column:1 / -1}}
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
@@ -366,7 +386,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   <div class="adm-cab">
     <p class="eyebrow">Panel del owner</p>
     <h1>muévete.pe</h1>
-    <p class="sub">Todas las playas: usuarios, cuentas y PIN.</p>
+    <p class="sub">Todas las playas: usuarios y cobros.</p>
   </div>
 
   <section class="gate" id="gate" hidden>
@@ -377,8 +397,29 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   <div id="app" hidden>
     <nav class="tabs" role="tablist" aria-label="Secciones">
       <button role="tab" data-tab="usuarios" class="on">Usuarios</button>
+      <button role="tab" data-tab="cobros">Cobros</button>
     </nav>
 
+
+    <!-- COBROS -->
+    <section class="tab" id="t-cobros" hidden>
+      <div class="card">
+        <h2>Cobros</h2>
+        <p class="desc">Elige un estado y un monto para asignarlo a todos los de esa fecha, o cambia el monto de cada jugador en su fila.</p>
+        <div class="barra dos-sel"><select id="cPlaya" aria-label="Playa"></select><select id="cFecha" aria-label="Fecha"></select></div>
+        <div class="chips" id="cChips"></div>
+        <div class="bulk-c">
+          <select id="cEstado" aria-label="Estado">
+            <option value="asiste">Asiste</option><option value="tarde">Tarde</option><option value="tarde NJ">Tarde NJ</option><option value="sin">Sin asistencia</option>
+          </select>
+          <label class="monto-c"><span>S/</span><input id="cMonto" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="9" aria-label="Monto"></label>
+          <button class="pill btn-azul" type="button" id="cAsignar">asignar</button>
+        </div>
+        <div class="conf-c" id="cConf" hidden><p id="cConfTxt"></p><div><button class="pill btn-azul" type="button" id="cSi">confirmar</button><button class="pill borde-az" type="button" id="cNo">cancelar</button></div></div>
+        <div class="barra"><div class="buscar"><input id="cBuscar" type="text" placeholder="Buscar jugador" autocomplete="off"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+        <div class="lista-adm" id="cLista"></div>
+      </div>
+    </section>
     <!-- USUARIOS -->
     <section class="tab" id="t-usuarios" hidden>
       <div class="card">
@@ -442,8 +483,92 @@ const LINKS = {
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
     document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='t-'+t);
     try{ sessionStorage.setItem('owner.tab',t); }catch(e){}
+    if(t==='cobros') cobrosInicio();
   };
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
+  /* ---------- COBROS ---------- */
+  const ASIS={asiste:['asiste','asiste'],tarde:['tarde','tarde'],'tarde NJ':['tarde NJ','tardenj']};
+  const soles=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:2});
+  let cDatos=[], cCargado=false;
+  const cPlaya=()=>$('#cPlaya').value, cFecha=()=>$('#cFecha').value;
+  const fFecha=f=>{const d=new Date(f+'T12:00:00');return d.toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).replace('.','');};
+  async function cobrosInicio(){
+    if(cCargado) return; cCargado=true;
+    try{
+      const ps=await AUTH.db('configuraciones?select=playa,title&order=playa')||[];
+      $('#cPlaya').innerHTML=ps.map(p=>`<option value="${esc(p.playa)}">${esc(p.title||p.playa)}</option>`).join('')||'<option value="sombrillas">sombrillas</option>';
+      let g=''; try{ g=sessionStorage.getItem('owner.playa')||''; }catch(e){}
+      if(g && ps.some(p=>p.playa===g)) $('#cPlaya').value=g;
+      await cargarFechas();
+    }catch(e){ cCargado=false; fallo(e); }
+  }
+  async function cargarFechas(mantener){
+    const prev=$('#cFecha').value;
+    const fs=await rpc('owner_fechas',{p_playa:cPlaya()})||[];
+    const hoy=new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'});
+    $('#cFecha').innerHTML=fs.length?fs.map(f=>`<option value="${f.fecha}">${fFecha(f.fecha)}${f.sin_monto?' · '+f.sin_monto+' sin monto':''}</option>`).join(''):'<option value="">Sin fechas</option>';
+    if(mantener && fs.some(f=>f.fecha===prev)) $('#cFecha').value=prev;
+    else { const pas=fs.find(f=>f.fecha<=hoy); if(pas) $('#cFecha').value=pas.fecha; }
+    await cargarCobros();
+  }
+  async function cargarCobros(){
+    if(!cFecha()){ cDatos=[]; return pintarCobros(); }
+    $('#cLista').innerHTML='<p class="vacio-adm">Cargando…</p>';
+    try{ cDatos=await rpc('owner_cobros',{p_playa:cPlaya(),p_fecha:cFecha()})||[]; }catch(e){ cDatos=[]; fallo(e); }
+    pintarCobros();
+  }
+  function pintarCobros(){
+    pintarCobrosChips();
+    $('#cAsignar').disabled=!cDatos.length;
+    const q=$('#cBuscar').value.trim().toLowerCase();
+    const filas=cDatos.filter(r=>!q||r.jugador.toLowerCase().includes(q)||String(r.dni||'').includes(q));
+    if(!filas.length){ $('#cLista').innerHTML=`<p class="vacio-adm">${cDatos.length?'Nadie coincide con la búsqueda.':'No hay inscritos en esta fecha.'}</p>`; return; }
+    $('#cLista').innerHTML=filas.map(r=>{
+      const a=ASIS[r.asistencia];
+      return `<div class="fila-adm cob ${a?a[1]:''}" data-id="${r.id}"><div class="nm">${esc(r.jugador)}<small><span class="est-c ${a?a[1]:'no'}">${a?a[0]:'sin asistencia'}</span> · DNI ${esc(r.dni)}</small></div>
+        <label class="monto-c ${r.monto==null?'vacio':''}"><span>S/</span><input type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${r.monto==null?'':Number(r.monto)}" placeholder="—" aria-label="Monto de ${esc(r.jugador)}"></label></div>`;
+    }).join('');
+  }
+  $('#cLista').addEventListener('change',async e=>{
+    const i=e.target.closest('.monto-c input'); if(!i) return;
+    const fila=i.closest('.fila-adm'), id=fila.dataset.id, r=cDatos.find(x=>x.id===id);
+    const v=i.value.trim()===''?null:Number(i.value);
+    if(v!=null && (isNaN(v)||v<0||v>999)){ toast('Monto no válido.',true); i.value=r.monto??''; return; }
+    try{
+      await rpc('owner_cobro',{p_id:id,p_monto:v});
+      r.monto=v; const box=i.closest('.monto-c'); box.classList.toggle('vacio',v==null); box.classList.add('ok'); setTimeout(()=>box.classList.remove('ok'),900);
+      pintarCobrosChips();
+    }catch(err){ i.value=r.monto??''; fallo(err); }
+  });
+  $('#cLista').addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.matches('.monto-c input')) e.target.blur(); });
+  function pintarCobrosChips(){
+    const con=cDatos.filter(r=>r.monto!=null), sin=cDatos.filter(r=>r.asistencia&&r.monto==null), total=con.reduce((a,r)=>a+Number(r.monto),0);
+    $('#cChips').innerHTML=`<span class="chip">Inscritos <b>${cDatos.length}</b></span><span class="chip verde">Con monto <b>${con.length}</b></span><span class="chip ${sin.length?'naranja':''}">Sin monto <b>${sin.length}</b></span><span class="chip">Total <b>${soles(total)}</b></span>`;
+  }
+  const DEF={asiste:9,tarde:13,'tarde NJ':13,sin:18}, NOMB={asiste:'asiste',tarde:'tarde','tarde NJ':'tarde NJ',sin:'sin asistencia'};
+  const delEstado=e=>cDatos.filter(r=>(r.asistencia||'sin')===e);
+  const cerrarConf=()=>{ $('#cConf').hidden=true; };
+  $('#cEstado').onchange=()=>{ $('#cMonto').value=DEF[$('#cEstado').value]; cerrarConf(); };
+  $('#cMonto').addEventListener('input',cerrarConf);
+  $('#cAsignar').onclick=()=>{
+    const e=$('#cEstado').value, v=$('#cMonto').value.trim()===''?null:Number($('#cMonto').value), n=delEstado(e).length;
+    if(v!=null && (isNaN(v)||v<0||v>999)) return toast('Monto no válido.',true);
+    if(!n) return toast(`Nadie tiene "${NOMB[e]}" en esta fecha.`,true);
+    const dif=delEstado(e).filter(r=>r.monto!=null && Number(r.monto)!==v).length;
+    $('#cConfTxt').innerHTML=`Se asignará <b>${v==null?'sin monto':soles(v)}</b> a <b>${n} jugador${n===1?'':'es'}</b> con <b>${NOMB[e]}</b> el ${fFecha(cFecha())}.`+(dif?` ${dif} ya tenía${dif===1?'':'n'} otro monto y se reemplazará${dif===1?'':'n'}.`:'');
+    $('#cConf').hidden=false;
+  };
+  $('#cNo').onclick=cerrarConf;
+  $('#cSi').onclick=async()=>{
+    const b=$('#cSi'); b.disabled=true;
+    const e=$('#cEstado').value, v=$('#cMonto').value.trim()===''?null:Number($('#cMonto').value);
+    try{ const n=await rpc('owner_asignar_cobros',{p_playa:cPlaya(),p_fecha:cFecha(),p_estado:e,p_monto:v});
+      cerrarConf(); toast(`${n} monto${n===1?'':'s'} asignado${n===1?'':'s'}`); await cargarFechas(true);
+    }catch(err){ fallo(err); } finally{ b.disabled=false; }
+  };
+  $('#cPlaya').onchange=()=>{ try{ sessionStorage.setItem('owner.playa',cPlaya()); }catch(e){} cerrarConf(); cargarFechas().catch(fallo); };
+  $('#cFecha').onchange=()=>{ cerrarConf(); cargarCobros(); };
+  $('#cBuscar').addEventListener('input',pintarCobros);
   /* ---------- USUARIOS (activar cuenta / restablecer PIN) ---------- */
   let tUs;
   $('#uBuscar').addEventListener('input',()=>{ clearTimeout(tUs); tUs=setTimeout(buscarCuentas,300); });
