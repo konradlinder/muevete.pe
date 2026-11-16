@@ -7,7 +7,7 @@
    Este archivo va primero en el <head> de todas las páginas. */
 (function(){
   var PRINCIPAL = 'sombrillas';
-  var SECCIONES = ['ronda','campo','index','inscripciones','bases','admin','ronda1','ronda2','mi-cuenta','ranking','uma-go','terminos-y-condiciones'];
+  var SECCIONES = ['owner','ronda','campo','index','inscripciones','bases','admin','ronda1','ronda2','mi-cuenta','ranking','uma-go','terminos-y-condiciones'];
   var partes = location.pathname.replace(/\.html$/,'').split('/').filter(Boolean).map(decodeURIComponent);
   var playa = PRINCIPAL;
   if (partes.length && SECCIONES.indexOf(partes[0]) < 0 && !/^(index)$/.test(partes[0])) { playa = partes.shift().toLowerCase(); }

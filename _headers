@@ -24,3 +24,6 @@
   X-Robots-Tag: noindex
 /*/admin
   X-Robots-Tag: noindex
+
+/owner
+  X-Robots-Tag: noindex

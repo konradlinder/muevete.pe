@@ -8,7 +8,7 @@
     ronda2:   '/sombrillas/ronda2',
     terminos: '/terminos-y-condiciones',
     admin:    '/sombrillas/admin',
-    owner:    'https://www.muevete.pe/owner'
+    owner:    '/owner'
   };
   var SEDE = 'Uma Arena';
   var ALIADOS = [

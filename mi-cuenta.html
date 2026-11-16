@@ -387,7 +387,7 @@ body.cargando main{visibility:hidden}
       <div class="fila2"><div><label for="oNombre">Nombre</label><input id="oNombre" autocomplete="given-name"></div><div><label for="oApellido">Apellido</label><input id="oApellido" autocomplete="family-name"></div></div>
       <div><label for="oNac">Fecha de nacimiento</label><input id="oNac" type="date" data-selector-fecha min="1920-01-01"></div>
       <div><span class="lbl">Género</span><div class="chips" data-grupo="genero" data-uno><button type="button" class="chip" data-v="F">Mujer</button><button type="button" class="chip" data-v="M">Hombre</button></div></div>
-      <div><label for="oDistrito">Distrito</label><input id="oDistrito" autocomplete="address-level3" placeholder="Ej. Barranco"></div>
+      <div><label for="oDistrito">Distrito <span class="opc" data-opc-migrado hidden>· opcional</span></label><input id="oDistrito" autocomplete="address-level3" placeholder="Ej. Barranco"></div>
       <button class="btn btn-amarillo" type="submit">continuar</button>
     </form>
 
@@ -395,8 +395,8 @@ body.cargando main{visibility:hidden}
     <form class="paso-a ancho" data-paso="juego" novalidate hidden>
       <div class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i></div>
       <h2>Tu juego y contacto</h2>
-      <div><span class="lbl">¿Has jugado vóley antes?</span><div class="chips" data-grupo="historial"><button type="button" class="chip" data-v="nunca">Nunca</button><button type="button" class="chip" data-v="voley piso">Vóley piso</button><button type="button" class="chip" data-v="voley playa">Vóley playa</button></div></div>
-      <div><label for="oNivel">Máximo nivel jugado</label><input id="oNivel" placeholder="Ej. academia, liga, colegio"></div>
+      <div><span class="lbl">¿Has jugado vóley antes? <span class="opc" data-opc-migrado hidden>· opcional</span></span><div class="chips" data-grupo="historial"><button type="button" class="chip" data-v="nunca">Nunca</button><button type="button" class="chip" data-v="voley piso">Vóley piso</button><button type="button" class="chip" data-v="voley playa">Vóley playa</button></div></div>
+      <div><label for="oNivel">Máximo nivel jugado <span class="opc" data-opc-migrado hidden>· opcional</span></label><input id="oNivel" placeholder="Ej. academia, liga, colegio"></div>
       <div><label for="oCel">Celular <span class="opc">· para recuperar tu PIN</span></label><div class="doble-a"><select id="oCodigo" aria-label="Código de país"></select><input id="oCel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Ej. 987 654 321"></div></div>
       <div><label for="oInsta">Instagram <span class="opc">· opcional</span></label><div class="arroba-a"><input id="oInsta" autocapitalize="off" spellcheck="false" placeholder="usuario"></div></div>
       <div><span class="lbl">Contacto de emergencia</span><div class="fila2"><input id="oEmNombre" placeholder="Nombre" aria-label="Nombre del contacto de emergencia"><input id="oEmCel" type="tel" inputmode="tel" placeholder="Celular" aria-label="Celular del contacto de emergencia"></div></div>
@@ -934,7 +934,14 @@ async function guardarPerfil(d){
   $('#oInsta').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/^@+/,''); });
   const nivelSegunHistorial=()=>{ const nunca=chips('historial').includes('nunca'); $('#oNivel').disabled=nunca; if(nunca) $('#oNivel').value=''; };
   document.querySelector('[data-grupo="historial"]').addEventListener('click',()=>setTimeout(nivelSegunHistorial));
+  // Cuentas que vienen de Wix: solo se piden los datos obligatorios que les falten
+  let MIGRADO=false;
   const incompleto=p=>{
+    if(p.wix_id){
+      const sobre=!p.nombre||!p.apellido||!p.fecha_nacimiento||!p.genero;
+      const juego=!p.celular||!p.contacto_emergencia||!p.celular_emergencia;
+      return sobre?'sobre':juego?'juego':null;
+    }
     const sobre=!p.nombre||!p.apellido||!p.fecha_nacimiento||!p.genero||!p.distrito;
     const hist=p.historial_juego||[], nunca=hist.includes('nunca');
     const juego=!hist.length||(!nunca&&!p.nivel_juego)||!p.celular||!p.contacto_emergencia||!p.celular_emergencia||!p.terminos_aceptados_en;
@@ -951,7 +958,12 @@ async function guardarPerfil(d){
   const chips=g=>[...document.querySelectorAll(`[data-grupo="${g}"] .chip.on`)].map(c=>c.dataset.v);
   const marcar=(g,vals)=>document.querySelectorAll(`[data-grupo="${g}"] .chip`).forEach(c=>c.classList.toggle('on',(vals||[]).includes(c.dataset.v)));
   function abrirOnboarding(p,paso){
-    PERFIL_ID=p.id||null; pendiente(true);
+    PERFIL_ID=p.id||null; pendiente(true); MIGRADO=!!p.wix_id;
+    $('#oTerminos').closest('.chk').hidden=MIGRADO;
+    document.querySelectorAll('[data-opc-migrado]').forEach(e=>e.hidden=!MIGRADO);
+    pasoEl('juego').querySelector('[type=submit]').textContent=MIGRADO?'guardar':'crear cuenta';
+    pasoEl('juego').querySelector('h2').textContent=MIGRADO?'Completa tus datos':'Tu juego y contacto';
+    pasoEl('sobre').querySelector('h2').textContent=MIGRADO?'Completa tus datos':'Cuéntanos sobre ti';
     $('#oNombre').value=p.nombre||''; $('#oApellido').value=p.apellido||'';
     const n=$('#oNac'); if('valorFecha' in n) n.valorFecha=p.fecha_nacimiento||''; else n.value=p.fecha_nacimiento||'';
     marcar('genero',p.genero?[p.genero]:[]); $('#oDistrito').value=p.distrito||'';
@@ -974,25 +986,25 @@ async function guardarPerfil(d){
     if(!nombre||!apellido) return aviso('Escribe tu nombre y apellido.');
     if(!nac) return aviso('Elige tu fecha de nacimiento.');
     if(!g) return aviso('Elige tu género.');
-    if(!distrito) return aviso('Escribe tu distrito.');
+    if(!distrito&&!MIGRADO) return aviso('Escribe tu distrito.');
     await ocupado(pasoEl('sobre').querySelector('[type=submit]'),async()=>{
-      try{ await guardarOnb({nombre,apellido,fecha_nacimiento:nac,genero:g,distrito}); poner('[data-nombre]',nombre); mostrar('juego'); }
+      try{ await guardarOnb({nombre,apellido,fecha_nacimiento:nac,genero:g,distrito:distrito||null}); poner('[data-nombre]',nombre); mostrar('juego'); }
       catch(err){ aviso(err.message==='sin-sesion'?'Tu sesión venció. Vuelve a entrar.':err.message); }
     });
   });
   pasoEl('juego').addEventListener('submit',async e=>{
     e.preventDefault(); aviso('');
     const hist=chips('historial'), cel=$('#oCel').value.replace(/\D/g,''), emN=$('#oEmNombre').value.trim(), emC=$('#oEmCel').value.replace(/\D/g,''), nivel=$('#oNivel').value.trim();
-    if(!hist.length) return aviso('Cuéntanos si has jugado vóley antes.');
-    if(!hist.includes('nunca')&&!nivel) return aviso('Cuéntanos el máximo nivel en el que has jugado.');
+    if(!hist.length&&!MIGRADO) return aviso('Cuéntanos si has jugado vóley antes.');
+    if(hist.length&&!hist.includes('nunca')&&!nivel&&!MIGRADO) return aviso('Cuéntanos el máximo nivel en el que has jugado.');
     if(cel.length<6) return aviso('Escribe tu celular. Lo usamos para ayudarte si olvidas tu PIN.');
     if(!emN||emC.length<6) return aviso('Completa el nombre y celular de tu contacto de emergencia.');
-    if(!$('#oTerminos').checked) return aviso('Para jugar debes aceptar los términos y condiciones.');
+    if(!MIGRADO&&!$('#oTerminos').checked) return aviso('Para jugar debes aceptar los términos y condiciones.');
     await ocupado(pasoEl('juego').querySelector('[type=submit]'),async()=>{
       try{
-        await guardarOnb({historial_juego:hist,nivel_juego:nivel||null,
+        await guardarOnb({historial_juego:hist.length?hist:null,nivel_juego:nivel||null,
           country_code:$('#oCodigo').value.replace(/\D/g,'')||'51',celular:cel,instagram:$('#oInsta').value.trim().replace(/^@/,'')||null,
-          contacto_emergencia:emN,celular_emergencia:emC,terminos_aceptados_en:new Date().toISOString()});
+          contacto_emergencia:emN,celular_emergencia:emC,...(MIGRADO?{}:{terminos_aceptados_en:new Date().toISOString()})});
         pendiente(false); mostrar('listo');
       }catch(err){ aviso(err.message==='sin-sesion'?'Tu sesión venció. Vuelve a entrar.':err.message); }
     });
@@ -1001,7 +1013,7 @@ async function guardarPerfil(d){
   // Después de entrar: PIN temporal → cambiarlo; perfil incompleto → completarlo; si no, el perfil
   async function despuesDeEntrar(){
     let p=null;
-    try{ const f=await AUTH.db('usuarios?select=id,dni,nombre,apellido,fecha_nacimiento,genero,distrito,historial_juego,nivel_juego,country_code,celular,instagram,contacto_emergencia,celular_emergencia,terminos_aceptados_en,debe_cambiar_pin&limit=1'); p=f&&f[0]; }
+    try{ const f=await AUTH.db('usuarios?select=id,dni,wix_id,nombre,apellido,fecha_nacimiento,genero,distrito,historial_juego,nivel_juego,country_code,celular,instagram,contacto_emergencia,celular_emergencia,terminos_aceptados_en,debe_cambiar_pin&limit=1'); p=f&&f[0]; }
     catch(e){ if(e.message==='sin-sesion') return verLogin(); }
     if(p){
       if(p.dni){ A.dni=p.dni; document.querySelectorAll('[data-dni-usuario]').forEach(i=>i.value=p.dni); }
