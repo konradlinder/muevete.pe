@@ -213,6 +213,31 @@ input::-webkit-date-and-time-value{text-align:left}
   .partidos-adm{grid-template-columns:1fr}
   .tabs{border-radius:16px}
 }
+/* ---------- RESULTADOS ---------- */
+.res-barra{display:grid;grid-template-columns:1fr auto;gap:10px}
+.res-barra select{width:100%;min-width:0}
+.res-barra .pill{display:inline-flex;align-items:center;gap:8px;padding:0 20px}
+.res-barra .pill:disabled{opacity:.45;cursor:default}
+.res-barra .pill.girando svg{animation:girar .8s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.estado-res{display:flex;align-items:center;gap:8px;border-radius:14px;padding:11px 14px;font-size:13.5px;font-weight:600;margin-bottom:14px}
+.estado-res.pend{background:#FFF8E1;color:#8A5A00}
+.estado-res.ok{background:#E9F7EF;color:#15803D}
+.tabla-res{overflow-x:auto;border-radius:14px;box-shadow:inset 0 0 0 1px #E6E9EF;-webkit-overflow-scrolling:touch}
+.tabla-res table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+.tabla-res th{position:sticky;top:0;background:#F6F7FA;text-align:right;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6B7DA6;padding:10px 10px;white-space:nowrap}
+.tabla-res td{padding:9px 10px;text-align:right;font-weight:500;color:#3A3F47;white-space:nowrap;font-variant-numeric:tabular-nums;border-top:1px solid #EEF0F4}
+.tabla-res th.t-izq,.tabla-res td.t-izq{text-align:left}
+.tabla-res td.jug{font-weight:600;color:#111;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.tabla-res td.pos{font-weight:700;color:#111;width:44px}
+.tabla-res td.dni{color:#8A919C}
+.tabla-res tr.nuevo-campo td{border-top:2px solid #D7DDEA}
+.tabla-res .neg{color:#B91C1C}.tabla-res .posi{color:#15803D}
+.tabla-res .c1{position:sticky;left:0;background:#fff;z-index:1}
+.tabla-res .c2{position:sticky;left:44px;background:#fff;z-index:1;box-shadow:6px 0 6px -6px rgba(0,0,0,.12)}
+.tabla-res th.c1,.tabla-res th.c2{background:#F6F7FA;z-index:2}
+.tabla-res .campo-n{display:inline-block;min-width:26px;text-align:center;background:#EEF2F9;color:var(--azul-menu);border-radius:6px;padding:1px 6px;font-weight:700;font-size:13px}
+@media (max-width:640px){.res-barra .pill{padding:0 14px}.tabla-res table{font-size:13px}.tabla-res td.jug{max-width:150px}}
 
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
@@ -314,6 +339,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
       <button role="tab" data-tab="asistencia">Asistencia</button>
       <button role="tab" data-tab="puntajes">Puntajes</button>
       <button role="tab" data-tab="rondas">Rondas</button>
+      <button role="tab" data-tab="resultados">Resultados</button>
     </nav>
 
     <!-- EVENTO -->
@@ -398,6 +424,20 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <div class="acciones" id="rAcciones" hidden><span class="estado">Toca un jugador para intercambiarlo con otro o moverlo de posición.</span><button class="pill gris" type="button" id="rDescartar">descartar</button><button class="pill btn-azul" type="button" id="rGuardar">guardar ronda</button></div>
       </div>
     </section>
+
+    <!-- RESULTADOS -->
+    <section class="tab" id="t-resultados" hidden>
+      <div class="card">
+        <h2>Resultados</h2>
+        <p class="desc">Posiciones de cada jugador en la ronda. Solo cuentan los partidos finalizados.</p>
+        <div class="barra res-barra">
+          <select id="sRonda" aria-label="Ronda"><option value="" selected disabled>Ronda</option><option value="1">Ronda 1</option><option value="2">Ronda 2</option></select>
+          <button class="pill btn-azul" type="button" id="sActualizar" disabled><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>actualizar</button>
+        </div>
+        <div id="sEstado"></div>
+        <div id="sTabla"><p class="elige">Elige una ronda para ver sus resultados.</p></div>
+      </div>
+    </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </main>
@@ -432,7 +472,7 @@ const LINKS = {
   inscripciones: "inscripciones.html",
   ranking:       "ranking.html",
   bases:         "bases.html",
-  umaGo:         "",
+  umaGo:         "uma-go.html",
   ronda1:        "ronda.html?ronda=1",
   ronda2:        "ronda.html?ronda=2",
 };
@@ -467,17 +507,19 @@ const LINKS = {
   /* ---------- pestañas ---------- */
   const abrir=t=>{
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+    const bt=document.querySelector(`.tabs button[data-tab="${t}"]`); if(bt){ const n=bt.parentElement; n.scrollTo({left:bt.offsetLeft-(n.clientWidth-bt.offsetWidth)/2,behavior:'smooth'}); }
     document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='t-'+t);
     try{ sessionStorage.setItem('admin.tab',t); }catch(e){}
     if(t==='asistencia') cargarAsistencia();
     if(t==='puntajes') cargarPuntajes();
     if(t==='rondas') prepararRondas();
+    if(t==='resultados') cargarResultados();
   };
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
 
   /* ---------- EVENTO ---------- */
   function ponerResumen(){
-    $('#resumen').textContent=CFG?`Próxima fecha: ${fechaLarga(CFG.siguiente_fecha)} · ${hhmm(CFG.asistencia_mesa)} · inscripciones ${CFG.is_active?'abiertas':'cerradas'}${CFG.mantenimiento?' · en mantenimiento':''}`:'';
+    $('#resumen').textContent=CFG?`Próxima fecha: ${fechaLarga(CFG.siguiente_fecha)}${CFG.asistencia_mesa?' · '+hhmm(CFG.asistencia_mesa):''} · inscripciones ${CFG.is_active?'abiertas':'cerradas'}${CFG.mantenimiento?' · en mantenimiento':''}`:'';
     $('#iDesc').textContent=`Busca por nombre o DNI. Se inscribe para el ${fechaLarga(CFG&&CFG.siguiente_fecha)}.`;
   }
   async function cargarConfigAdmin(){
@@ -764,6 +806,33 @@ const LINKS = {
     catch(e){ fallo(e); }
     b.disabled=false; b.textContent='guardar ronda';
   };
+
+  /* ---------- RESULTADOS ---------- */
+  let RES=null;
+  const fmtCoc=n=>Number(n).toFixed(3);
+  async function cargarResultados(){
+    const r=+$('#sRonda').value; if(!r) return;
+    const b=$('#sActualizar'); b.disabled=true; b.classList.add('girando');
+    try{ RES=await rpc('admin_resultados',{p_ronda:r,p_playa:PLAYA}); pintarResultados(r); }
+    catch(e){ fallo(e); }
+    finally{ b.disabled=false; b.classList.remove('girando'); }
+  }
+  function pintarResultados(r){
+    const est=$('#sEstado'), tb=$('#sTabla');
+    if(!RES||!RES.length){ est.innerHTML=''; tb.innerHTML=`<p class="vacio-adm">Todavía no hay partidos en la ronda ${r}.</p>`; return; }
+    const pend=RES[0].partidos_pendientes, tot=RES[0].partidos_total;
+    est.innerHTML=pend
+      ? `<div class="estado-res pend">¡No han finalizado todos los partidos! Faltan ${pend} de ${tot}.</div>`
+      : `<div class="estado-res ok">Todos los partidos finalizados (${tot}).</div>`;
+    let ant=null;
+    const filas=RES.map(x=>{ const nc=ant!==null&&x.campo!==ant; ant=x.campo; const d=x.dif_puntos;
+      return `<tr class="${nc?'nuevo-campo':''}"><td class="pos c1 t-izq">${x.puesto}</td><td class="jug c2 t-izq">${esc(x.jugador)}</td>
+        <td>${x.ganados}</td><td>${fmtCoc(x.cociente)}</td><td class="${d<0?'neg':d>0?'posi':''}">${d>0?'+':''}${d}</td>
+        <td>${x.puntos_favor}</td><td>${x.puntos_contra}</td><td><span class="campo-n">${x.campo}</span></td><td>${x.puesto_campo}</td><td class="dni">${esc(x.dni||'—')}</td></tr>`; }).join('');
+    tb.innerHTML=`<div class="tabla-res"><table><thead><tr><th class="c1 t-izq">Puesto</th><th class="c2 t-izq">Jugador</th><th title="Partidos ganados">PG</th><th>Cociente</th><th title="Diferencia de puntos">Dif</th><th title="Puntos a favor">PF</th><th title="Puntos en contra">PC</th><th>Campo</th><th title="Puesto en el campo"># campo</th><th>DNI</th></tr></thead><tbody>${filas}</tbody></table></div>`;
+  }
+  $('#sRonda').onchange=cargarResultados;
+  $('#sActualizar').onclick=cargarResultados;
 
   /* ---------- arranque ---------- */
   (async()=>{

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uma Go | muévete.pe</title>
+<meta name="description" content="Arma tu propio Uma con amigos: dos campos en simultáneo, marcador y posiciones en tu celular.">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://xrfvzqeepihoyqyootcs.supabase.co" crossorigin>
+<link rel="preconnect" href="https://static.wixstatic.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0046B8; --azul-menu:#0051C2; --amarillo:#FFDB03; --blanco:#F7F7F7;
+  --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
+  --poppins:"Poppins",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:var(--poppins);font-weight:600;background:var(--fondo);color:var(--negro);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+
+/* ---------- MENÚ (igual que el inicio) ---------- */
+.right{display:flex;gap:38px;align-items:flex-start;position:fixed;top:calc(23px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:20}
+.menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
+.menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
+.menu a:hover{color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:first-child{padding-left:30px}
+.menu a:last-child{padding-right:30px}
+.cuenta{padding:0 20px!important}
+.mhead .cuenta{padding:0 18px!important}
+.cuenta{display:flex;align-items:center;gap:14px;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);height:60px;padding:0 12px;font-size:16px;letter-spacing:.02em;color:#fff}
+.cuenta svg{width:24px;height:24px}
+.cuenta.on,.cuenta:hover{color:var(--amarillo)}
+.panel{display:flex;gap:38px;align-items:flex-start}
+.burger{display:none;background:var(--azul-menu);border:0;border-radius:50%;width:52px;height:52px;color:var(--blanco);box-shadow:0 1px 4px rgba(179,179,179,.6);cursor:pointer}
+.burger svg{width:26px;height:26px}
+
+/* menú celular */
+.mfondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpanel{position:fixed;top:0;right:0;bottom:0;width:min(76vw,320px);background:var(--azul);z-index:71;transform:translateX(100%);transition:transform .32s ease;padding:calc(env(safe-area-inset-top,0px) + 38px) 0 30px;overflow-y:auto;display:flex;flex-direction:column;color:var(--blanco)}
+.mopen .mfondo{opacity:1;pointer-events:auto}
+.mopen .mpanel{transform:none}
+body.mopen{overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 20px}
+.mhead .cuenta{height:46px;font-size:19px;padding:0 13px;gap:22px}
+.mhead .cuenta svg{width:28px;height:28px}
+.mclose{background:none;border:0;color:var(--blanco);width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.mclose svg{width:28px;height:28px}
+.mnav{margin-top:30px;display:flex;flex-direction:column}
+.mnav a,.mnav button.mdrop{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:62px;padding:0 54px 0 34px;font-weight:600;font-size:25px;color:var(--blanco);background:none;border:0;text-align:left;cursor:pointer}
+.mnav a.on{color:var(--amarillo)}
+.mdrop svg{width:18px;height:18px;transition:transform .2s;flex:none}
+.mdrop[aria-expanded="true"] svg{transform:rotate(180deg)}
+.msub{display:none;flex-direction:column}
+.msub.open{display:flex}
+.msub a{min-height:46px;font-size:19px;padding-left:54px}
+
+
+/* ---------- RONDAS Y CAMPOS ---------- */
+main{max-width:1040px;margin:0 auto;padding:122px 20px 80px}
+h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.sub{margin-top:8px;font-size:15px;font-weight:500;color:#5B6370}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:42px;padding:0 20px;border:0;border-radius:999px;background:var(--amarillo);color:#000;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:filter .15s,transform .1s}
+.pill:hover{filter:brightness(1.06)}
+.pill:active{transform:scale(.97)}
+.pill svg{width:18px;height:18px}
+.pill[disabled]{background:transparent;color:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35);cursor:default;transform:none;filter:none}
+.demo{margin:22px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border:1.5px dashed #C9D2E3;border-radius:14px;background:#fff}
+.demo b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7A808A;margin-right:4px}
+.demo button{border:1.5px solid #D5D9E0;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.demo button.on{background:var(--azul-menu);border-color:var(--azul-menu);color:#fff}
+@media (max-width:980px){.panel{display:none}.burger{display:grid;place-items:center}main{padding:calc(23px + env(safe-area-inset-top,0px)) 16px 40px}main > h1:first-child{min-height:52px;display:flex;align-items:center;padding-right:64px;padding-left:64px}.volver{margin-top:6px;margin-left:64px}}
+@media (max-width:760px){h1{font-size:34px}}
+/* celular: el contenido empieza a la altura del botón del menú */
+@media (max-width:980px){main{padding-top:calc(29px + env(safe-area-inset-top,0px))}}
+
+/* ---------- UMA GO ---------- */
+main{max-width:1040px}
+.cab-go h1 b{color:var(--azul-menu)}
+.cab-go h1{display:flex;align-items:center;gap:.26em}
+#juego{scroll-margin-top:100px}
+.card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:22px}
+.card h2{font-size:18px;font-weight:700}
+.card .desc{margin-top:4px;font-size:14px;font-weight:500;color:#5B6370;line-height:1.5}
+.jugs{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:16px}
+.jug{display:grid;grid-template-columns:28px 1fr 38px;align-items:center;gap:8px}
+.jug .n{font-size:14px;font-weight:700;color:#6B7DA6;text-align:right}
+.jug input{width:100%;height:46px;border:1.5px solid #D5D9E0;border-radius:12px;padding:0 14px;font:500 16px var(--poppins);color:#111;background:#fff;outline:none;min-width:0}
+.jug input:focus{border-color:var(--azul-menu);box-shadow:0 0 0 3px rgba(0,81,194,.12)}
+.jug input.mal{border-color:#E08080}
+.quitar{width:34px;height:34px;border:0;border-radius:999px;background:#fff;color:#B91C1C;box-shadow:inset 0 0 0 1.5px #F3B4B4;display:grid;place-items:center;cursor:pointer}
+.quitar:hover{background:#FDECEC}
+.quitar svg{width:15px;height:15px}
+.agregar{display:inline-flex;align-items:center;gap:8px;margin-top:14px;height:40px;padding:0 16px;border:0;border-radius:999px;background:#EEF2F9;color:var(--azul-menu);font:600 14px var(--poppins);cursor:pointer}
+.agregar:hover{background:#E2E9F6}
+.agregar svg{width:16px;height:16px}
+.acc{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:20px;flex-wrap:wrap}
+.acc .info{font-size:13px;font-weight:500;color:#5B6370;display:flex;align-items:center;gap:8px}
+.acc .info svg{width:18px;height:18px;color:var(--azul-menu);flex:none}
+.acc .der{display:flex;align-items:center;gap:14px;margin-left:auto}
+.btn-azul{background:var(--azul-menu)!important;color:#fff!important}
+.txt-btn{background:none;border:0;color:#5B6370;font:600 14px var(--poppins);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+.txt-btn:hover{color:#111}
+.txt-btn.rojo{color:#B91C1C}
+.error-go{margin-top:12px;font-size:13px;font-weight:600;color:#B91C1C}
+
+/* juego */
+.juego-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:30px;flex-wrap:wrap}
+.juego-cab h2{font-size:26px;font-weight:700}
+.ronda-n{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7DA6}
+.cuerpo{display:grid;grid-template-columns:340px 1fr;gap:28px;margin-top:16px;align-items:start}
+.tabla{position:sticky;top:110px}
+.tabla h3,.col h3{font-size:16px;font-weight:700;margin-bottom:10px}
+.enc,.fila{display:grid;grid-template-columns:24px 1fr 40px 46px 54px;align-items:center}
+.enc{font-size:11.5px;font-weight:700;color:#5B6370;letter-spacing:.04em;padding:0 10px 8px;text-align:center}
+.enc span:nth-child(2){text-align:left}
+.filas{display:grid;gap:5px}
+.fila{background:var(--amarillo);border-radius:12px;height:44px;padding:0 10px;font-size:14.5px;text-align:center}
+.fila .pos{font-size:12.5px;color:#6B5A00}
+.fila .nm{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+.fila .neg{color:#B03A00}
+.leyenda{margin-top:10px;font-size:12px;font-weight:500;color:#7A808A;line-height:1.5}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.col{display:grid;gap:12px;align-content:start}
+.col h3{margin-bottom:0;display:flex;align-items:center;gap:8px}
+.col h3 small{font-size:12px;font-weight:600;color:#7A808A}
+.seg-campo{display:none}
+.partido{background:var(--azul-menu);color:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 6px 18px rgba(0,40,120,.12)}
+.p-top{display:flex;align-items:center;justify-content:space-between;min-height:22px}
+.p-top h4{font-size:15px;font-weight:700}
+.p-top h4 b{color:var(--amarillo);margin-left:3px}
+.marcador{display:grid;gap:8px;margin:12px 0 2px}
+.lado{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;background:rgba(255,255,255,.07);border-radius:14px;padding:7px 7px 7px 13px}
+.equipo{display:grid;gap:1px;font-size:14.5px;font-weight:600;line-height:1.3;min-width:0}
+.equipo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lado.pierde .equipo{color:#AFC3EE;font-weight:500}
+.lado.gana{background:rgba(255,219,3,.14)}
+.num{width:52px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:23px;font-weight:700;color:var(--amarillo)}
+.lado.pierde .num{color:#fff;opacity:.7}
+.num input{width:100%;height:100%;border:0;border-radius:12px;background:#fff;color:#000;font:700 21px var(--poppins);text-align:center;outline:none;-moz-appearance:textfield;appearance:textfield}
+.num input::-webkit-outer-spin-button,.num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.num input:focus{box-shadow:0 0 0 3px rgba(255,219,3,.75)}
+.num input::placeholder{color:#B5BCC7}
+.p-pie{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:10px;min-height:36px}
+.p-pie .ayuda{margin-right:auto;font-size:12px;font-weight:500;color:#BFD0F5}
+.p-pie .ayuda.error{color:#FFB59A;font-weight:600}
+.estado-fin{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#BFD0F5;margin-right:auto}
+.estado-fin svg{width:16px;height:16px;color:#7EE2A0}
+.pill.chica{height:34px;padding:0 14px;font-size:13px;gap:7px}
+.pill.borde{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45)}
+.pill.borde:hover{background:rgba(255,255,255,.1)}
+.pill.chica svg{width:15px;height:15px}
+.descansa{font-size:12px;font-weight:500;color:#BFD0F5;margin-top:8px}
+.siguiente{margin-top:22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:#fff;border-radius:20px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.siguiente .msg{font-size:14px;font-weight:600;color:#3A3F47}
+.siguiente .msg.pend{color:#8A5A00}
+.siguiente .der{display:flex;align-items:center;gap:14px;margin-left:auto}
+.siguiente .pill[disabled]{background:#EEF0F4;color:#9AA1AC;box-shadow:none}
+@media (max-width:980px){
+  main{padding-top:calc(23px + env(safe-area-inset-top,0px))}
+  main > h1:first-child,.cab-go h1{min-height:52px;display:flex;align-items:center;padding-left:64px;padding-right:64px;font-size:clamp(26px,8vw,34px);white-space:nowrap}
+  .cuerpo{grid-template-columns:1fr}
+  .tabla{position:static;order:2}
+}
+@media (max-width:760px){
+  .card{padding:18px 16px}
+  .jugs{grid-template-columns:1fr}
+  .campos{grid-template-columns:1fr}
+  .seg-campo{display:flex;gap:4px;padding:4px;background:#fff;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:sticky;top:calc(84px + env(safe-area-inset-top,0px));z-index:5}
+  .seg-campo button{flex:1;height:40px;border:0;border-radius:999px;background:transparent;font:600 14px var(--poppins);color:#3A3F47;cursor:pointer}
+  .seg-campo button.on{background:var(--azul-menu);color:var(--amarillo)}
+  .campos[data-ver="1"] .col[data-campo="2"],.campos[data-ver="2"] .col[data-campo="1"]{display:none}
+  .col h3{display:none}
+  .acc .der{width:100%;justify-content:space-between}
+  .siguiente .der{width:100%;justify-content:space-between}
+}
+
+/* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
+.menu{padding:0;align-items:stretch}
+.menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
+.menu a:not(.on):hover{color:var(--amarillo)}
+.mnav{padding:0 10px;gap:2px}
+.mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
+.msub{padding-left:14px}
+.msub a{min-height:46px;padding-left:26px}
+
+/* ---------- Menú en la misma posición en todas las páginas ---------- */
+html{scrollbar-gutter:stable}
+.top .wrap{max-width:none;position:static}
+.right{top:calc(24px + env(safe-area-inset-top,0px));right:calc(20px + env(safe-area-inset-right,0px));gap:38px}
+.menu a,.menu a:first-child,.menu a:last-child{font-size:16px;letter-spacing:0}
+.cuenta{height:60px;gap:14px;font-size:16px;letter-spacing:.02em;padding:0 22px!important}
+.mhead .cuenta{height:46px;font-size:19px;gap:22px;padding:0 18px!important}
+
+/* Campos */
+input,select{height:44px;border:1.5px solid #D5D9E0;border-radius:12px;background:#fff;padding:0 14px;font-size:15px;font-weight:500;color:#000;outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+input::placeholder{color:#9AA1AC;font-weight:400}
+input:hover,select:hover{border-color:#B9C0CC}
+input:focus,select:focus{border-color:var(--azul-menu);box-shadow:0 0 0 3px rgba(0,81,194,.15)}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center}
+#fCategoria{width:215px}
+#fNombre{width:200px}
+@media (max-width:760px){#fCategoria,#fNombre{width:0;min-width:0;flex:1;height:48px;font-size:17px}}
+
+/* Rendimiento: las filas fuera de pantalla no se dibujan hasta que se acercan */
+#filas > [hidden]{display:none!important}
+#filas > *{content-visibility:auto;contain-intrinsic-size:auto 35px}
+
+/* Burbuja del menú que se desliza de página en página (escritorio) */
+@media (min-width:981px){@view-transition{navigation:auto}}
+.menu{position:relative}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
+.menu a{position:relative;z-index:1}
+.menu.con-pill a.on{background:transparent}
+.menu a:nth-of-type(1){view-transition-name:menu-1}
+.menu a:nth-of-type(2){view-transition-name:menu-2}
+.menu a:nth-of-type(3){view-transition-name:menu-3}
+.menu a:nth-of-type(4){view-transition-name:menu-4}
+::view-transition-group(menu-pill){animation-duration:.4s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* Ícono de la app arriba a la izquierda (aquí irá luego el aviso "instalar") */
+.app-ico{position:fixed;top:calc(24px + env(safe-area-inset-top,0px));left:calc(20px + env(safe-area-inset-left,0px));z-index:20;width:60px;height:60px;border-radius:14px;box-shadow:0 1px 4px rgba(179,179,179,.6);display:block;transition:transform .15s}
+.app-ico:hover{transform:scale(1.04)}
+.app-ico img{width:100%;height:100%;border-radius:14px;display:block}
+.burger{border-radius:12px!important}
+@media (max-width:980px){.app-ico{width:52px;height:52px;border-radius:12px;left:calc(16px + env(safe-area-inset-left,0px))}.app-ico img{border-radius:12px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 21.5v-2.5a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="salir" viewBox="0 0 24 24"><circle cx="10" cy="7.5" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 21v-1.5a5 5 0 0 1 5-5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 15.5l5 5M21 15.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="circplus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6" fill="none" stroke="#000" stroke-width="1.3"/><path d="M10 5.5v9M5.5 10h9" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="up" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#1E9E3A"/><path d="M5.5 12.5 10 8l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="down" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#E2561B"/><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- MENÚ -->
+<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
+<div class="right">
+  <div class="panel">
+    <nav class="menu" aria-label="Menú principal">
+      <a href="index.html">Inicio</a>
+      <a data-link="inscripciones">Inscripciones</a>
+      <a data-link="ranking">Ranking</a>
+      <a data-link="bases">Bases</a>
+    </nav>
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+  </div>
+  <button class="burger" id="burger" aria-label="Menú"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</div>
+
+<main>
+  <div class="cab-go"><h1>Uma <b>Go</b></h1></div>
+  <p class="sub">Arma tu propio Uma con amigos y llévalo en el celular.</p>
+
+  <!-- ARMAR -->
+  <section class="card" id="armar">
+    <h2>Genera tu Uma Go</h2>
+    <p class="desc">Ingresa a los jugadores en orden, de mayor a menor nivel de juego (8 a 10 jugadores).</p>
+    <div class="jugs" id="jugs"></div>
+    <button class="agregar" type="button" id="agregar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>agregar jugador</button>
+    <p class="error-go" id="errorGo" hidden></p>
+    <div class="acc">
+      <span class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>Se armarán partidos en dos campos para jugar en simultáneo.</span>
+      <div class="der">
+        <button class="txt-btn" type="button" id="limpiar">reestablecer</button>
+        <button class="pill btn-azul" type="button" id="generar">generar Uma Go</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="juego" hidden>
+    <div class="juego-cab">
+      <div><p class="ronda-n" id="rondaN">Ronda 1</p><h2>Tu Uma Go</h2></div>
+      <button class="txt-btn rojo" type="button" id="reiniciar">reestablecer Uma Go</button>
+    </div>
+    <div class="cuerpo">
+      <aside class="tabla">
+        <h3>Posiciones</h3>
+        <div class="enc"><span>#</span><span>Jugador</span><span>PG</span><span>Dif.</span><span>Coc.</span></div>
+        <div class="filas" id="filas"></div>
+        <p class="leyenda">PG: partidos ganados · Dif.: diferencia de puntos · Coc.: puntos a favor ÷ en contra. Suma todas las rondas.</p>
+      </aside>
+      <div>
+        <div class="seg-campo" id="segCampo"><button data-c="1" class="on">Campo 1</button><button data-c="2">Campo 2</button></div>
+        <div class="campos" id="campos" data-ver="1"></div>
+      </div>
+    </div>
+    <div class="siguiente" id="siguiente"></div>
+  </section>
+</main>
+
+<!-- MENÚ CELULAR -->
+<div class="mfondo" id="mfondo" hidden></div>
+<aside class="mpanel" id="mpanel" aria-label="Menú" hidden>
+  <div class="mhead">
+    <a class="cuenta" href="mi-cuenta.html">Mi cuenta <svg><use href="#user"/></svg></a>
+    <button class="mclose" id="mclose" aria-label="Cerrar menú"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <nav class="mnav">
+    <a href="index.html">Inicio</a>
+    <a data-link="inscripciones">Inscripciones</a>
+    <button class="mdrop" id="mdrop" aria-expanded="false">Partidos <svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="msub" id="msub">
+      <a data-link="ronda1">Ronda 1</a>
+      <a data-link="ronda2">Ronda 2</a>
+    </div>
+    <a data-link="ranking">Ranking</a>
+    <a data-link="bases">Bases</a>
+    <a data-link="umaGo">Uma Go</a>
+  </nav>
+</aside>
+
+<script>
+const LINKS = {
+  inscripciones: "inscripciones.html",
+  ranking:       "ranking.html",
+  bases:         "bases.html",
+  umaGo:         "uma-go.html",
+  ronda1:        "ronda.html?ronda=1",
+  ronda2:        "ronda.html?ronda=2",
+};
+
+(function(){
+  const $=s=>document.querySelector(s);
+  document.querySelectorAll('[data-link]').forEach(a=>a.href=LINKS[a.dataset.link]||'#');
+
+  const CLAVE='muevete.umago.v1', MIN=8, MAX=10;
+  // mismos emparejamientos que el Uma (índices del campo: a1, a2, b1, b2)
+  const SETS={5:[[0,1,2,4],[0,2,3,4],[1,4,2,3],[0,4,1,3],[0,3,1,2]],4:[[0,1,2,3],[0,2,1,3],[0,3,1,2]]};
+  const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const ICO_X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ICO_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const ICO_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>';
+
+  let S=null; try{ S=JSON.parse(localStorage.getItem(CLAVE)||'null'); }catch(e){}
+  if(!S) S={nombres:Array(MIN).fill(''),juego:null};
+  const guardar=()=>{ try{ localStorage.setItem(CLAVE,JSON.stringify(S)); }catch(e){} };
+
+  /* ---------- armar ---------- */
+  function pintarNombres(){
+    const n=S.nombres.length;
+    $('#jugs').innerHTML=S.nombres.map((v,i)=>`<div class="jug"><span class="n">${i+1}.</span><input value="${esc(v)}" data-i="${i}" placeholder="Nombre" autocomplete="off" enterkeyhint="next" maxlength="40">${n>MIN?`<button class="quitar" type="button" data-q="${i}" aria-label="Eliminar jugador ${i+1}">${ICO_X}</button>`:'<span></span>'}</div>`).join('');
+    $('#agregar').hidden=n>=MAX;
+    $('#jugs').querySelectorAll('input').forEach(inp=>{
+      inp.oninput=()=>{ S.nombres[+inp.dataset.i]=inp.value; inp.classList.remove('mal'); guardar(); };
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); const sig=$('#jugs').querySelector(`input[data-i="${+inp.dataset.i+1}"]`); sig?sig.focus():inp.blur(); } };
+    });
+    $('#jugs').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{ S.nombres.splice(+b.dataset.q,1); guardar(); pintarNombres(); });
+  }
+  $('#agregar').onclick=()=>{ if(S.nombres.length<MAX){ S.nombres.push(''); guardar(); pintarNombres(); $('#jugs').querySelector(`input[data-i="${S.nombres.length-1}"]`).focus(); } };
+  $('#limpiar').onclick=()=>{ S.nombres=Array(MIN).fill(''); guardar(); pintarNombres(); $('#errorGo').hidden=true; };
+
+  const tamanos=n=>n===8?[4,4]:n===9?[5,4]:[5,5];
+  function partidosDe(ids){ return SETS[ids.length].map((s,k)=>({n:k+1,a:[ids[s[0]],ids[s[1]]],b:[ids[s[2]],ids[s[3]]],sa:null,sb:null,fin:false})); }
+  // Ronda 1: campos parejos (en zigzag por nivel: 1-4-5-8-9 / 2-3-6-7-10)
+  function ronda1(n){
+    const c=[[],[]]; for(let i=0;i<n;i++){ const g=Math.floor(i/2), k=i%2; c[g%2===0?k:1-k].push(i); }
+    // si un campo quedó con 5 y el otro con 4, el de 5 es el campo 1
+    if(c[1].length>c[0].length) c.reverse();
+    return c;
+  }
+  $('#generar').onclick=()=>{
+    const ins=[...$('#jugs').querySelectorAll('input')]; let mal=false;
+    const nombres=S.nombres.map(x=>x.trim());
+    ins.forEach((inp,i)=>{ const v=nombres[i]; const dup=v&&nombres.indexOf(v)!==i; if(!v||dup){ inp.classList.add('mal'); mal=true; } });
+    const e=$('#errorGo');
+    if(mal){ e.textContent=nombres.some(v=>!v)?'Completa el nombre de todos los jugadores.':'Hay nombres repetidos.'; e.hidden=false; return; }
+    e.hidden=true;
+    const campos=ronda1(nombres.length);
+    S.juego={jugadores:nombres,ronda:1,historial:[],campos:campos.map(ids=>({ids,partidos:partidosDe(ids)}))};
+    guardar(); mostrar(); document.getElementById('juego').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  /* ---------- estadísticas ---------- */
+  function stats(partidos,jugadores){
+    const t=jugadores.map((nm,i)=>({i,nm,pg:0,pf:0,pc:0}));
+    partidos.filter(p=>p.fin).forEach(p=>{
+      p.a.forEach(i=>{ t[i].pf+=p.sa; t[i].pc+=p.sb; if(p.sa>p.sb) t[i].pg++; });
+      p.b.forEach(i=>{ t[i].pf+=p.sb; t[i].pc+=p.sa; if(p.sb>p.sa) t[i].pg++; });
+    });
+    t.forEach(x=>{ x.dif=x.pf-x.pc; x.coc=x.pc===0?x.pf:Math.round(x.pf/x.pc*1000)/1000; });
+    return t;
+  }
+  const ordenar=(a,b)=>b.pg-a.pg||b.coc-a.coc||a.i-b.i;   // a.i = orden de nivel (desempate)
+  const todosLosPartidos=()=>[...S.juego.historial.flat(),...S.juego.campos.flatMap(c=>c.partidos)];
+
+  /* ---------- pintar juego ---------- */
+  function mostrar(){
+    const J=S.juego;
+    $('#armar').hidden=!!J; $('#juego').hidden=!J;
+    if(!J){ pintarNombres(); return; }
+    $('#rondaN').textContent='Ronda '+J.ronda;
+    const tabla=stats(todosLosPartidos(),J.jugadores).sort(ordenar);
+    $('#filas').innerHTML=tabla.map((x,k)=>`<div class="fila"><span class="pos">${k+1}</span><span class="nm">${esc(x.nm)}</span><span>${x.pg}</span><span class="${x.dif<0?'neg':''}">${x.dif>0?'+':''}${x.dif}</span><span>${x.coc.toFixed(2)}</span></div>`).join('');
+    $('#campos').innerHTML=J.campos.map((c,ci)=>`<div class="col" data-campo="${ci+1}"><h3>Campo ${ci+1} <small>${c.ids.length} jugadores</small></h3>${c.partidos.map((p,pi)=>tarjeta(p,ci,pi,c.ids)).join('')}</div>`).join('');
+    conectar(); pintarSiguiente();
+  }
+  function tarjeta(p,ci,pi,ids){
+    const nm=i=>esc(S.juego.jugadores[i]);
+    const ga=p.fin&&p.sa>p.sb, gb=p.fin&&p.sb>p.sa;
+    const num=(lado,v)=>p.fin&&!p.edit?`<div class="num">${v}</div>`:`<div class="num"><input type="number" inputmode="numeric" min="0" max="99" data-l="${lado}" value="${v??''}" placeholder="0" aria-label="Puntos"></div>`;
+    const descansa=ids.length===5?ids.filter(i=>!p.a.includes(i)&&!p.b.includes(i)).map(nm):[];
+    let pie;
+    if(p.fin&&!p.edit) pie=`<span class="estado-fin">${ICO_OK}Finalizado</span><button class="pill chica borde" data-acc="mod">${ICO_EDIT}modificar</button>`;
+    else pie=`<span class="ayuda" data-ayuda></span>${p.edit?'<button class="txt-btn" style="color:#BFD0F5" data-acc="cancel">cancelar</button>':''}<button class="pill chica" data-acc="fin">${p.edit?'guardar':'finalizar'}</button>`;
+    return `<article class="partido${p.fin?' fin':''}" data-c="${ci}" data-p="${pi}">
+      <div class="p-top"><h4>Partido<b>${p.n}</b></h4></div>
+      <div class="marcador">
+        <div class="lado ${ga?'gana':gb?'pierde':''}"><div class="equipo"><span>${nm(p.a[0])}</span><span>${nm(p.a[1])}</span></div>${num('a',p.sa)}</div>
+        <div class="lado ${gb?'gana':ga?'pierde':''}"><div class="equipo"><span>${nm(p.b[0])}</span><span>${nm(p.b[1])}</span></div>${num('b',p.sb)}</div>
+      </div>
+      ${descansa.length?`<p class="descansa">Descansa: ${descansa.join(', ')}</p>`:''}
+      <div class="p-pie">${pie}</div>
+    </article>`;
+  }
+  function conectar(){
+    document.querySelectorAll('.partido').forEach(el=>{
+      const p=S.juego.campos[+el.dataset.c].partidos[+el.dataset.p];
+      const ay=el.querySelector('[data-ayuda]');
+      el.querySelectorAll('input').forEach(inp=>{ inp.oninput=()=>{ if(ay){ay.textContent='';ay.classList.remove('error');}
+        if(!p.edit){ const v=inp.value===''?null:Math.max(0,Math.min(99,parseInt(inp.value,10)||0)); if(inp.dataset.l==='a') p.sa=v; else p.sb=v; guardar(); } }; });
+      const b=el.querySelector('[data-acc]'); if(!b) return;
+      el.querySelectorAll('[data-acc]').forEach(btn=>btn.onclick=()=>{
+        const acc=btn.dataset.acc;
+        if(acc==='mod'){ p.edit=true; mostrar(); return; }
+        if(acc==='cancel'){ delete p.edit; mostrar(); return; }
+        const va=el.querySelector('input[data-l="a"]').value, vb=el.querySelector('input[data-l="b"]').value;
+        const err=t=>{ ay.textContent=t; ay.classList.add('error'); };
+        if(va===''||vb==='') return err('Ingresa ambos puntajes');
+        const a=parseInt(va,10), bb=parseInt(vb,10);
+        if(a===bb) return err('No puede haber empate');
+        p.sa=a; p.sb=bb; p.fin=true; delete p.edit; guardar(); mostrar();
+      });
+    });
+  }
+  document.querySelectorAll('#segCampo button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#segCampo button').forEach(x=>x.classList.toggle('on',x===b)); $('#campos').dataset.ver=b.dataset.c; });
+
+  /* ---------- siguiente ronda ---------- */
+  let confirmando=false;
+  function pintarSiguiente(){
+    const J=S.juego, pend=J.campos.flatMap(c=>c.partidos).filter(p=>!p.fin).length;
+    const box=$('#siguiente');
+    if(confirmando&&!pend){
+      box.innerHTML=`<span class="msg">Se armarán los campos de la ronda ${J.ronda+1} según los resultados. ¿Continuar?</span><div class="der"><button class="txt-btn" id="sigNo">cancelar</button><button class="pill btn-azul" id="sigSi">confirmar</button></div>`;
+      $('#sigNo').onclick=()=>{ confirmando=false; pintarSiguiente(); };
+      $('#sigSi').onclick=()=>{ confirmando=false; siguienteRonda(); };
+      return;
+    }
+    box.innerHTML=`<span class="msg ${pend?'pend':''}">${pend?`¡Debes finalizar todos los partidos primero! Faltan ${pend}.`:'Todos los partidos finalizados.'}</span><div class="der"><button class="pill btn-azul" id="sigBtn" ${pend?'disabled':''}>generar siguiente ronda</button></div>`;
+    $('#sigBtn').onclick=()=>{ confirmando=true; pintarSiguiente(); };
+  }
+  // Igual que la ronda 2 del Uma: primero los 1.º de cada campo, luego los 2.º, etc.
+  // (en el mismo puesto, mayor cociente primero). El campo 1 recibe a los mejores.
+  function siguienteRonda(){
+    const J=S.juego, n=J.jugadores.length;
+    const orden=J.campos.flatMap(c=>{
+      const st=stats(c.partidos,J.jugadores).filter(x=>c.ids.includes(x.i)).sort(ordenar);
+      return st.map((x,k)=>({i:x.i,prom:(k+1)*100-x.coc}));
+    }).sort((a,b)=>a.prom-b.prom||a.i-b.i).map(x=>x.i);
+    const [t1]=tamanos(n);
+    const c1=orden.slice(0,t1).sort((a,b)=>a-b), c2=orden.slice(t1).sort((a,b)=>a-b);
+    J.historial.push(J.campos.flatMap(c=>c.partidos));
+    J.ronda++; J.campos=[c1,c2].map(ids=>({ids,partidos:partidosDe(ids)}));
+    guardar(); mostrar(); document.getElementById('juego').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  let reinicio=false;
+  $('#reiniciar').onclick=()=>{
+    const b=$('#reiniciar');
+    if(!reinicio){ reinicio=true; b.textContent='¿seguro? toca de nuevo para borrar'; setTimeout(()=>{ reinicio=false; b.textContent='reestablecer Uma Go'; },4000); return; }
+    reinicio=false; b.textContent='reestablecer Uma Go';
+    S.juego=null; guardar(); mostrar(); scrollTo({top:0,behavior:'smooth'});
+  };
+
+  mostrar();
+
+  // menú celular
+  const mp=$('#mpanel'),mf=$('#mfondo'); let cierre;
+  const menu=open=>{clearTimeout(cierre);
+    if(open){mp.hidden=false;mf.hidden=false;mp.offsetWidth;requestAnimationFrame(()=>document.body.classList.add('mopen'));}
+    else{document.body.classList.remove('mopen');cierre=setTimeout(()=>{mp.hidden=true;mf.hidden=true;},340);}};
+  $('#burger').onclick=()=>menu(true); $('#mclose').onclick=()=>menu(false); mf.onclick=()=>menu(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('#mdrop').onclick=e=>{const o=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',o);$('#msub').classList.toggle('open',o)};
+})();
+</script>
+<script src="js/pie.js"></script>
+<script src="js/menu-pill.js"></script>
+</body>
+</html>
