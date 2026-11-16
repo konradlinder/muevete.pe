@@ -1,0 +1,12 @@
+// muévete.pe · configuración de Cloudflare (Worker con archivos estáticos)
+// Cloudflare sirve la carpeta del repositorio tal cual, con las reglas de _redirects y _headers.
+{
+  "name": "muevete-pe",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": ".",
+    // /ranking sirve ranking.html; /ranking.html redirige a /ranking
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
