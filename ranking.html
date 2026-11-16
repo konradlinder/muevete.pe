@@ -170,6 +170,13 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 ::view-transition-group(menu-1),::view-transition-group(menu-2),::view-transition-group(menu-3),::view-transition-group(menu-4){animation-duration:.4s}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* Ícono de la app arriba a la izquierda (aquí irá luego el aviso "instalar") */
+.app-ico{position:fixed;top:calc(24px + env(safe-area-inset-top,0px));left:calc(20px + env(safe-area-inset-left,0px));z-index:20;width:60px;height:60px;border-radius:14px;box-shadow:0 1px 4px rgba(179,179,179,.6);display:block;transition:transform .15s}
+.app-ico:hover{transform:scale(1.04)}
+.app-ico img{width:100%;height:100%;border-radius:14px;display:block}
+.burger{border-radius:12px!important}
+@media (max-width:980px){.app-ico{width:52px;height:52px;border-radius:12px;left:calc(16px + env(safe-area-inset-left,0px))}.app-ico img{border-radius:12px}}
 </style>
 </head>
 <body>
@@ -183,6 +190,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 </svg>
 
 <!-- MENÚ -->
+<a class="app-ico" href="index.html" aria-label="Ir al inicio de muévete.pe"><img src="img/favicon-192.png" alt="" width="60" height="60"></a>
 <div class="right">
   <div class="panel">
     <nav class="menu" aria-label="Menú principal">
