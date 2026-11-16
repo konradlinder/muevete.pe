@@ -140,6 +140,25 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .nota a{color:var(--azul-menu);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .aviso{text-align:center;font-weight:500;color:#5B6370;padding:20px 0;grid-column:1 / -1}
 .pill.confirmar{background:#fff;color:var(--azul-menu)}
+/* marcador en vivo */
+.vivo{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#fff}
+.vivo::before{content:"";width:8px;height:8px;border-radius:50%;background:#FF5A4E;animation:latido 1.6s infinite}
+@keyframes latido{0%{box-shadow:0 0 0 0 rgba(255,90,78,.7)}70%{box-shadow:0 0 0 8px rgba(255,90,78,0)}100%{box-shadow:0 0 0 0 rgba(255,90,78,0)}}
+.ctrl{display:flex;align-items:center;gap:8px}
+.ctrl button{border:0;cursor:pointer;display:grid;place-items:center;border-radius:999px;padding:0;transition:transform .08s,filter .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ctrl button:active{transform:scale(.9)}
+.ctrl .menos{width:36px;height:36px;background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45)}
+.ctrl .menos:hover{background:rgba(255,255,255,.1)}
+.ctrl .mas1{width:46px;height:46px;background:var(--amarillo);color:#000;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.ctrl svg{width:18px;height:18px}
+.ctrl .mas1 svg{width:22px;height:22px}
+.ctrl .num{width:46px;color:#fff;font-size:26px}
+.partido.envivo .lado .num{color:#fff}
+.partido.envivo .lado.lidera .num{color:var(--amarillo)}
+.pop{animation:pop .25s}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.p-pie.solo-info{min-height:0;justify-content:flex-start}
+
 
 @media (max-width:980px){main{padding-top:calc(29px + env(safe-area-inset-top,0px))}.cab{margin-top:18px}.cuerpo{grid-template-columns:1fr}.tabla{position:static}.lista{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.lista{grid-template-columns:1fr}}
@@ -270,6 +289,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/partidos-datos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const LINKS = {
   inscripciones: "inscripciones.html",
@@ -292,14 +312,60 @@ const LINKS = {
   $('#mdrop').setAttribute('aria-expanded','true'); $('#msub').classList.add('open');
 
   const SVG_OK=`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8.2" stroke-width="1.6"/><path d="M6.4 10.3l2.4 2.4 4.8-5"/></svg>`, SVG_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
-  const AUTH=window.MUEVETE_AUTH;
-  let partidos=[], J=[], puedo=false, sesion=null, firma='';
-  const editando=new Set();   // partidos finalizados que se están corrigiendo
-  const VENTANA=60000;        // un marcador se puede corregir hasta 60 s después de registrarlo
   const SVG_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
-  const escritos={};   // marcadores que la persona está escribiendo (no se pierden al actualizar)
+  const SVG_MAS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg>';
+  const SVG_MENOS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h12"/></svg>';
+  const SVG_PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
+  const AUTH=window.MUEVETE_AUTH, DB=window.MUEVETE_DB||{};
+  const VENTANA=60000;      // 60 s para corregir un marcador finalizado
+  const ESPERA=1200;        // se guarda 1,2 s después del último toque
+  let partidos=[], J=[], puedo=false, sesion=null, firma='', tiempoReal=false;
+  const editando=new Set(); // finalizados que se están corrigiendo
+  const loc={};             // marcador local por partido: {a,b,sucio,guardando,error,t,conf}
 
-  // Tabla calculada con los partidos finalizados
+  /* ---------- marcador local que no se pierde ---------- */
+  const CLAVE=id=>'muevete.vivo.'+id;
+  const guardarLocal=(id,l)=>{ try{ localStorage.setItem(CLAVE(id),JSON.stringify({a:l.a,b:l.b,t:Date.now()})); }catch(e){} };
+  const borrarLocal=id=>{ try{ localStorage.removeItem(CLAVE(id)); }catch(e){} };
+  const leerLocal=id=>{ try{ return JSON.parse(localStorage.getItem(CLAVE(id))||'null'); }catch(e){ return null; } };
+
+  const valores=p=>{ const l=loc[p.id]; return (l&&(l.sucio||l.guardando||editando.has(p.id)))?l:{a:p.pa??0,b:p.pb??0}; };
+
+  async function enviar(p){
+    const l=loc[p.id]; if(!l||!l.sucio||l.guardando) return;
+    l.guardando=true; l.sucio=false; l.error=''; const a=l.a,b=l.b;
+    estadoCard(p);
+    try{
+      await AUTH.db('rpc/actualizar_marcador',{method:'POST',body:JSON.stringify({p_id:p.id,p_score_a:a,p_score_b:b})});
+      l.guardando=false; l.ok=Date.now();
+      p.pa=a; p.pb=b; p.vivo=true; p.vivoPor='ti'; p.vivoEn=Date.now();
+      if(!l.sucio) borrarLocal(p.id);
+    }catch(e){
+      l.guardando=false; l.sucio=true;
+      l.error=e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':(e.message||'Sin conexión');
+      if(/finalizado/i.test(l.error)){ l.sucio=false; borrarLocal(p.id); }
+      else { clearTimeout(l.t); l.t=setTimeout(()=>enviar(p),4000); }   // reintenta solo
+    }
+    estadoCard(p);
+    if(l.sucio&&!l.error) programar(p);
+  }
+  function programar(p){ const l=loc[p.id]; clearTimeout(l.t); l.t=setTimeout(()=>enviar(p),ESPERA); }
+  function tocar(p,lado,d){
+    const v=valores(p);
+    const l=loc[p.id]=Object.assign(loc[p.id]||{},{a:v.a,b:v.b});
+    l[lado]=Math.max(0,Math.min(99,l[lado]+d)); l.conf=false;
+    if(editando.has(p.id)){ actualizarNums(p); estadoCard(p); return; }   // corrección: se guarda con "Guardar"
+    l.sucio=true; l.error=''; guardarLocal(p.id,l);
+    actualizarNums(p,lado); estadoCard(p); programar(p);
+  }
+  async function vaciarPendientes(){
+    const ps=partidos.filter(p=>loc[p.id]&&(loc[p.id].sucio||loc[p.id].guardando));
+    for(const p of ps){ clearTimeout(loc[p.id].t); if(loc[p.id].sucio) await enviar(p); }
+  }
+  addEventListener('pagehide',()=>{ partidos.forEach(p=>{ const l=loc[p.id]; if(l&&l.sucio) guardarLocal(p.id,l); }); });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) partidos.forEach(p=>{ const l=loc[p.id]; if(l&&l.sucio){ clearTimeout(l.t); enviar(p); } }); });
+
+  /* ---------- tabla de posiciones (partidos finalizados) ---------- */
   function tabla(){
     const t=new Map(J.map((nombre,i)=>[nombre,{nombre,i,g:0,pf:0,pc:0}]));
     const de=n=>{ if(!t.has(n)) t.set(n,{nombre:n,i:t.size,g:0,pf:0,pc:0}); return t.get(n); };
@@ -312,119 +378,226 @@ const LINKS = {
     L.forEach(x=>{x.coc=x.pc?x.pf/x.pc:x.pf;x.dif=x.pf-x.pc});
     return L.sort((x,y)=>y.g-x.g||y.coc-x.coc||y.dif-x.dif||x.i-y.i);
   }
-
-  function pintar(){
+  function pintarTabla(){
     const hay=partidos.some(p=>p.fin);
     $('#filas').replaceChildren(...tabla().map((x,k)=>{
       const d=document.createElement('div'); d.className='fila';
       d.innerHTML=`<span class="pos">${k+1}</span><span class="nm"></span><span>${hay?x.g:'–'}</span><span>${hay?x.coc.toFixed(3):'–'}</span><span class="${hay&&x.dif<0?'neg':''}">${hay?x.dif:'–'}</span>`;
       d.querySelector('.nm').textContent=x.nombre; return d;
     }));
+  }
 
+  /* ---------- tarjetas ---------- */
+  const hace=t=>{ const s=Math.max(0,Math.round((Date.now()-t)/1000)); return s<5?'ahora':s<60?`hace ${s} s`:`hace ${Math.round(s/60)} min`; };
+  function boton(clase,html,aria){ const b=document.createElement('button'); b.type='button'; b.className=clase; b.innerHTML=html; if(aria) b.setAttribute('aria-label',aria); return b; }
+
+  function card(p){
+    const tpl=$('#tpl-partido');
+    const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
+    n.dataset.id=p.id;
+    f('n').textContent=p.n;
+    const eq=(el,ids)=>ids.forEach(j=>{const s=document.createElement('span');s.textContent=j;el.append(s)});
+    eq(f('ea'),p.a); eq(f('eb'),p.b);
+    const corrigiendo=p.fin&&editando.has(p.id);
+
+    // FINALIZADO
+    if(p.fin&&!corrigiendo){
+      n.classList.add('fin');
+      const ganaA=p.pa>p.pb;
+      f('pa').textContent=p.pa??'–'; f('pb').textContent=p.pb??'–';
+      f(ganaA?'la':'lb').classList.add('gana'); f(ganaA?'lb':'la').classList.add('pierde');
+      f('estado').innerHTML=`<span class="estado-fin">${SVG_OK} Finalizado</span>`;
+      const resta=p.finEn?Math.ceil((p.finEn+VENTANA-Date.now())/1000):0;
+      if(puedo&&resta>0){
+        n.classList.add('editable');
+        const e=boton('pill chica borde',`editar <span class="seg">${resta} s</span> `+SVG_EDIT,`Editar el marcador del partido ${p.n}`);
+        e.dataset.hasta=p.finEn+VENTANA;
+        e.onclick=()=>{ editando.add(p.id); loc[p.id]={a:p.pa??0,b:p.pb??0}; reemplazar(p); };
+        f('pie').append(e);
+      }
+      return n;
+    }
+
+    // PENDIENTE (sin iniciar)
+    if(!p.fin&&!p.vivo&&!(loc[p.id]&&(loc[p.id].sucio||loc[p.id].guardando))){
+      f('estado').innerHTML='<span class="estado-pend">Pendiente</span>';
+      if(!puedo){
+        f('pa').innerHTML='<span class="guion">–</span>'; f('pb').innerHTML='<span class="guion">–</span>';
+        n.querySelector('.p-pie').remove(); return n;
+      }
+      f('pa').innerHTML='<span class="guion">0</span>'; f('pb').innerHTML='<span class="guion">0</span>';
+      const info=Object.assign(document.createElement('span'),{className:'ayuda',textContent:'Cuando empiecen a jugar'});
+      const b=boton('pill','Iniciar marcador '+SVG_PLAY,`Iniciar el marcador del partido ${p.n}`);
+      b.onclick=()=>{ loc[p.id]={a:0,b:0,sucio:true}; guardarLocal(p.id,loc[p.id]); p.vivo=true; reemplazar(p); enviar(p); };
+      f('pie').append(info,b);
+      return n;
+    }
+
+    // EN VIVO / CORRIGIENDO
+    n.classList.add('envivo');
+    f('estado').innerHTML=corrigiendo?'<span class="estado-pend">Corrigiendo</span>':'<span class="vivo">EN VIVO</span>';
+    const v=valores(p);
+    if(!puedo){
+      f('pa').textContent=v.a; f('pb').textContent=v.b;
+      f('la').classList.toggle('lidera',v.a>v.b); f('lb').classList.toggle('lidera',v.b>v.a);
+      const pie=f('pie'); pie.innerHTML=''; pie.classList.add('solo-info');
+      pie.append(Object.assign(document.createElement('span'),{className:'ayuda',textContent:p.vivoPor?`Actualizado por ${p.vivoPor} · ${hace(p.vivoEn||Date.now())}`:'Se actualiza solo'}));
+      return n;
+    }
+    for(const lado of ['a','b']){
+      const caja=f('p'+lado); caja.classList.add('ctrl-num');
+      const ctrl=document.createElement('div'); ctrl.className='ctrl';
+      const menos=boton('menos',SVG_MENOS,`Restar un punto al equipo ${lado.toUpperCase()}`);
+      const mas=boton('mas1',SVG_MAS,`Sumar un punto al equipo ${lado.toUpperCase()}`);
+      const num=document.createElement('div'); num.className='num'; num.dataset.n=lado; num.textContent=v[lado];
+      menos.onclick=()=>tocar(p,lado,-1); mas.onclick=()=>tocar(p,lado,+1);
+      ctrl.append(menos,num,mas);
+      caja.replaceWith(ctrl);
+    }
+    f('la').classList.toggle('lidera',v.a>v.b); f('lb').classList.toggle('lidera',v.b>v.a);
+    const info=Object.assign(document.createElement('span'),{className:'ayuda',id:'info-'+p.id});
+    const fin=boton('pill',(corrigiendo?'Guardar ':'Finalizar ')+SVG_CHECK);
+    fin.dataset.rol='fin';
+    fin.onclick=async()=>{
+      const l=loc[p.id]=loc[p.id]||{a:v.a,b:v.b}; const w=valores(p);
+      if(w.a===w.b){ l.error='No puede haber empate'; estadoCard(p); return; }
+      if(!l.conf){ l.conf=true; estadoCard(p); return; }
+      fin.disabled=true; fin.textContent='guardando…';
+      try{
+        if(!corrigiendo) await vaciarPendientes();
+        await AUTH.db('rpc/finalizar_partido',{method:'POST',body:JSON.stringify({p_id:p.id,p_score_a:w.a,p_score_b:w.b})});
+        delete loc[p.id]; borrarLocal(p.id); editando.delete(p.id);
+        firma=''; await cargar(true);
+      }catch(e){
+        l.conf=false; l.error=e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':e.message; fin.disabled=false; estadoCard(p);
+      }
+    };
+    if(corrigiendo){
+      const c=boton('pill chica borde','cancelar'); c.style.marginRight='8px';
+      c.onclick=()=>{ editando.delete(p.id); delete loc[p.id]; reemplazar(p); };
+      f('pie').append(info,c,fin);
+      info.dataset.hasta=p.finEn+VENTANA;
+    } else f('pie').append(info,fin);
+    setTimeout(()=>estadoCard(p));
+    return n;
+  }
+
+  // Solo cambia los números de una tarjeta (sin redibujarla)
+  function actualizarNums(p,lado){
+    const n=document.querySelector(`.partido[data-id="${p.id}"]`); if(!n) return;
+    const v=valores(p);
+    n.querySelectorAll('.num[data-n]').forEach(el=>{ el.textContent=v[el.dataset.n]; });
+    if(lado){ const el=n.querySelector(`.num[data-n="${lado}"]`); if(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); } }
+    const ls=n.querySelectorAll('.lado'); ls[0].classList.toggle('lidera',v.a>v.b); ls[1].classList.toggle('lidera',v.b>v.a);
+  }
+  // Texto de abajo: guardando / guardado / quién actualizó / errores
+  function estadoCard(p){
+    const n=document.querySelector(`.partido[data-id="${p.id}"]`); if(!n) return;
+    const info=n.querySelector('.ayuda'); const fin=n.querySelector('[data-rol=fin]'); const l=loc[p.id]||{};
+    const v=valores(p);
+    if(fin&&!fin.disabled){ const corr=editando.has(p.id); fin.classList.toggle('confirmar',!!l.conf); fin.innerHTML=l.conf?`Confirmar ${v.a}–${v.b} ${SVG_CHECK}`:(corr?'Guardar ':'Finalizar ')+SVG_CHECK; }
+    if(!info) return;
+    info.classList.toggle('error',!!l.error);
+    if(l.error) info.textContent=/sesión/.test(l.error)||/empate|finalizado|60/.test(l.error)?l.error:`${l.error}. Reintentando…`;
+    else if(l.conf) info.textContent='¿Seguro? Toca otra vez para confirmar';
+    else if(editando.has(p.id)) info.textContent='';
+    else if(l.guardando) info.textContent='Guardando…';
+    else if(l.sucio) info.textContent='Cambios sin guardar…';
+    else if(l.ok&&Date.now()-l.ok<4000) info.textContent='Guardado ✓';
+    else if(p.vivoPor) info.textContent=`Actualizado por ${p.vivoPor} · ${hace(p.vivoEn||Date.now())}`;
+    else info.textContent='Se guarda solo mientras anotan';
+  }
+  function reemplazar(p){
+    const viejo=document.querySelector(`.partido[data-id="${p.id}"]`);
+    const nuevo=card(p);
+    if(viejo) viejo.replaceWith(nuevo);
+  }
+  function pintar(){
+    pintarTabla();
     const pend=partidos.some(p=>!p.fin);
     const nota=$('#nota');
     nota.hidden=!(pend&&!puedo);
-    if(pend&&!puedo) nota.innerHTML='<a href="mi-cuenta.html">Inicia sesión</a> para registrar los marcadores.';
-
+    if(pend&&!puedo) nota.innerHTML='<a href="mi-cuenta.html">Inicia sesión</a> para anotar los marcadores.';
     if(!partidos.length){ $('#lista').innerHTML='<p class="aviso">Todavía no hay partidos para este campo.</p>'; return; }
-    const tpl=$('#tpl-partido');
-    $('#lista').replaceChildren(...partidos.map(p=>{
-      const n=tpl.content.firstElementChild.cloneNode(true), f=k=>n.querySelector(`[data-f="${k}"]`);
-      f('n').textContent=p.n;
-      const eq=(el,ids)=>ids.forEach(j=>{const s=document.createElement('span');s.textContent=j;el.append(s)});
-      eq(f('ea'),p.a); eq(f('eb'),p.b);
-      const corrigiendo=p.fin&&editando.has(p.id);
-      if(p.fin&&!corrigiendo){
-        n.classList.add('fin');
-        const ganaA=p.pa>p.pb;
-        f('pa').textContent=p.pa??'–'; f('pb').textContent=p.pb??'–';
-        f(ganaA?'la':'lb').classList.add('gana');
-        f(ganaA?'lb':'la').classList.add('pierde');
-        f('estado').innerHTML=`<span class="estado-fin">${SVG_OK} Finalizado</span>`;
-        const resta=p.finEn?Math.ceil((p.finEn+VENTANA-Date.now())/1000):0;
-        if(puedo&&resta>0){
-          n.classList.add('editable');
-          const e=document.createElement('button'); e.type='button'; e.className='pill chica borde'; e.dataset.hasta=p.finEn+VENTANA; e.innerHTML=`editar <span class="seg">${resta} s</span> `+SVG_EDIT;
-          e.setAttribute('aria-label',`Editar el marcador del partido ${p.n}`);
-          e.onclick=()=>{ editando.add(p.id); escritos[p.id]=[String(p.pa??''),String(p.pb??'')]; pintar(); };
-          f('pie').append(e);
-        }
-        return n;
-      }
-      f('estado').innerHTML=corrigiendo?'<span class="estado-pend">Editando</span>':'<span class="estado-pend">Pendiente</span>';
-      if(!puedo){
-        f('pa').innerHTML='<span class="guion">–</span>'; f('pb').innerHTML='<span class="guion">–</span>';
-        n.querySelector('.p-pie').remove();
-        return n;
-      }
-      const inp=lado=>{const i=document.createElement('input');i.type='number';i.inputMode='numeric';i.min=0;i.max=99;i.placeholder='0';i.setAttribute('aria-label',`Puntos del equipo ${lado} en el partido ${p.n}`);return i};
-      const ia=inp('A'), ib=inp('B'); f('pa').append(ia); f('pb').append(ib);
-      const prev=escritos[p.id]; if(prev){ia.value=prev[0];ib.value=prev[1];}
-      const b=document.createElement('button'); b.type='button'; b.className='pill';
-      const ayuda=Object.assign(document.createElement('span'),{className:'ayuda'});
-      let confirmando=false;
-      const etiqueta=corrigiendo?'Guardar':'Finalizar';
-      const normal=()=>{confirmando=false;b.classList.remove('confirmar');b.innerHTML=etiqueta+' '+SVG_CHECK};
-      const revisar=()=>{
-        escritos[p.id]=[ia.value,ib.value]; normal(); ayuda.classList.remove('error');
-        const a=ia.value,c=ib.value, ok=a!==''&&c!==''&&+a>=0&&+c>=0&&+a<=99&&+c<=99;
-        b.disabled=!(ok&&+a!==+c);
-        ayuda.textContent=(ok&&+a===+c)?'No puede haber empate':(corrigiendo?'':'Ingresa el marcador');
-      };
-      ia.oninput=ib.oninput=revisar; revisar();
-      b.onclick=async()=>{
-        if(!confirmando){ confirmando=true; b.classList.add('confirmar'); b.innerHTML=`Confirmar ${ia.value}–${ib.value} ${SVG_CHECK}`; ayuda.textContent='¿Seguro? Toca otra vez para confirmar'; return; }
-        b.disabled=true; b.textContent='guardando…';
-        try{
-          await AUTH.db('rpc/finalizar_partido',{method:'POST',body:JSON.stringify({p_id:p.id,p_score_a:+ia.value,p_score_b:+ib.value})});
-          delete escritos[p.id]; editando.delete(p.id); firma=''; await cargar();
-        }catch(e){
-          normal(); b.disabled=false; ayuda.classList.add('error');
-          ayuda.textContent=e.message==='sin-sesion'?'Tu sesión venció. Vuelve a ingresar.':e.message;
-        }
-      };
-      if(corrigiendo){
-        ayuda.dataset.hasta=p.finEn+VENTANA;
-        const c=document.createElement('button'); c.type='button'; c.className='pill chica borde'; c.style.marginRight='8px'; c.textContent='cancelar';
-        c.onclick=()=>{ editando.delete(p.id); delete escritos[p.id]; pintar(); };
-        f('pie').append(ayuda,c,b);
-      } else f('pie').append(ayuda,b);
-      return n;
-    }));
+    $('#lista').replaceChildren(...partidos.map(card));
   }
 
-  async function cargar(){
+  /* ---------- datos ---------- */
+  async function cargar(forzar){
     let ps;
     try{ ps=await cargarPartidos({ronda,campo}); }
     catch(e){ if(!firma) $('#lista').innerHTML='<p class="aviso">No se pudieron cargar los partidos. Intenta de nuevo en un momento.</p>'; return; }
     const nueva=ps.map(p=>p.id+p.act).join()+'|'+puedo;
-    if(nueva===firma) return; firma=nueva;
-    // no repintar mientras alguien escribe un marcador
-    if((editando.size||(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.partido')))&&partidos.length){ firma=''; return; }
-    partidos=ps; J=jugadoresDelCampo(ps); pintar();
+    if(nueva===firma&&!forzar) return;
+    const primera=!partidos.length;
+    firma=nueva;
+    // recuperar marcadores que quedaron sin guardar (por ejemplo, si se cerró la página)
+    if(primera&&puedo) ps.forEach(p=>{ const g=leerLocal(p.id); if(g&&!p.fin){ loc[p.id]={a:g.a,b:g.b,sucio:true}; p.vivo=true; } else if(g) borrarLocal(p.id); });
+    const ocupado=[...editando].length||document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.partido.fin');
+    if(primera||forzar||!ocupado){ partidos=ps; J=jugadoresDelCampo(ps); pintar(); }
+    else {
+      // aplica solo cambios de partidos que no se están corrigiendo
+      ps.forEach(np=>{ const i=partidos.findIndex(x=>x.id===np.id); if(i<0||editando.has(np.id)) return; partidos[i]=np; reemplazar(np); });
+      pintarTabla();
+    }
+    if(primera&&puedo) ps.forEach(p=>{ if(loc[p.id]&&loc[p.id].sucio) enviar(p); });
+  }
+
+  // Cambio que llega en tiempo real
+  function aplicar(r){
+    if(!r||r.ronda!==ronda||r.campo!==campo) return;
+    const p=partidos.find(x=>x.id===r.partido_id);
+    if(!p){ cargar(true); return; }
+    const l=loc[p.id];
+    const eraFin=p.fin;
+    p.pa=r.score_a; p.pb=r.score_b; p.fin=!!r.finalizado; p.vivo=!!r.en_vivo&&!r.finalizado; p.vivoPor=r.vivo_por||''; p.vivoEn=Date.parse(r.actualizado)||Date.now();
+    if(p.fin&&!eraFin){ firma=''; cargar(true); return; }       // trae la hora de cierre para los 60 s
+    if(editando.has(p.id)) return;
+    if(l&&(l.sucio||l.guardando)) return;                       // mis cambios sin guardar mandan
+    const n=document.querySelector(`.partido[data-id="${p.id}"]`);
+    if(n&&n.querySelector('.ctrl')){ actualizarNums(p); estadoCard(p); }
+    else reemplazar(p);
+    pintarTabla();
+  }
+  function conectarTiempoReal(){
+    if(!window.supabase||!DB.url) return;
+    try{
+      const sb=window.supabase.createClient(DB.url,DB.anonKey,{auth:{persistSession:false,autoRefreshToken:false}});
+      sb.channel(`campo-${ronda}-${campo}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'marcadores_vivo',filter:'campo=eq.'+campo},m=>aplicar(m.new))
+        .subscribe(s=>{ tiempoReal=(s==='SUBSCRIBED'); if(tiempoReal) cargar(); });
+    }catch(e){ tiempoReal=false; }
   }
 
   (async()=>{
     try{ sesion=AUTH?await AUTH.sesion():null; }catch(e){ sesion=null; }
-    puedo=!!sesion;   // por ahora: cualquier persona con cuenta puede registrar o corregir marcadores
-    await cargar();
+    puedo=!!sesion;   // por ahora: cualquier persona con cuenta puede anotar
+    await cargar(true);
+    conectarTiempoReal();
   })();
-  setInterval(()=>{ if(!document.hidden) cargar(); },20000);
+  // respaldo si el tiempo real no conecta: consulta cada 5 s con partidos en vivo (20 s si no)
+  let ultimo=0;
+  setInterval(()=>{
+    if(document.hidden) return;
+    const espera=tiempoReal?60000:(partidos.some(p=>p.vivo)?5000:20000);
+    if(Date.now()-ultimo>=espera){ ultimo=Date.now(); cargar(); }
+  },1000);
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cargar(); });
 
-  // cuenta regresiva de los 60 s para corregir
+  // relojes: cuenta regresiva de 60 s y "hace N s"
   setInterval(()=>{
     let vencido=false;
-    document.querySelectorAll('[data-hasta]').forEach(el=>{
+    document.querySelectorAll('.pill[data-hasta],.ayuda[data-hasta]').forEach(el=>{
       const r=Math.ceil((+el.dataset.hasta-Date.now())/1000);
       if(r<=0){ vencido=true; return; }
       if(el.classList.contains('ayuda')){ if(!el.classList.contains('error')&&!el.textContent.startsWith('¿')) el.textContent=`Quedan ${r} s para corregir`; }
       else { const s=el.querySelector('.seg'); if(s) s.textContent=r+' s'; }
     });
     if(vencido){
-      partidos.forEach(p=>{ if(p.finEn&&p.finEn+VENTANA<=Date.now()){ editando.delete(p.id); delete escritos[p.id]; } });
-      pintar();
+      partidos.forEach(p=>{ if(p.finEn&&p.finEn+VENTANA<=Date.now()&&(editando.has(p.id)||document.querySelector(`.partido[data-id="${p.id}"] [data-hasta]`))){ editando.delete(p.id); delete loc[p.id]; reemplazar(p); } });
     }
+    partidos.forEach(p=>{ if(p.vivo&&!p.fin) estadoCard(p); });
+    document.querySelectorAll('.pie-vivo').forEach(()=>{});
   },1000);
 
   // menú celular

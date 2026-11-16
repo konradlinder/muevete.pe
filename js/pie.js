@@ -6,7 +6,7 @@
     bases:    'bases.html',
     ronda1:   'ronda.html?ronda=1',
     ronda2:   'ronda.html?ronda=2',
-    terminos: 'https://www.muevete.pe/terminos-y-condiciones',
+    terminos: 'terminos.html',
     admin:    'https://www.muevete.pe/playa/sombrillas1/admin',
     owner:    'https://www.muevete.pe/owner'
   };
