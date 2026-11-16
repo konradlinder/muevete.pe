@@ -103,6 +103,21 @@
       recuperando=false;
     },
 
+    // Guarda una sesión que llegó de la función "cuenta" (DNI + PIN)
+    usarSesion:function(j){ return guardar(j); },
+
+    // Llama a la Edge Function "cuenta" (ingreso con DNI + PIN)
+    cuenta:async function(datos,conSesion){
+      var h=base();
+      if(conSesion){ var s=await this.sesion(); if(!s) throw new Error('sin-sesion'); h.Authorization='Bearer '+s.access_token; }
+      var r;
+      try{ r=await fetch(DB.url+'/functions/v1/cuenta',{method:'POST',headers:h,body:JSON.stringify(datos)}); }
+      catch(e){ throw new Error('Sin conexión. Revisa tu internet.'); }
+      var j=null; try{ j=await r.json(); }catch(e){}
+      if(!r.ok){ var err=new Error((j&&j.error)||'No se pudo completar. Intenta de nuevo.'); err.status=r.status; err.datos=j||{}; throw err; }
+      return j;
+    },
+
     // fetch a la base de datos (PostgREST) con la sesión del usuario
     db:async function(ruta,opc){
       var s=await this.sesion(); if(!s) throw new Error('sin-sesion');

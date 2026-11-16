@@ -259,6 +259,16 @@ input::-webkit-date-and-time-value{text-align:left}
 .tabla-res th.c1,.tabla-res th.c2{background:#F6F7FA;z-index:2}
 .tabla-res .campo-n{display:inline-block;min-width:26px;text-align:center;background:#EEF2F9;color:var(--azul-menu);border-radius:6px;padding:1px 6px;font-weight:700;font-size:13px}
 @media (max-width:640px){.res-barra .pill{padding:0 14px}.tabla-res table{font-size:13px}.tabla-res td.jug{max-width:150px}}
+/* ---------- USUARIOS ---------- */
+.badge.activa{background:#DCFCE7;color:#166534}
+.badge.sin{background:#FFEDD5;color:#9A3412}
+.badge.bloq{background:#FDECEC;color:#B91C1C}
+.badge.temp{background:#E0E7FF;color:#3730A3}
+.pin-res{grid-column:1 / -1;background:#FFF8E1;border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:500;color:#5C4A00;line-height:1.5}
+.pin-res b.pinb{display:block;font-size:24px;letter-spacing:.2em;color:#000;margin:2px 0 4px}
+.pin-res .acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pin-res .acc a,.pin-res .acc button{text-decoration:none}
+.btn-wa{background:#25D366!important;color:#fff!important}
 
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
@@ -361,6 +371,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
       <button role="tab" data-tab="puntajes">Puntajes</button>
       <button role="tab" data-tab="rondas">Rondas</button>
       <button role="tab" data-tab="resultados">Resultados</button>
+      <button role="tab" data-tab="usuarios">Usuarios</button>
     </nav>
 
     <!-- EVENTO -->
@@ -457,6 +468,16 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         </div>
         <div id="sEstado"></div>
         <div id="sTabla"><p class="elige">Elige una ronda para ver sus resultados.</p></div>
+      </div>
+    </section>
+
+    <!-- USUARIOS -->
+    <section class="tab" id="t-usuarios" hidden>
+      <div class="card">
+        <h2>Usuarios</h2>
+        <p class="desc">Activa cuentas y restablece el PIN. El PIN temporal se usa una sola vez: al entrar, la persona crea uno nuevo.</p>
+        <div class="barra"><div class="buscar"><input id="uBuscar" type="text" placeholder="Nombre o DNI" autocomplete="off" enterkeyhint="search"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+        <div class="lista-adm" id="uLista"><p class="vacio-adm">Escribe al menos 2 letras o números.</p></div>
       </div>
     </section>
   </div>
@@ -855,6 +876,46 @@ const LINKS = {
   }
   $('#sRonda').onchange=cargarResultados;
   $('#sActualizar').onclick=cargarResultados;
+
+  /* ---------- USUARIOS (activar cuenta / restablecer PIN) ---------- */
+  let tUs;
+  $('#uBuscar').addEventListener('input',()=>{ clearTimeout(tUs); tUs=setTimeout(buscarCuentas,300); });
+  const fechaCorta=f=>f?f.split('-').reverse().join('/'):'';
+  async function buscarCuentas(){
+    const q=$('#uBuscar').value.trim(), box=$('#uLista');
+    if(q.length<2){ box.innerHTML='<p class="vacio-adm">Escribe al menos 2 letras o números.</p>'; return; }
+    box.innerHTML='<p class="vacio-adm">Buscando…</p>';
+    let r; try{ r=await rpc('admin_usuarios',{p_texto:q}); }catch(e){ fallo(e); return; }
+    if(q!==$('#uBuscar').value.trim()) return;
+    if(!r.length){ box.innerHTML='<p class="vacio-adm">No se encontró a nadie con ese nombre o DNI.</p>'; return; }
+    box.replaceChildren(...r.map(u=>{
+      const d=document.createElement('div'); d.className='fila-adm';
+      const est=u.activa?'<span class="badge activa">ACTIVA</span>':'<span class="badge sin">SIN ACTIVAR</span>';
+      const extra=(u.migracion_bloqueada&&!u.activa?'<span class="badge bloq" title="Falló 3 veces al confirmar sus datos">BLOQUEADA</span>':'')+(u.debe_cambiar_pin?'<span class="badge temp">PIN TEMPORAL</span>':'')+(u.con_correo?'<span class="badge">CORREO</span>':'');
+      d.innerHTML=`<span class="pos">•</span><span class="nm">${esc(u.jugador)}${est}${extra}<small>DNI ${esc(u.dni||'—')} · ${esc(u.celular||'sin celular')}${u.nacimiento?' · nac. '+fechaCorta(u.nacimiento):''}</small></span><span class="der"></span>`;
+      const b=document.createElement('button'); b.type='button'; b.className='pill chica btn-azul';
+      b.textContent=u.activa?'restablecer PIN':'activar cuenta';
+      if(!u.dni){ b.disabled=true; b.title='No tiene DNI registrado'; }
+      b.onclick=async()=>{
+        if(!b.dataset.ok){ b.dataset.ok=1; b.textContent='¿confirmar?'; setTimeout(()=>{ if(b.dataset.ok){ delete b.dataset.ok; b.textContent=u.activa?'restablecer PIN':'activar cuenta'; } },4000); return; }
+        delete b.dataset.ok; b.disabled=true; b.textContent='…';
+        try{
+          const res=await AUTH.cuenta({accion:'admin_pin',dni:u.dni},true);
+          const msg=`Hola ${res.nombre||''}, tu PIN temporal de muévete es ${res.pin}. Entra en muevete.pe/mi-cuenta con tu DNI y este PIN; te pediremos crear uno nuevo.`;
+          const tel=(u.celular||'').replace(/\D/g,'');
+          const caja=document.createElement('div'); caja.className='pin-res';
+          caja.innerHTML=`PIN temporal para ${esc(u.jugador)}:<b class="pinb">${res.pin.slice(0,3)} ${res.pin.slice(3)}</b>Envíaselo solo a su celular registrado. ${res.activada?'Su cuenta quedó activada.':''}<div class="acc"><button class="pill chica" type="button">copiar mensaje</button>${tel?`<a class="pill chica btn-wa" target="_blank" rel="noopener" href="https://wa.me/${tel.length===9?'51'+tel:tel}?text=${encodeURIComponent(msg)}">enviar por WhatsApp</a>`:''}</div>`;
+          caja.querySelector('button').onclick=async()=>{ try{ await navigator.clipboard.writeText(msg); toast('Mensaje copiado'); }catch(e){ toast('No se pudo copiar',true); } };
+          d.querySelector('.pin-res')?.remove(); d.append(caja);
+          b.textContent='restablecer PIN'; u.activa=true;
+          d.querySelector('.badge.sin')?.replaceWith(Object.assign(document.createElement('span'),{className:'badge activa',textContent:'ACTIVA'}));
+        }catch(e){ fallo(e.message==='sin-sesion'?e:new Error(e.message)); b.textContent=u.activa?'restablecer PIN':'activar cuenta'; }
+        finally{ b.disabled=false; }
+      };
+      d.querySelector('.der').append(b);
+      return d;
+    }));
+  }
 
   /* ---------- arranque ---------- */
   (async()=>{

@@ -229,6 +229,45 @@ body.cargando main{visibility:hidden}
   .doble .codigo{width:104px!important}
   .campo .dato{font-size:14px;padding:0 12px}
 }
+
+/* ---------- Ingreso con DNI + PIN ---------- */
+.login .aviso{margin-bottom:14px}
+.paso-a{display:grid;gap:15px}
+.login form.paso-a{margin-top:0}
+.paso-a[hidden]{display:none!important}
+.paso-a h2{margin-top:2px}
+.paso-a .sub{margin-top:-8px}
+.paso-a .sub b{color:#fff}
+.login.ancho-on{max-width:480px}
+.login .lbl,.login label{display:block;font-size:15px;font-weight:600;margin-bottom:8px}
+.login .btn{justify-self:center}
+.login .enlace.claro{color:#BFD0F5}
+.hola{display:flex;justify-content:center}
+.hola-foto{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+.pasos{display:flex;gap:6px;justify-content:center}
+.pasos i{width:28px;height:5px;border-radius:3px;background:rgba(255,255,255,.3)}
+.pasos i.on{background:var(--amarillo)}
+.hint{font-size:12.5px;color:#BFD0F5;font-weight:500;margin-top:6px}
+.info{background:rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:500;line-height:1.5;color:#E4ECFB}
+.info b{color:var(--amarillo)}
+.btn-wa{background:#25D366;color:#fff;height:48px;font-size:16px;padding:0 26px;text-decoration:none}
+.btn-wa svg{width:20px;height:20px}
+.pin{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.pin span{height:54px;border-radius:12px;background:#fff;color:#000;display:grid;place-items:center;font-size:26px;font-weight:700;pointer-events:none}
+.pin span.f{box-shadow:0 0 0 3px rgba(255,219,3,.75)}
+.login .pin .pin-in{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;font-size:16px;color:transparent;caret-color:transparent;cursor:text}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:40px;padding:0 16px;border:0;border-radius:999px;background:rgba(255,255,255,.12);color:#fff;font:600 14px var(--poppins,Poppins),sans-serif;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35);cursor:pointer}
+.chip.on{background:var(--amarillo);color:#000;box-shadow:none}
+.login .fila2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.login .fila2 > div{min-width:0}
+.opc{font-weight:500;color:#BFD0F5;font-size:12.5px}
+.login .chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:500;line-height:1.45;color:#E4ECFB;margin:0;cursor:pointer}
+.login .chk input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--amarillo)}
+.login .chk a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+.ok-ico{width:64px;height:64px;border-radius:50%;background:var(--amarillo);display:grid;place-items:center;margin:0 auto;font-size:32px;color:#000;font-weight:800}
+.login a.btn{text-decoration:none}
+@media (max-width:980px){#vLogin{margin-top:calc(62px + env(safe-area-inset-top,0px))}}
 </style>
 </head>
 <body class="cargando">
@@ -255,12 +294,116 @@ body.cargando main{visibility:hidden}
 </div>
 
 <main>
-  <!-- LOGIN -->
+  <!-- INGRESO CON DNI + PIN -->
   <section class="vista login" id="vLogin" hidden>
-    <h2 id="lTitulo">Inicia sesión</h2>
-    <p class="sub" id="lSub">Entra con tu correo y contraseña para ver y editar tu perfil.</p>
-    <form id="fLogin" novalidate>
-      <div class="aviso" id="lAviso" role="alert"></div>
+    <div class="aviso" id="lAviso" role="alert"></div>
+
+    <!-- 1. DNI -->
+    <form class="paso-a" data-paso="dni" novalidate>
+      <h2>Ingresa a muévete</h2><p class="sub">Con tu DNI o carné de extranjería.</p>
+      <div><label for="aDni">DNI/CE</label><input id="aDni" name="username" inputmode="numeric" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="# documento"></div>
+      <button class="btn btn-amarillo" type="submit">continuar</button>
+      <button class="enlace claro" type="button" data-ir="correo">¿Tienes una cuenta con correo? Entra aquí</button>
+    </form>
+
+    <!-- 2. Tiene cuenta: PIN -->
+    <form class="paso-a" data-paso="pin" novalidate hidden>
+      <div class="hola"><img class="hola-foto" src="/img/avatar.png" alt=""></div>
+      <h2>Hola, <span data-nombre></span></h2><p class="sub">DNI <span data-dni-oculto></span></p>
+      <div><label for="aPin">Tu PIN</label><div class="pin" data-pin><input id="aPin" class="pin-in" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password" aria-label="PIN de 6 números"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <button class="btn btn-amarillo" type="submit">ingresar</button>
+      <button class="enlace" type="button" data-ir="olvido">¿Olvidaste tu PIN?</button>
+      <button class="enlace claro" type="button" data-ir="dni">No soy yo · cambiar DNI</button>
+    </form>
+
+    <!-- 3a. Migración: confirmar datos -->
+    <form class="paso-a" data-paso="migrar" novalidate hidden>
+      <div class="pasos"><i class="on"></i><i></i></div>
+      <h2>¡Hola, <span data-nombre></span>!</h2><p class="sub">Ya jugabas en muévete. Confirma tus datos para activar tu cuenta en la web nueva.</p>
+      <div><label for="mCel">Celular registrado</label><input id="mCel" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ej. 987 654 321"><p class="hint">Termina en ••<span data-cel-fin></span></p></div>
+      <div><label for="mNac">Fecha de nacimiento</label><input id="mNac" type="date" data-selector-fecha min="1920-01-01"></div>
+      <button class="btn btn-amarillo" type="submit">continuar</button>
+      <button class="enlace" type="button" data-ir="soporte" data-motivo="celular">¿Ya no usas ese celular?</button>
+    </form>
+
+    <!-- 3b. Crear PIN (migración o cuenta nueva) -->
+    <form class="paso-a" data-paso="crearpin" novalidate hidden>
+      <div class="pasos" data-pasos-crear></div>
+      <h2 data-titulo-pin>Crea tu PIN</h2><p class="sub">6 números que vas a usar para entrar. No uses tu DNI ni 123456.</p>
+      <input type="text" name="username" autocomplete="username" data-dni-usuario hidden>
+      <div><label for="cPin1">PIN</label><div class="pin" data-pin><input id="cPin1" class="pin-in" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" aria-label="PIN de 6 números"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div><label for="cPin2">Repite tu PIN</label><div class="pin" data-pin><input id="cPin2" class="pin-in" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" aria-label="PIN de 6 números"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <button class="btn btn-amarillo" type="submit" data-boton-pin>activar cuenta</button>
+    </form>
+
+    <!-- 3c / 5. Soporte por WhatsApp -->
+    <div class="paso-a" data-paso="soporte" hidden>
+      <h2 data-sop-titulo>No pudimos confirmar tus datos</h2><p class="sub" data-sop-texto></p>
+      <div class="info">Escríbenos por WhatsApp y activamos tu cuenta. <b>Tu historial y ranking se mantienen.</b></div>
+      <a class="btn btn-wa" data-wa target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.2.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg> escribir a soporte</a>
+      <button class="enlace" type="button" data-ir="dni">Volver</button>
+    </div>
+    <div class="paso-a" data-paso="olvido" hidden>
+      <h2>¿Olvidaste tu PIN?</h2><p class="sub">Escríbenos por WhatsApp <b>desde el celular registrado en tu cuenta</b> y te damos un PIN temporal.</p>
+      <div class="info">Al entrar con el PIN temporal te pediremos crear uno nuevo.</div>
+      <a class="btn btn-wa" data-wa target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.2.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg> escribir a soporte</a>
+      <button class="enlace" type="button" data-ir="pin">Volver</button>
+    </div>
+
+    <!-- 4. DNI nuevo -->
+    <div class="paso-a" data-paso="nuevo" hidden>
+      <h2>¡Bienvenido a muévete!</h2><p class="sub">No encontramos el DNI <b data-dni></b>. Crea tu cuenta en 3 pasos.</p>
+      <div class="info">1. Crea tu PIN<br>2. Cuéntanos sobre ti<br>3. Tu juego y contacto de emergencia</div>
+      <button class="btn btn-amarillo" type="button" data-ir="crearpin">crear cuenta</button>
+      <button class="enlace claro" type="button" data-ir="dni">¿Te equivocaste? Cambiar DNI</button>
+    </div>
+
+    <!-- PIN temporal: crear uno nuevo -->
+    <form class="paso-a" data-paso="cambiarpin" novalidate hidden>
+      <h2>Crea tu nuevo PIN</h2><p class="sub">Entraste con un PIN temporal. Elige los 6 números que usarás desde ahora.</p>
+      <input type="text" name="username" autocomplete="username" data-dni-usuario hidden>
+      <div><label for="nPin1">Nuevo PIN</label><div class="pin" data-pin><input id="nPin1" class="pin-in" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" aria-label="PIN de 6 números"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div><label for="nPin2">Repite tu PIN</label><div class="pin" data-pin><input id="nPin2" class="pin-in" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" aria-label="PIN de 6 números"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <button class="btn btn-amarillo" type="submit">guardar PIN</button>
+    </form>
+
+    <!-- Paso 2 de 3: sobre ti -->
+    <form class="paso-a ancho" data-paso="sobre" novalidate hidden>
+      <div class="pasos"><i class="on"></i><i class="on"></i><i></i></div>
+      <h2>Cuéntanos sobre ti</h2>
+      <div class="fila2"><div><label for="oNombre">Nombre</label><input id="oNombre" autocomplete="given-name"></div><div><label for="oApellido">Apellido</label><input id="oApellido" autocomplete="family-name"></div></div>
+      <div><label for="oNac">Fecha de nacimiento</label><input id="oNac" type="date" data-selector-fecha min="1920-01-01"></div>
+      <div><span class="lbl">Género</span><div class="chips" data-grupo="genero" data-uno><button type="button" class="chip" data-v="F">Mujer</button><button type="button" class="chip" data-v="M">Hombre</button></div></div>
+      <div><label for="oDistrito">Distrito</label><input id="oDistrito" autocomplete="address-level3" placeholder="Ej. Barranco"></div>
+      <button class="btn btn-amarillo" type="submit">continuar</button>
+    </form>
+
+    <!-- Paso 3 de 3: juego y contacto -->
+    <form class="paso-a ancho" data-paso="juego" novalidate hidden>
+      <div class="pasos"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      <h2>Tu juego y contacto</h2>
+      <div><span class="lbl">¿Has jugado vóley antes?</span><div class="chips" data-grupo="historial"><button type="button" class="chip" data-v="nunca">Nunca</button><button type="button" class="chip" data-v="voley piso">Vóley piso</button><button type="button" class="chip" data-v="voley playa">Vóley playa</button></div></div>
+      <div><label for="oNivel">Máximo nivel jugado</label><input id="oNivel" placeholder="Ej. academia, liga, colegio"></div>
+      <div><label for="oCel">Celular <span class="opc">· recomendado para recuperar tu PIN</span></label><input id="oCel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Ej. 987 654 321"></div>
+      <div><span class="lbl">Contacto de emergencia</span><div class="fila2"><input id="oEmNombre" placeholder="Nombre" aria-label="Nombre del contacto de emergencia"><input id="oEmCel" type="tel" inputmode="tel" placeholder="Celular" aria-label="Celular del contacto de emergencia"></div></div>
+      <label class="chk"><input type="checkbox" id="oTerminos"><span>Acepto los <a href="/terminos-y-condiciones" target="_blank">términos y condiciones</a> y el deslinde de responsabilidades.</span></label>
+      <button class="btn btn-amarillo" type="submit">crear cuenta</button>
+    </form>
+
+    <!-- Listo -->
+    <div class="paso-a" data-paso="listo" hidden>
+      <div class="ok-ico" aria-hidden="true">✓</div>
+      <h2>¡Tu cuenta está lista, <span data-nombre></span>!</h2><p class="sub">Desde ahora entras con tu DNI y tu PIN.</p>
+      <a class="btn btn-amarillo" href="/sombrillas/inscripciones">ir a inscripciones</a>
+      <button class="enlace" type="button" data-ir="perfil">ver mi perfil</button>
+    </div>
+
+    <!-- Cuentas antiguas con correo -->
+    <div class="paso-a" data-paso="correo" hidden>
+      <h2 id="lTitulo">Entra con tu correo</h2>
+      <p class="sub" id="lSub">Solo para cuentas que se crearon con correo y contraseña.</p>
+      <form id="fLogin" novalidate>
+      
       <div data-modo="login olvido"><label for="lCorreo">Correo electrónico</label><input id="lCorreo" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="tucorreo@ejemplo.com"></div>
       <div data-modo="login"><label for="lClave">Contraseña</label><div class="clave"><input id="lClave" type="password" autocomplete="current-password" placeholder="••••••••"><button class="ver" type="button" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
       <div data-modo="nueva"><label for="lNueva">Nueva contraseña</label><div class="clave"><input id="lNueva" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><button class="ver" type="button" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
@@ -268,6 +411,8 @@ body.cargando main{visibility:hidden}
       <button class="enlace" type="button" id="lOlvido" data-modo="login">¿Olvidaste tu contraseña?</button>
       <button class="enlace" type="button" id="lVolver" data-modo="olvido">Volver a iniciar sesión</button>
     </form>
+      <button class="enlace claro" type="button" data-ir="dni">Entrar con DNI y PIN</button>
+    </div>
   </section>
 
   <section class="vista" id="vPerfil" hidden>
@@ -612,24 +757,216 @@ async function guardarPerfil(d){
   /* ---------- vistas ---------- */
   const vLogin=$('#vLogin'), vPerfil=$('#vPerfil');
   const aviso=(t,ok)=>{const a=$('#lAviso');a.textContent=t||'';a.classList.toggle('si',!!t);a.classList.toggle('ok',!!ok)};
-  let modo='login';
-  const TEXTOS={
-    login:['Inicia sesión','Entra con tu correo y contraseña para ver y editar tu perfil.','ingresar'],
-    olvido:['Recupera tu contraseña','Te enviaremos un correo con un enlace para crear una nueva.','enviar enlace'],
-    nueva:['Crea tu nueva contraseña','Escribe la contraseña que usarás desde ahora.','guardar contraseña']
-  };
-  function ponerModo(m){
-    modo=m; aviso('');
-    const [t,sub,b]=TEXTOS[m];
-    $('#lTitulo').textContent=t; $('#lSub').textContent=sub; $('#lBoton').textContent=b;
-    document.querySelectorAll('[data-modo]').forEach(e=>e.hidden=!e.dataset.modo.split(' ').includes(m));
+  const WA='51964214852';
+  const A={dni:'',info:null,crear:'registrar',cel:'',nac:''};
+  const pasoEl=n=>document.querySelector(`.paso-a[data-paso="${n}"]`);
+  function mostrar(n){
+    aviso('');
+    document.querySelectorAll('.paso-a').forEach(e=>e.hidden=e.dataset.paso!==n);
+    vLogin.classList.toggle('ancho-on',n==='sobre'||n==='juego');
+    vPerfil.hidden=true; vLogin.hidden=false; document.body.classList.remove('cargando');
+    document.title=(n==='sobre'||n==='juego'?'Crea tu cuenta':'Iniciar sesión')+' | muévete.pe';
+    scrollTo({top:0});
+    const el=pasoEl(n), f=el&&el.querySelector('input:not([hidden]):not([type=checkbox])');
+    if(f&&matchMedia('(pointer:fine)').matches) setTimeout(()=>f.focus(),60);
   }
   function verLogin(m){
-    vPerfil.hidden=true; vLogin.hidden=false; ponerModo(m||'login');
-    document.body.classList.remove('cargando');
-    document.title='Iniciar sesión | muévete.pe';
-    if(matchMedia('(pointer:fine)').matches) setTimeout(()=>$(m==='nueva'?'#lNueva':'#lCorreo').focus(),50);
+    if(m){ mostrar('correo'); ponerModo(m); return; }
+    mostrar('dni');
   }
+
+  // ---------- PIN de 6 casillas ----------
+  document.querySelectorAll('[data-pin]').forEach(c=>{
+    const inp=c.querySelector('input'), cajas=[...c.querySelectorAll('span')];
+    const pintar=()=>{ inp.value=inp.value.replace(/\D/g,'').slice(0,6); const n=inp.value.length;
+      cajas.forEach((b,k)=>{ b.textContent=k<n?'•':''; b.classList.toggle('f',document.activeElement===inp&&k===Math.min(n,5)); }); };
+    inp.addEventListener('input',()=>{ pintar(); if(inp.value.length===6){ const f=inp.form, otros=[...f.querySelectorAll('.pin-in')], k=otros.indexOf(inp); if(otros[k+1]) otros[k+1].focus(); } });
+    inp.addEventListener('focus',pintar); inp.addEventListener('blur',pintar); c.pintar=pintar;
+  });
+  const pin=id=>$('#'+id).value;
+  const limpiarPin=(...ids)=>ids.forEach(id=>{ const i=$('#'+id); i.value=''; i.closest('[data-pin]').pintar(); });
+  const pinDebil=(p,dni)=>/^(\d)\1{5}$/.test(p)||['123456','654321','121212','123123'].includes(p)||dni.includes(p);
+
+  // ---------- ayudas ----------
+  const ocultarDni=d=>d.length>5?d.slice(0,3)+'•••'+d.slice(-2):d;
+  const poner=(sel,v)=>document.querySelectorAll(sel).forEach(e=>e.textContent=v);
+  const wa=txt=>`https://wa.me/${WA}?text=${encodeURIComponent(txt)}`;
+  async function ocupado(btn,fn){ const t=btn.textContent; btn.disabled=true; btn.textContent='un momento…'; try{ await fn(); } finally{ btn.disabled=false; btn.textContent=t; } }
+  function soporte(motivo){
+    const T={
+      'no-coincide':['No pudimos confirmar tus datos','El celular o la fecha de nacimiento no coinciden con los que tenemos registrados.'],
+      'sin-datos':['Activa tu cuenta con soporte',`No tenemos tu celular o tu fecha de nacimiento para confirmar que eres tú, ${A.info&&A.info.nombre||''}.`],
+      'celular':['¿Cambiaste de celular?','Escríbenos desde tu número nuevo y te ayudamos a activar tu cuenta.']
+    }[motivo]||['Activa tu cuenta con soporte',''];
+    $('[data-sop-titulo]').textContent=T[0]; $('[data-sop-texto]').textContent=T[1];
+    pasoEl('soporte').querySelector('[data-wa]').href=wa(`Hola, necesito activar mi cuenta de muévete. Mi DNI es ${A.dni}.`);
+    mostrar('soporte');
+  }
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-ir]'); if(!b) return;
+    const n=b.dataset.ir;
+    if(n==='soporte') return soporte(b.dataset.motivo);
+    if(n==='perfil') return verPerfil();
+    if(n==='crearpin') prepararCrear('registrar');
+    if(n==='olvido') pasoEl('olvido').querySelector('[data-wa]').href=wa(`Hola, olvidé mi PIN de muévete. Mi DNI es ${A.dni}.`);
+    if(n==='correo') ponerModo('login');
+    mostrar(n);
+  });
+  function prepararCrear(modo){
+    A.crear=modo; limpiarPin('cPin1','cPin2');
+    $('[data-pasos-crear]').innerHTML=modo==='migrar'?'<i class="on"></i><i class="on"></i>':'<i class="on"></i><i></i><i></i>';
+    $('[data-boton-pin]').textContent=modo==='migrar'?'activar cuenta':'continuar';
+    document.querySelectorAll('[data-dni-usuario]').forEach(i=>i.value=A.dni);
+  }
+
+  // ---------- 1. DNI ----------
+  pasoEl('dni').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const dni=$('#aDni').value.toUpperCase().replace(/[^0-9A-Z]/g,'');
+    if(dni.length<6) return aviso('Escribe tu DNI o carné de extranjería.');
+    await ocupado(e.submitter||pasoEl('dni').querySelector('[type=submit]'),async()=>{
+      let r; try{ r=await AUTH.cuenta({accion:'buscar',dni}); }catch(err){ return aviso(err.message); }
+      A.dni=dni; A.info=r;
+      poner('[data-dni]',dni); poner('[data-dni-oculto]',ocultarDni(dni)); poner('[data-nombre]',r.nombre||'');
+      document.querySelectorAll('[data-dni-usuario]').forEach(i=>i.value=dni);
+      if(r.estado==='activa'){
+        $('.hola-foto').src=urlFoto(r.foto)||'/img/avatar.png';
+        if(!r.nombre) poner('[data-nombre]','de nuevo');
+        limpiarPin('aPin'); mostrar('pin');
+        if(r.bloqueado_hasta) aviso('Por seguridad este DNI está bloqueado unos minutos. Vuelve a intentar en un rato.');
+      } else if(r.estado==='migrar'){
+        if(!r.puede_migrar) return soporte('sin-datos');
+        poner('[data-cel-fin]',r.cel_fin||''); $('#mCel').value=''; mostrar('migrar');
+      } else mostrar('nuevo');
+    });
+  });
+
+  // ---------- 2. PIN ----------
+  pasoEl('pin').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    if(pin('aPin').length!==6) return aviso('Escribe tu PIN de 6 números.');
+    await ocupado(pasoEl('pin').querySelector('[type=submit]'),async()=>{
+      try{
+        const r=await AUTH.cuenta({accion:'entrar',dni:A.dni,pin:pin('aPin')});
+        AUTH.usarSesion(r.sesion); limpiarPin('aPin');
+        if(r.debe_cambiar_pin){ limpiarPin('nPin1','nPin2'); return mostrar('cambiarpin'); }
+        await despuesDeEntrar();
+      }catch(err){ limpiarPin('aPin'); aviso(err.message); }
+    });
+  });
+
+  // ---------- 3a. Migración ----------
+  pasoEl('migrar').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const cel=$('#mCel').value.replace(/\D/g,''), n=$('#mNac'), nac=('valorFecha' in n)?n.valorFecha:n.value;
+    if(cel.length<6) return aviso('Escribe tu celular.');
+    if(!nac) return aviso('Elige tu fecha de nacimiento.');
+    await ocupado(pasoEl('migrar').querySelector('[type=submit]'),async()=>{
+      try{ await AUTH.cuenta({accion:'verificar',dni:A.dni,celular:cel,nacimiento:nac}); }
+      catch(err){ if(err.status===423) return soporte('no-coincide'); return aviso(err.message); }
+      A.cel=cel; A.nac=nac; prepararCrear('migrar'); mostrar('crearpin');
+    });
+  });
+
+  // ---------- 3b. Crear PIN ----------
+  pasoEl('crearpin').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const p1=pin('cPin1'), p2=pin('cPin2');
+    if(p1.length!==6) return aviso('El PIN debe tener 6 números.');
+    if(p1!==p2){ limpiarPin('cPin2'); return aviso('Los PIN no coinciden. Repítelo.'); }
+    if(pinDebil(p1,A.dni)){ limpiarPin('cPin1','cPin2'); return aviso('Ese PIN es muy fácil de adivinar. Elige otro.'); }
+    await ocupado(pasoEl('crearpin').querySelector('[type=submit]'),async()=>{
+      try{
+        const datos=A.crear==='migrar'?{accion:'migrar',dni:A.dni,celular:A.cel,nacimiento:A.nac,pin:p1}:{accion:'registrar',dni:A.dni,pin:p1};
+        const r=await AUTH.cuenta(datos);
+        AUTH.usarSesion(r.sesion); limpiarPin('cPin1','cPin2');
+        if(A.crear==='registrar') return abrirOnboarding({});
+        toast('¡Cuenta activada!'); await despuesDeEntrar();
+      }catch(err){ if(err.status===423) return soporte('no-coincide'); aviso(err.message); }
+    });
+  });
+
+  // ---------- PIN temporal → nuevo PIN ----------
+  pasoEl('cambiarpin').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const p1=pin('nPin1'), p2=pin('nPin2');
+    if(p1.length!==6) return aviso('El PIN debe tener 6 números.');
+    if(p1!==p2){ limpiarPin('nPin2'); return aviso('Los PIN no coinciden. Repítelo.'); }
+    if(pinDebil(p1,A.dni)){ limpiarPin('nPin1','nPin2'); return aviso('Ese PIN es muy fácil de adivinar. Elige otro.'); }
+    await ocupado(pasoEl('cambiarpin').querySelector('[type=submit]'),async()=>{
+      try{ await AUTH.cambiarClave(p1); await AUTH.db('rpc/pin_cambiado',{method:'POST',body:'{}'}); limpiarPin('nPin1','nPin2'); toast('PIN actualizado'); await despuesDeEntrar(); }
+      catch(err){ aviso(err.message==='sin-sesion'?'Tu sesión venció. Vuelve a entrar con el PIN temporal.':err.message); }
+    });
+  });
+
+  // ---------- Onboarding: pasos 2 y 3 ----------
+  let PERFIL_ID=null;
+  document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{
+    const c=e.target.closest('.chip'); if(!c) return;
+    if('uno' in g.dataset) g.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+    else{
+      const nunca=c.dataset.v==='nunca'; c.classList.toggle('on');
+      g.querySelectorAll('.chip').forEach(x=>{ if(x!==c&&c.classList.contains('on')&&(nunca||x.dataset.v==='nunca')) x.classList.remove('on'); });
+    }
+  }));
+  const chips=g=>[...document.querySelectorAll(`[data-grupo="${g}"] .chip.on`)].map(c=>c.dataset.v);
+  const marcar=(g,vals)=>document.querySelectorAll(`[data-grupo="${g}"] .chip`).forEach(c=>c.classList.toggle('on',(vals||[]).includes(c.dataset.v)));
+  function abrirOnboarding(p){
+    PERFIL_ID=p.id||null;
+    $('#oNombre').value=p.nombre||''; $('#oApellido').value=p.apellido||'';
+    const n=$('#oNac'); if('valorFecha' in n) n.valorFecha=p.fecha_nacimiento||''; else n.value=p.fecha_nacimiento||'';
+    marcar('genero',p.genero?[p.genero]:[]); $('#oDistrito').value=p.distrito||'';
+    marcar('historial',p.historial_juego||[]); $('#oNivel').value=p.nivel_juego||'';
+    $('#oCel').value=p.celular||''; $('#oEmNombre').value=p.contacto_emergencia||''; $('#oEmCel').value=p.celular_emergencia||'';
+    $('#oTerminos').checked=!!p.terminos_aceptados_en;
+    mostrar('sobre');
+  }
+  async function guardarOnb(cambios){
+    if(!PERFIL_ID){ const f=await AUTH.db('usuarios?select=id&limit=1'); PERFIL_ID=f&&f[0]&&f[0].id; }
+    await AUTH.db('usuarios?id=eq.'+PERFIL_ID,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify(cambios)});
+  }
+  pasoEl('sobre').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const n=$('#oNac'), nac=('valorFecha' in n)?n.valorFecha:n.value, g=chips('genero')[0];
+    const nombre=$('#oNombre').value.trim(), apellido=$('#oApellido').value.trim(), distrito=$('#oDistrito').value.trim();
+    if(!nombre||!apellido) return aviso('Escribe tu nombre y apellido.');
+    if(!nac) return aviso('Elige tu fecha de nacimiento.');
+    if(!g) return aviso('Elige tu género.');
+    if(!distrito) return aviso('Escribe tu distrito.');
+    await ocupado(pasoEl('sobre').querySelector('[type=submit]'),async()=>{
+      try{ await guardarOnb({nombre,apellido,fecha_nacimiento:nac,genero:g,distrito}); poner('[data-nombre]',nombre); mostrar('juego'); }
+      catch(err){ aviso(err.message==='sin-sesion'?'Tu sesión venció. Vuelve a entrar.':err.message); }
+    });
+  });
+  pasoEl('juego').addEventListener('submit',async e=>{
+    e.preventDefault(); aviso('');
+    const hist=chips('historial'), cel=$('#oCel').value.replace(/\D/g,''), emN=$('#oEmNombre').value.trim(), emC=$('#oEmCel').value.replace(/\D/g,'');
+    if(!hist.length) return aviso('Cuéntanos si has jugado vóley antes.');
+    if(!emN||emC.length<6) return aviso('Completa el nombre y celular de tu contacto de emergencia.');
+    if(!$('#oTerminos').checked) return aviso('Para jugar debes aceptar los términos y condiciones.');
+    await ocupado(pasoEl('juego').querySelector('[type=submit]'),async()=>{
+      try{
+        await guardarOnb({historial_juego:hist,nivel_juego:$('#oNivel').value.trim()||null,
+          country_code:cel?'51':null,celular:cel||null,contacto_emergencia:emN,celular_emergencia:emC,
+          terminos_aceptados_en:new Date().toISOString()});
+        mostrar('listo');
+      }catch(err){ aviso(err.message==='sin-sesion'?'Tu sesión venció. Vuelve a entrar.':err.message); }
+    });
+  });
+
+  // Después de entrar: PIN temporal → cambiarlo; perfil incompleto → completarlo; si no, el perfil
+  async function despuesDeEntrar(){
+    let p=null;
+    try{ const f=await AUTH.db('usuarios?select=id,dni,nombre,apellido,fecha_nacimiento,genero,distrito,historial_juego,nivel_juego,celular,contacto_emergencia,celular_emergencia,terminos_aceptados_en,debe_cambiar_pin&limit=1'); p=f&&f[0]; }
+    catch(e){ if(e.message==='sin-sesion') return verLogin(); }
+    if(p){
+      if(p.dni){ A.dni=p.dni; document.querySelectorAll('[data-dni-usuario]').forEach(i=>i.value=p.dni); }
+      if(p.debe_cambiar_pin){ limpiarPin('nPin1','nPin2'); return mostrar('cambiarpin'); }
+      if(!p.nombre||!p.apellido||!p.fecha_nacimiento||!p.genero) return abrirOnboarding(p);
+    }
+    return verPerfil();
+  }
+
   async function verPerfil(){
     let p;
     try{ p=await cargarPerfil(); }
@@ -648,7 +985,19 @@ async function guardarPerfil(d){
     $('#fotoPerfil').src=p.foto||'/img/avatar.png';
   }
 
-  /* ---------- formulario de login ---------- */
+  /* ---------- cuentas antiguas con correo ---------- */
+  let modo='login';
+  const TEXTOS={
+    login:['Entra con tu correo','Solo para cuentas que se crearon con correo y contraseña.','ingresar'],
+    olvido:['Recupera tu contraseña','Te enviaremos un correo con un enlace para crear una nueva.','enviar enlace'],
+    nueva:['Crea tu nueva contraseña','Escribe la contraseña que usarás desde ahora.','guardar contraseña']
+  };
+  function ponerModo(m){
+    modo=m; aviso('');
+    const [t,sub,b]=TEXTOS[m];
+    $('#lTitulo').textContent=t; $('#lSub').textContent=sub; $('#lBoton').textContent=b;
+    document.querySelectorAll('[data-modo]').forEach(e=>e.hidden=!e.dataset.modo.split(' ').includes(m));
+  }
   document.querySelectorAll('.ver').forEach(b=>b.onclick=()=>{const i=b.previousElementSibling;const v=i.type==='password';i.type=v?'text':'password';b.setAttribute('aria-label',v?'Ocultar contraseña':'Mostrar contraseña')});
   $('#lOlvido').onclick=()=>{ponerModo('olvido');$('#lCorreo').focus()};
   $('#lVolver').onclick=()=>{ponerModo('login');$('#lCorreo').focus()};
@@ -660,20 +1009,20 @@ async function guardarPerfil(d){
     if(modo==='nueva'&&$('#lNueva').value.length<6) return aviso('La contraseña debe tener al menos 6 caracteres.');
     btn.disabled=true; btn.textContent='un momento…';
     try{
-      if(modo==='login'){ await AUTH.entrar(correo,$('#lClave').value); $('#lClave').value=''; await verPerfil(); }
+      if(modo==='login'){ await AUTH.entrar(correo,$('#lClave').value); $('#lClave').value=''; await despuesDeEntrar(); }
       else if(modo==='olvido'){ await AUTH.recuperar(correo); aviso('Listo. Si el correo está registrado, te llegará un enlace en unos minutos.',true); }
-      else { await AUTH.cambiarClave($('#lNueva').value); $('#lNueva').value=''; toast('Contraseña actualizada'); await verPerfil(); }
+      else { await AUTH.cambiarClave($('#lNueva').value); $('#lNueva').value=''; toast('Contraseña actualizada'); await despuesDeEntrar(); }
     }catch(err){ aviso(err.message); }
     finally{ btn.disabled=false; btn.textContent=txt; }
   });
 
   /* ---------- arranque ---------- */
   (async()=>{
-    if(window.MUEVETE_AUTH_ERROR){ verLogin(); aviso('El enlace venció o ya fue usado. Pide uno nuevo.'); return; }
+    if(window.MUEVETE_AUTH_ERROR){ verLogin('olvido'); aviso('El enlace venció o ya fue usado. Pide uno nuevo.'); return; }
     const s=await AUTH.sesion();
     if(!s) return verLogin();
     if(AUTH.recuperando()) return verLogin('nueva');
-    verPerfil();
+    despuesDeEntrar();
   })();
 
   /* ---------- guardar al cambiar un campo ---------- */
