@@ -31,7 +31,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-body{font-family:var(--poppins);font-weight:600;background:var(--azul);color:var(--blanco);-webkit-font-smoothing:antialiased}
+body{font-family:var(--poppins);font-weight:600;background:#817573;color:var(--blanco);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 img,video{display:block;max-width:100%}
 .wrap{max-width:1366px;margin:0 auto;position:relative}
@@ -49,9 +49,6 @@ img,video{display:block;max-width:100%}
 .right{display:flex;gap:38px;align-items:flex-start;position:absolute;top:calc(26px + env(safe-area-inset-top,0px));right:calc(21px + env(safe-area-inset-right,0px));z-index:20}
 /* Menú, ícono y WhatsApp quedan fijos siempre */
 .right{position:fixed}
-/* Franja superior: Safari (iPhone) pinta la barra de estado con el color de este
-   elemento fijo; lo vamos igualando al borde superior del video. */
-.tinte{position:fixed;top:0;left:0;right:0;height:1px;z-index:19;pointer-events:none;background:#B9B4AC;transition:background-color .4s}
 @keyframes entraMenu{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
 :root{--barras:calc(100lvh - 100svh)}
 .menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
@@ -438,7 +435,6 @@ const CONFIG = {
 <main>
   <!-- HERO -->
   <section class="hero" id="inicio">
-    <div class="tinte" id="tinte" aria-hidden="true"></div>
     <div class="hero-bg" id="heroBg"></div>
     <a class="bajar" href="#contenido" aria-label="Bajar"><svg viewBox="0 0 24 24"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     <div class="hero-in">
@@ -583,18 +579,22 @@ const CONFIG = {
     // si el navegador bloquea el autoplay (ej. modo ahorro de batería), arranca al primer toque o scroll
     const alTocar=()=>{intentar(); if(!v.paused){['touchstart','click','scroll'].forEach(e=>removeEventListener(e,alTocar));}};
     ['touchstart','click','scroll'].forEach(e=>addEventListener(e,alTocar,{passive:true}));
-    // iguala la franja de arriba (barra de estado de Safari) al color del borde superior del video
-    const tinte=document.getElementById('tinte'), cv=document.createElement('canvas'); cv.width=16; cv.height=2;
+    // Safari (iPhone) pinta la barra de estado y su degradé con el color de fondo de la página.
+    // Lo igualamos a lo que hay arriba de la pantalla: el borde del video, el gris o el azul del pie.
+    const cv=document.createElement('canvas'); cv.width=16; cv.height=2;
     const cx=cv.getContext('2d',{willReadFrequently:true});
+    const claro=document.querySelector('.claro'), pie=document.querySelector('.pie-azul');
+    let ultimo='';
+    const pintar=c=>{ if(c===ultimo) return; ultimo=c; document.documentElement.style.backgroundColor=c; document.body.style.backgroundColor=c; };
     const muestrear=()=>{
-      if(window.scrollY>document.getElementById('inicio').offsetHeight-60){ tinte.style.backgroundColor='transparent'; return; }
+      if(pie && pie.getBoundingClientRect().top<=0) return pintar('#0046B8');
+      if(claro && claro.getBoundingClientRect().top<=0) return pintar('#F6F6F6');
       if(v.readyState<2) return;
       try{ const vh=v.videoHeight, vw=v.videoWidth, r=v.getBoundingClientRect();
-        // parte del video que realmente se ve arriba (object-fit:cover)
         const esc=Math.max(r.width/vw, r.height/vh), sh=Math.max(2, 24/esc), sy=Math.max(0,(vh-r.height/esc)*0.42);
         cx.drawImage(v, 0, sy, vw, sh, 0, 0, 16, 2);
         const d=cx.getImageData(0,0,16,2).data; let R=0,G=0,B=0; for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];}
-        const n=d.length/4; tinte.style.backgroundColor=`rgb(${R/n|0},${G/n|0},${B/n|0})`;
+        const n=d.length/4; pintar(`rgb(${R/n|0},${G/n|0},${B/n|0})`);
       }catch(e){} };
     setInterval(muestrear,400); v.addEventListener('loadeddata',muestrear); addEventListener('scroll',muestrear,{passive:true});
   }
