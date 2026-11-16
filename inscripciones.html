@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <script src="/js/ruta.js"></script>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#0069DC">
+<meta name="theme-color" content="#0060D2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23,7 +23,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --azul:#0069DC; --azul-menu:#0069DC; --azul-osc:#0054B4; --amarillo:#FFDF00; --blanco:#F7F7F7;
+  --azul:#0058CA; --azul-menu:#0060D2; --amarillo:#FFDD00; --blanco:#F7F7F7;
   --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
   --poppins:"Poppins",sans-serif;
 }
@@ -38,7 +38,7 @@ button,input,select{font:inherit;color:inherit}
 .menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:first-child{padding-left:30px}
 .menu a:last-child{padding-right:30px}
 .cuenta{padding:0 20px!important}
@@ -123,7 +123,7 @@ h1{font-size:48px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .quien img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;background:#fff}
 .quien small{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#C9D8F5}
 .quien b{font-size:17px;font-weight:600}
-.nota-pago{display:flex;align-items:flex-start;gap:10px;background:rgba(255,223,0,.14);border:1.5px solid rgba(255,223,0,.45);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14.5px;font-weight:500;line-height:1.45}
+.nota-pago{display:flex;align-items:flex-start;gap:10px;background:rgba(255,221,0,.14);border:1.5px solid rgba(255,221,0,.45);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14.5px;font-weight:500;line-height:1.45}
 .nota-pago svg{width:20px;height:20px;flex:none;color:var(--amarillo);margin-top:1px}
 .nota-pago b{color:var(--amarillo)}
 .espera-ic b{font-size:30px;font-weight:700;color:#000}
@@ -215,11 +215,11 @@ h1{font-size:48px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
 .menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:not(.on):hover{color:var(--amarillo)}
 .mnav{padding:0 10px;gap:2px}
 .mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
-.mnav a.on{background:var(--azul-osc);color:var(--amarillo)}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
 .msub{padding-left:14px}
 .msub a{min-height:46px;padding-left:26px}
 
@@ -233,7 +233,7 @@ html{scrollbar-gutter:stable}
 
 /* Campos */
 .panel-insc input[type=text],.panel-insc input[type=tel]{width:100%;height:50px;border:0;border-radius:12px;background:#fff;padding:0 16px;font-size:17px;font-weight:500;color:#000;letter-spacing:.04em;outline:none;box-sizing:border-box;transition:box-shadow .15s}
-.panel-insc input:focus{box-shadow:0 0 0 3px rgba(255,223,0,.7)}
+.panel-insc input:focus{box-shadow:0 0 0 3px rgba(255,221,0,.7)}
 .panel-insc input::placeholder{color:#9AA1AC;font-weight:400}
 .check input{appearance:none;-webkit-appearance:none;flex:none;width:22px;height:22px;margin:0;border:2px solid #fff;border-radius:7px;background:transparent;cursor:pointer;display:grid;place-items:center;transition:background .15s,border-color .15s}
 .check input:checked{background:var(--amarillo);border-color:var(--amarillo)}
@@ -242,7 +242,7 @@ html{scrollbar-gutter:stable}
 /* Burbuja del menú que se desliza de página en página (escritorio) */
 @media (min-width:981px){@view-transition{navigation:auto}}
 .menu{position:relative}
-.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul-osc);view-transition-name:menu-pill;pointer-events:none}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
 .menu a{position:relative;z-index:1}
 .menu.con-pill a.on{background:transparent}
 .menu a:nth-of-type(1){view-transition-name:menu-1}
@@ -419,14 +419,14 @@ html{scrollbar-gutter:stable}
 
     <!-- 4b. CUPOS AGOTADOS -->
     <div class="estado" data-estado="llenas">
-      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDF00" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>¡Cupos agotados!</div>
+      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDD00" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>¡Cupos agotados!</div>
       <p class="txt">Se completaron los cupos y la lista de espera para esta fecha. Únete a nuestra comunidad para enterarte de la próxima.</p>
       <div class="acciones-c"><a class="pill verde" data-comunidad target="_blank" rel="noopener">unirme <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a></div>
     </div>
 
     <!-- 4c. MANTENIMIENTO -->
     <div class="estado" data-estado="mantenimiento">
-      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDF00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg>Estamos en mantenimiento</div>
+      <div class="tit"><svg viewBox="0 0 24 24" fill="none" stroke="#FFDD00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg>Estamos en mantenimiento</div>
       <p class="txt">Las inscripciones vuelven en breve. Únete a nuestra comunidad para enterarte apenas abran.</p>
       <div class="acciones-c"><a class="pill verde" data-comunidad target="_blank" rel="noopener">unirme <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a></div>
     </div>

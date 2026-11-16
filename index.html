@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <script src="/js/ruta.js"></script>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#0069DC">
+<meta name="theme-color" content="#0060D2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -26,10 +26,9 @@
 <style>
 /* ===== Línea gráfica muévete.pe (valores tomados del sitio actual) ===== */
 :root{
-  --azul:#0069DC;        /* fondo principal */
-  --azul-menu:#0069DC;   /* menú y botón Mi cuenta */
-  --azul-osc:#0054B4;    /* página seleccionada en el menú */
-  --amarillo:#FFDF00;    /* filas, botones y acentos */
+  --azul:#0058CA;        /* fondo principal */
+  --azul-menu:#0060D2;   /* menú y botón Mi cuenta */
+  --amarillo:#FFDD00;    /* filas, botones y acentos */
   --blanco:#F7F7F7;      /* textos sobre azul */
   --negro:#000;          /* textos sobre amarillo */
   --gris-hero:#F7F7F7;
@@ -48,7 +47,7 @@ img,video{display:block;max-width:100%}
 /* ---------- placeholder de medios ---------- */
 .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
   border:1.5px dashed rgba(255,255,255,.55);color:rgba(255,255,255,.85);font-size:12px;padding:6px;line-height:1.3}
-.ph.dark{border-color:rgba(0,105,220,.35);color:rgba(0,105,220,.7)}
+.ph.dark{border-color:rgba(0,88,202,.35);color:rgba(0,88,202,.7)}
 
 /* ---------- HEADER ---------- */
 .top{position:absolute;inset:0 0 auto 0;z-index:20}
@@ -63,7 +62,7 @@ img,video{display:block;max-width:100%}
 .menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 25px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:first-child{padding-left:32px}
 .menu a:last-child{padding-right:32px}
 .cuenta{padding:0 22px!important}
@@ -113,7 +112,7 @@ body.mopen{overflow:hidden}
 .by{display:flex;align-items:flex-end;gap:12px;font-style:italic;font-size:40px;line-height:44px;letter-spacing:.02em;color:var(--blanco)}
 .by .spon{width:235px;height:90px}
 .by .spon img{width:100%;height:100%;object-fit:contain}
-.hero .ph.dark{border-color:rgba(0,105,220,.35)}
+.hero .ph.dark{border-color:rgba(0,88,202,.35)}
 
 /* ---------- WhatsApp flotante ---------- */
 .wa{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));top:auto;z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
@@ -245,7 +244,7 @@ footer a:hover{color:var(--amarillo)}
 .pie-azul{background:var(--azul)}
 .pilares2{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .pilar2{background:#fff;border:1px solid #E6EAF2;border-radius:20px;padding:26px 22px;display:flex;align-items:center;gap:18px;box-shadow:0 4px 14px rgba(16,24,40,.04)}
-.ic2{width:78px;height:78px;display:grid;place-items:center;flex:none;color:#0069DC}
+.ic2{width:78px;height:78px;display:grid;place-items:center;flex:none;color:#0058CA}
 .ic2 svg,.ic2 img{width:78px;height:78px;object-fit:contain}
 .pilar2 p{font-size:17px;font-weight:600;line-height:1.3}
 .destacado{display:grid;grid-template-columns:1.05fr 1fr;gap:24px;margin-top:28px;align-items:stretch}
@@ -322,11 +321,11 @@ footer a:hover{color:var(--amarillo)}
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
 .menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:not(.on):hover{color:var(--amarillo)}
 .mnav{padding:0 10px;gap:2px}
 .mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
-.mnav a.on{background:var(--azul-osc);color:var(--amarillo)}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
 .msub{padding-left:14px}
 .msub a{min-height:46px;padding-left:26px}
 
@@ -341,7 +340,7 @@ html{scrollbar-gutter:stable}
 /* Burbuja del menú que se desliza de página en página (escritorio) */
 @media (min-width:981px){@view-transition{navigation:auto}}
 .menu{position:relative}
-.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul-osc);view-transition-name:menu-pill;pointer-events:none}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
 .menu a{position:relative;z-index:1}
 .menu.con-pill a.on{background:transparent}
 .menu a:nth-of-type(1){view-transition-name:menu-1}
@@ -477,8 +476,8 @@ const CONFIG = {
         <div class="prox-top"><span class="eti">Próxima fecha</span><span class="estado-chip" id="chipEstado" hidden></span></div>
         <div class="prox-fecha" id="pxFecha">—</div>
         <div class="prox-datos">
-          <span><svg viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-11.8A7 7 0 0 1 19 9.7c0 5.5-7 11.8-7 11.8z" fill="#FF7A7A"/><circle cx="12" cy="9.6" r="2.6" fill="#0069DC"/></svg><span id="pxSede">Playa Sombrillas, Barranco</span></span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.8"/><path d="M12 6.5V12l3.5 2.5" stroke="#FFDF00" stroke-width="2"/></svg><span id="pxHora">6:30 – 10:30 a. m.</span></span>
+          <span><svg viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-11.8A7 7 0 0 1 19 9.7c0 5.5-7 11.8-7 11.8z" fill="#FF7A7A"/><circle cx="12" cy="9.6" r="2.6" fill="#0058CA"/></svg><span id="pxSede">Playa Sombrillas, Barranco</span></span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.8"/><path d="M12 6.5V12l3.5 2.5" stroke="#FFDD00" stroke-width="2"/></svg><span id="pxHora">6:30 – 10:30 a. m.</span></span>
         </div>
         <div class="prox-cta">
           <p>¡Ven y <em>muévete</em> con nosotros!</p>

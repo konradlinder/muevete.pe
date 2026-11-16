@@ -2,7 +2,7 @@
    - Páginas, JS y datos: primero la red (siempre lo último); si no hay conexión, la copia guardada.
    - Imágenes y fuentes: la copia guardada al instante y se actualiza por detrás.
    - Supabase y videos: no se tocan (siempre en vivo). */
-const VERSION = 'muevete-v2';
+const VERSION = 'muevete-v4';
 const PAGINAS = ['/', '/ranking', '/mi-cuenta', '/uma-go', '/terminos-y-condiciones',
                  '/inscripciones', '/bases', '/ronda', '/campo'];
 const ARCHIVOS = ['/js/ruta.js', '/js/app.js', '/js/config.js', '/js/auth.js', '/js/pie.js', '/js/menu-pill.js',

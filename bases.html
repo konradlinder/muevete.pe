@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <script src="/js/ruta.js"></script>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#0069DC">
+<meta name="theme-color" content="#0060D2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --azul:#0069DC; --azul-menu:#0069DC; --azul-osc:#0054B4; --amarillo:#FFDF00; --blanco:#F7F7F7;
+  --azul:#0058CA; --azul-menu:#0060D2; --amarillo:#FFDD00; --blanco:#F7F7F7;
   --fondo:#F6F6F6; --negro:#000; --rojo:#CC3D00;
   --poppins:"Poppins",sans-serif;
 }
@@ -37,7 +37,7 @@ button,input,select{font:inherit;color:inherit}
 .menu{display:flex;background:var(--azul-menu);border-radius:999px;box-shadow:0 1px 4px rgba(179,179,179,.6);overflow:hidden}
 .menu a{display:block;line-height:60px;padding:0 23px;font-size:16px;color:var(--blanco);transition:color .15s}
 .menu a:hover{color:var(--amarillo)}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:first-child{padding-left:30px}
 .menu a:last-child{padding-right:30px}
 .cuenta{padding:0 20px!important}
@@ -99,7 +99,7 @@ body{background:#fff}
 .cuerpo > *{min-width:0}
 .contenido section{padding-bottom:44px;margin-bottom:44px;border-bottom:1px solid #EEF0F4}
 .contenido section:last-of-type{border-bottom:0}
-h2{display:flex;align-items:baseline;gap:14px;color:#0069DC;font-size:30px;font-weight:600;line-height:1.15;margin-bottom:18px}
+h2{display:flex;align-items:baseline;gap:14px;color:#0058CA;font-size:30px;font-weight:600;line-height:1.15;margin-bottom:18px}
 h2 span{font-size:18px;font-weight:500;color:#7FA0DA;flex:none}
 .contenido p,.contenido li{font-size:16px;line-height:1.7;color:#454A52;font-weight:500}
 .contenido p+p{margin-top:12px}
@@ -107,13 +107,13 @@ h2 span{font-size:18px;font-weight:500;color:#7FA0DA;flex:none}
 .contenido a{color:var(--azul-menu);text-decoration:underline;text-underline-offset:2px}
 .contenido ul{padding-left:20px;display:grid;gap:8px}
 .contenido ul ul{margin-top:8px;gap:4px}
-.contenido li::marker{color:#0069DC}
+.contenido li::marker{color:#0058CA}
 .foto{width:100%;border-radius:16px;margin-top:26px;aspect-ratio:16/9;object-fit:cover}
 
 .tarjetas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .tarjeta{background:#F5F7FB;border:1px solid #E6EAF2;border-radius:16px;padding:18px 18px 16px}
 .tarjeta .ic{width:42px;height:42px;border-radius:50%;background:#fff;border:1.5px solid #CFD9EE;display:grid;place-items:center;margin-bottom:10px}
-.tarjeta .ic svg{width:22px;height:22px;fill:none;stroke:#0069DC;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tarjeta .ic svg{width:22px;height:22px;fill:none;stroke:#0058CA;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .tarjeta h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#1A1D22;margin-bottom:4px}
 .tarjeta p{font-size:15px!important;line-height:1.55!important}
 .tarjeta:last-child:nth-child(odd){grid-column:1 / -1}
@@ -124,7 +124,7 @@ h2 span{font-size:18px;font-weight:500;color:#7FA0DA;flex:none}
 .sede b{font-size:18px;font-weight:600}
 .temporadas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 16px}
 .temporadas div{border:1.5px solid #E1E6EF;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
-.temporadas b{color:#0069DC;font-size:17px}
+.temporadas b{color:#0058CA;font-size:17px}
 .temporadas span{font-size:14px;color:#5A606B;font-weight:500}
 .temporadas em{font-style:normal;align-self:flex-start;margin-top:8px;background:var(--amarillo);border-radius:999px;padding:2px 10px;font-size:13px}
 
@@ -145,7 +145,7 @@ thead tr:first-child th{font-size:12px;letter-spacing:.08em;text-transform:upper
 tbody th{background:#F5F7FB;color:#1A1D22;width:70px}
 tbody td{color:#2A2E35;font-weight:500}
 td.q{background:#EEF3FC;font-weight:600}
-thead th.q{background:#0054B4}
+thead th.q{background:#004BAE}
 tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 .oro thead th{background:var(--amarillo);color:#000;border-bottom-color:rgba(0,0,0,.08)}
 .oro thead th.q{background:#F2C600}
@@ -183,11 +183,11 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
 .menu a,.menu a:first-child,.menu a:last-child{line-height:60px;padding:0 24px;border-radius:999px;transition:color .15s,background .15s}
-.menu a.on{background:var(--azul-osc);color:var(--amarillo)}
+.menu a.on{background:var(--azul);color:var(--amarillo)}
 .menu a:not(.on):hover{color:var(--amarillo)}
 .mnav{padding:0 10px;gap:2px}
 .mnav a,.mnav button.mdrop{border-radius:999px;min-height:58px;padding:0 44px 0 24px;transition:background .15s}
-.mnav a.on{background:var(--azul-osc);color:var(--amarillo)}
+.mnav a.on{background:var(--azul-menu);color:var(--amarillo)}
 .msub{padding-left:14px}
 .msub a{min-height:46px;padding-left:26px}
 
@@ -202,7 +202,7 @@ html{scrollbar-gutter:stable}
 /* Burbuja del menú que se desliza de página en página (escritorio) */
 @media (min-width:981px){@view-transition{navigation:auto}}
 .menu{position:relative}
-.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul-osc);view-transition-name:menu-pill;pointer-events:none}
+.menu-pill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;background:var(--azul);view-transition-name:menu-pill;pointer-events:none}
 .menu a{position:relative;z-index:1}
 .menu.con-pill a.on{background:transparent}
 .menu a:nth-of-type(1){view-transition-name:menu-1}
