@@ -178,6 +178,20 @@ input::-webkit-date-and-time-value{text-align:left}
 .gc .jug-chip.sel{background:var(--amarillo);color:#000}
 .gc .jug-chip.sel small{color:#6B5A00}
 .gc.corto{box-shadow:0 0 0 3px #F59E0B}
+.accion-r{position:sticky;top:150px;z-index:12;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(16,24,40,.16),0 0 0 2px var(--amarillo);padding:12px 14px;margin:0 0 12px}
+.ar-info{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ar-tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7DA6}
+.ar-info b{font-size:16px}
+.ar-info small{font-size:13px;color:#5B6370;font-weight:500}
+.ar-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ar-mover{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#3A3F47}
+.ar-mover input{width:74px;height:34px!important;padding:0 8px!important;text-align:center}
+.ar-ayuda{font-size:12px;color:#6B7280;font-weight:500;margin-top:8px}
+.gc .jug-chip .ord{display:inline-block;min-width:22px;color:#BFD0F5;font-size:11px;font-weight:700}
+.gc .jug-chip.sel .ord{color:#6B5A00}
+.gc .jug-chip.mov{animation:mov .6s}
+@keyframes mov{0%{background:var(--amarillo);color:#000}100%{}}
+@media (max-width:980px){.accion-r{top:142px}}
 .serie-h{grid-column:1 / -1;font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7DA6;margin-top:6px}
 .nota-adm{background:#FFF8E1;border-radius:14px;padding:12px 14px;font-size:13px;font-weight:500;color:#5C4A00;margin-bottom:14px;line-height:1.5}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1A1D21;color:#fff;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;max-width:90vw;text-align:center}
@@ -369,8 +383,19 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         </div>
         <div class="nota-adm" id="rNota"></div>
         <div class="chips" id="rChips"></div>
+        <div class="accion-r" id="rAccion" hidden>
+          <div class="ar-info"><span class="ar-tag">Seleccionado</span><b id="raNombre"></b><small id="raPos"></small></div>
+          <div class="ar-btns">
+            <button class="pill chica gris" type="button" id="raSubir" aria-label="Subir una posición">▲ subir</button>
+            <button class="pill chica gris" type="button" id="raBajar" aria-label="Bajar una posición">▼ bajar</button>
+            <label class="ar-mover">a la posición <input id="raPosNueva" type="number" min="1" inputmode="numeric"></label>
+            <button class="pill chica btn-azul" type="button" id="raMover">mover</button>
+            <button class="pill chica gris" type="button" id="raCancelar">cancelar</button>
+          </div>
+          <p class="ar-ayuda">Para <b>intercambiar</b>, toca a otro jugador. Para <b>subir o bajar</b> (y desplazar a todos), usa los botones o escribe la posición.</p>
+        </div>
         <div class="grid-campos" id="rCampos"></div>
-        <div class="acciones" id="rAcciones" hidden><span class="estado">Toca un jugador y luego otro para intercambiarlos.</span><button class="pill gris" type="button" id="rDescartar">descartar</button><button class="pill btn-azul" type="button" id="rGuardar">guardar ronda</button></div>
+        <div class="acciones" id="rAcciones" hidden><span class="estado">Toca un jugador para intercambiarlo con otro o moverlo de posición.</span><button class="pill gris" type="button" id="rDescartar">descartar</button><button class="pill btn-azul" type="button" id="rGuardar">guardar ronda</button></div>
       </div>
     </section>
   </div>
@@ -592,8 +617,8 @@ const LINKS = {
   const SERIES=['A','B','C','D'];
   // Partidos: con 5 jugadores salen 5 partidos y con 4 salen 3 (mismos cruces que Wix)
   const SETS={5:[[0,1,2,4],[0,2,3,4],[1,4,2,3],[0,4,1,3],[0,3,1,2]],4:[[0,1,2,3],[0,2,1,3],[0,3,1,2]]};
-  let rondaSel=1, PREV=null, elegido=null, avisoPrev='';
-  document.querySelectorAll('#rSel button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#rSel button').forEach(x=>x.classList.toggle('on',x===b)); rondaSel=+b.dataset.r; PREV=null; prepararRondas(); });
+  let rondaSel=1, PREV=null, LISTA=null, CFGR=null, elegido=null, movido=null, avisoPrev='';
+  document.querySelectorAll('#rSel button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#rSel button').forEach(x=>x.classList.toggle('on',x===b)); rondaSel=+b.dataset.r; PREV=null; LISTA=null; elegido=null; prepararRondas(); });
 
   // Ronda 1: zigzag dentro de cada serie (izq→der, der→izq…)
   function armarRonda1(cfg,jugadores){
@@ -658,34 +683,72 @@ const LINKS = {
       }
       const N=jugadores.length, cfg=CONFIG_CAMPOS[N];
       if(!cfg) throw new Error(N<4?'Se necesitan al menos 4 jugadores.':`No hay configuración de campos para ${N} jugadores (con 6, 7 u 11 no se pueden armar campos de 4 o 5). Ajusta la asistencia.`);
-      PREV=rondaSel===1?armarRonda1(cfg,jugadores):armarRonda2(cfg,jugadores);
-      elegido=null; pintarPrevia();
+      LISTA=jugadores; CFGR=cfg; elegido=null; rearmar();
     }catch(e){ fallo(e); }
     finally{ b.disabled=false; }
   };
+  // Vuelve a armar los campos desde la lista ordenada (el orden se renumera 1, 2, 3…)
+  function rearmar(){
+    LISTA.forEach((j,i)=>j.orden=i+1);
+    PREV=rondaSel===1?armarRonda1(CFGR,LISTA):armarRonda2(CFGR,LISTA);
+    pintarPrevia();
+  }
+  const idxDe=j=>LISTA.indexOf(j);
+  function seleccionar(j){
+    if(!elegido){ elegido=j; }
+    else if(elegido===j){ elegido=null; }
+    else{ // intercambiar
+      const a=idxDe(elegido), b=idxDe(j); [LISTA[a],LISTA[b]]=[LISTA[b],LISTA[a]];
+      movido=[elegido,j]; toast(`Intercambiados: ${elegido.nombre} ↔ ${j.nombre}`); elegido=null; rearmar(); return;
+    }
+    pintarPrevia();
+  }
+  function moverA(pos){
+    if(!elegido) return;
+    const de=idxDe(elegido), a=Math.max(0,Math.min(LISTA.length-1,pos-1));
+    if(de===a) return;
+    LISTA.splice(de,1); LISTA.splice(a,0,elegido);
+    movido=[elegido]; rearmar();
+  }
+  $('#raSubir').onclick=()=>elegido&&moverA(idxDe(elegido));        // posición actual - 1
+  $('#raBajar').onclick=()=>elegido&&moverA(idxDe(elegido)+2);      // posición actual + 1
+  $('#raMover').onclick=()=>{ const v=+$('#raPosNueva').value; if(!v){ toast('Escribe la nueva posición',true); return; } moverA(v); };
+  $('#raPosNueva').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#raMover').click(); });
+  $('#raCancelar').onclick=()=>{ elegido=null; pintarPrevia(); };
+
   function pintarPrevia(){
     const N=PREV.reduce((s,c)=>s+c.jugadores.length,0), malos=PREV.filter(c=>!SETS[c.jugadores.length]).length;
     const porSerie=SERIES.map(s=>[s,PREV.filter(c=>c.serie===s).reduce((t,c)=>t+c.jugadores.length,0)]).filter(x=>x[1]);
     $('#rChips').innerHTML=`<span class="chip">Jugadores <b>${N}</b></span><span class="chip">Campos <b>${PREV.length}</b></span><span class="chip">Partidos <b>${PREV.reduce((s,c)=>s+(SETS[c.jugadores.length]||[]).length,0)}</b></span>`+porSerie.map(([s,n])=>`<span class="chip">Serie ${s} <b>${n}</b></span>`).join('')+(malos?`<span class="chip rojo">Campos con error <b>${malos}</b></span>`:'');
+    // panel de acciones del jugador seleccionado
+    const pan=$('#rAccion'); pan.hidden=!elegido;
+    if(elegido){
+      const c=PREV.find(x=>x.jugadores.includes(elegido));
+      $('#raNombre').textContent=elegido.nombre;
+      $('#raPos').textContent=`posición ${elegido.orden} de ${LISTA.length} · campo ${c?c.campo:'—'} · serie ${c?c.serie:'—'}`;
+      $('#raPosNueva').max=LISTA.length; $('#raPosNueva').value='';
+      $('#raSubir').disabled=elegido.orden<=1; $('#raBajar').disabled=elegido.orden>=LISTA.length;
+    }
     const nodos=[];
     if(avisoPrev){ const a=document.createElement('p'); a.className='nota-adm'; a.style.gridColumn='1 / -1'; a.textContent=avisoPrev; nodos.push(a); }
     let serieAnt='';
-    PREV.forEach((c,ci)=>{
+    PREV.forEach(c=>{
       if(c.serie!==serieAnt){ serieAnt=c.serie; const h=document.createElement('h3'); h.className='serie-h'; h.textContent='Serie '+c.serie; nodos.push(h); }
       const d=document.createElement('div'); d.className='gc'+(SETS[c.jugadores.length]?'':' corto');
       d.innerHTML=`<h3>Campo <b>${c.campo}</b></h3>`;
-      c.jugadores.forEach((j,ji)=>{ const b=document.createElement('button'); b.type='button'; b.className='jug-chip'+(elegido&&elegido[0]===ci&&elegido[1]===ji?' sel':'');
-        b.innerHTML=`<span>${esc(j.nombre)}</span><small>${esc(j.extra)}</small>`;
-        b.onclick=()=>{ if(!elegido){ elegido=[ci,ji]; }
-          else{ const [a,bb]=elegido; const t=PREV[a].jugadores[bb]; PREV[a].jugadores[bb]=PREV[ci].jugadores[ji]; PREV[ci].jugadores[ji]=t; elegido=null; }
-          pintarPrevia(); };
+      c.jugadores.forEach(j=>{ const b=document.createElement('button'); b.type='button';
+        b.className='jug-chip'+(elegido===j?' sel':'')+(movido&&movido.includes(j)?' mov':'');
+        b.innerHTML=`<span><span class="ord">${j.orden}</span> ${esc(j.nombre)}</span><small>${esc(j.extra)}</small>`;
+        b.setAttribute('aria-label',`${j.nombre}, posición ${j.orden}`);
+        b.onclick=()=>seleccionar(j);
         d.append(b); });
       nodos.push(d);
     });
     $('#rCampos').replaceChildren(...nodos);
+    movido=null;
     $('#rAcciones').hidden=false;
   }
-  $('#rDescartar').onclick=()=>{ PREV=null; elegido=null; prepararRondas(); };
+  $('#rDescartar').onclick=()=>{ PREV=null; LISTA=null; elegido=null; $('#rAccion').hidden=true; prepararRondas(); };
   $('#rGuardar').onclick=async()=>{
     if(!PREV) return;
     if(PREV.some(c=>!SETS[c.jugadores.length])){ toast('Cada campo debe tener 4 o 5 jugadores.',true); return; }
@@ -697,7 +760,7 @@ const LINKS = {
         jugador_a1:J[st[0]].nombre,jugador_a2:J[st[1]].nombre,jugador_b1:J[st[2]].nombre,jugador_b2:J[st[3]].nombre,jugadores:nombres,
         object_a1:obj(J[st[0]]),object_a2:obj(J[st[1]]),object_b1:obj(J[st[2]]),object_b2:obj(J[st[3]])})); });
     const b=$('#rGuardar'); b.disabled=true; b.textContent='guardando…';
-    try{ const n=await rpc('admin_guardar_ronda',{p_ronda:rondaSel,p_playa:PLAYA,p_partidos:partidos}); toast(`Ronda ${rondaSel} guardada: ${n} partidos`); PREV=null; prepararRondas(); }
+    try{ const n=await rpc('admin_guardar_ronda',{p_ronda:rondaSel,p_playa:PLAYA,p_partidos:partidos}); toast(`Ronda ${rondaSel} guardada: ${n} partidos`); PREV=null; LISTA=null; elegido=null; $('#rAccion').hidden=true; prepararRondas(); }
     catch(e){ fallo(e); }
     b.disabled=false; b.textContent='guardar ronda';
   };
