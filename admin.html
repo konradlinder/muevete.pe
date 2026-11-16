@@ -152,6 +152,10 @@ input::-webkit-date-and-time-value{text-align:left}
 .fila-adm .nm small a{color:inherit}
 .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:2px;background:#E5E7EB;color:#4B5563}
 .badge.le{background:#FDE68A;color:#78350F}
+.badge.nuevo{background:#DCFCE7;color:#166534}
+.gc .jug-chip.nuevo{box-shadow:inset 3px 0 0 #4ADE80}
+.gc .tag-nuevo{display:inline-block;flex:none;margin-left:auto;font-size:9px;font-weight:800;letter-spacing:.06em;background:#4ADE80;color:#052E16;border-radius:4px;padding:1px 4px;vertical-align:1px}
+.gc .jug-chip.sel .tag-nuevo{background:#166534;color:#fff}
 .fila-adm.asiste{background:#E8F7EE}.fila-adm.tarde{background:#FFF6E0}.fila-adm.tardenj{background:#FDECEC}
 .seg{display:inline-flex;background:#fff;border-radius:999px;padding:3px;gap:2px;box-shadow:inset 0 0 0 1.5px #E1E5EC}
 .seg button{border:0;background:transparent;border-radius:999px;height:34px;padding:0 12px;font:600 13px var(--poppins);color:#3A3F47;cursor:pointer;white-space:nowrap}
@@ -201,7 +205,7 @@ input::-webkit-date-and-time-value{text-align:left}
 @keyframes mov{0%{background:var(--amarillo);color:#000}100%{}}
 @media (max-width:980px){.accion-r{top:142px}}
 .gc .jug-chip > span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gc .jug-chip small{flex:none}
+.gc .jug-chip small{flex:none;margin-left:auto}
 /* escritorio: más ancho en Rondas y Resultados, y los 5 campos de cada serie en una fila */
 @media (min-width:1180px){
   body.ancho main{max-width:1260px}
@@ -610,7 +614,7 @@ const LINKS = {
     $('#aLista').replaceChildren(...L.map(x=>{
       const d=document.createElement('div'); d.className='fila-adm '+(x.asistencia||'').replace(' ','').toLowerCase();
       const tel=(x.celular||'').replace(/\D/g,'');
-      d.innerHTML=`<span class="pos">${x.posicion}</span><span class="nm">${esc(x.jugador)}${x.espera?'<span class="badge le">L.E.</span>':''}<small>${x.dni?'DNI '+esc(x.dni)+' · ':''}${x.puesto?'Puesto '+x.puesto+' · ':''}${tel?`<a href="https://wa.me/${tel.length===9?'51'+tel:tel}" target="_blank" rel="noopener">${esc(x.celular)}</a>`:'sin celular'}</small></span><span class="der"></span>`;
+      d.innerHTML=`<span class="pos">${x.posicion}</span><span class="nm">${esc(x.jugador)}${x.nuevo?'<span class="badge nuevo" title="Nunca jugó en muévete">NUEVO</span>':''}${x.espera?'<span class="badge le">L.E.</span>':''}<small>${x.dni?'DNI '+esc(x.dni)+' · ':''}${x.puesto?'Puesto '+x.puesto+' · ':''}${tel?`<a href="https://wa.me/${tel.length===9?'51'+tel:tel}" target="_blank" rel="noopener">${esc(x.celular)}</a>`:'sin celular'}</small></span><span class="der"></span>`;
       const seg=document.createElement('div'); seg.className='seg'; seg.setAttribute('role','radiogroup'); seg.setAttribute('aria-label','Asistencia de '+x.jugador);
       [['asiste','Asiste'],['tarde','Tarde'],['tarde NJ','Tarde NJ'],['','×']].forEach(([v,t])=>{
         const b=document.createElement('button'); b.type='button'; b.dataset.v=v; b.textContent=t; b.setAttribute('role','radio');
@@ -720,7 +724,7 @@ const LINKS = {
       if(rondaSel===1){
         const lista=await rpc('admin_lista',{p_playa:PLAYA,p_fecha:leerFecha('#aFecha')||CFG.siguiente_fecha,p_temporada:TEMPORADA});
         jugadores=lista.filter(x=>x.asistencia==='asiste'||x.asistencia==='tarde')
-          .map(x=>({nombre:x.jugador,dni:x.dni||'',promedio:Number(x.promedio)||0,ranking:x.puesto??10000}))
+          .map(x=>({nombre:x.jugador,dni:x.dni||'',promedio:Number(x.promedio)||0,ranking:x.puesto??10000,nuevo:!!x.nuevo}))
           .sort((a,b)=>b.promedio-a.promedio||a.ranking-b.ranking)
           .map((x,i)=>({...x,orden:i+1,extra:x.ranking<10000?`#${x.ranking}`:'s/p'}));
       }else{
@@ -779,7 +783,7 @@ const LINKS = {
   function pintarPrevia(){
     const N=PREV.reduce((s,c)=>s+c.jugadores.length,0), malos=PREV.filter(c=>!SETS[c.jugadores.length]).length;
     const porSerie=SERIES.map(s=>[s,PREV.filter(c=>c.serie===s).reduce((t,c)=>t+c.jugadores.length,0)]).filter(x=>x[1]);
-    $('#rChips').innerHTML=`<span class="chip">Jugadores <b>${N}</b></span><span class="chip">Campos <b>${PREV.length}</b></span><span class="chip">Partidos <b>${PREV.reduce((s,c)=>s+(SETS[c.jugadores.length]||[]).length,0)}</b></span>`+porSerie.map(([s,n])=>`<span class="chip">Serie ${s} <b>${n}</b></span>`).join('')+(malos?`<span class="chip rojo">Campos con error <b>${malos}</b></span>`:'');
+    $('#rChips').innerHTML=`<span class="chip">Jugadores <b>${N}</b></span><span class="chip">Campos <b>${PREV.length}</b></span><span class="chip">Partidos <b>${PREV.reduce((s,c)=>s+(SETS[c.jugadores.length]||[]).length,0)}</b></span>`+porSerie.map(([s,n])=>`<span class="chip">Serie ${s} <b>${n}</b></span>`).join('')+(malos?`<span class="chip rojo">Campos con error <b>${malos}</b></span>`:'')+((n=>n?`<span class="chip verde" title="Nunca jugaron en muévete">Nuevos <b>${n}</b></span>`:'')((LISTA||[]).filter(j=>j.nuevo).length));
     // panel de acciones del jugador seleccionado
     const pan=$('#rAccion'); pan.hidden=!elegido;
     if(elegido){
@@ -797,8 +801,8 @@ const LINKS = {
       const d=document.createElement('div'); d.className='gc'+(SETS[c.jugadores.length]?'':' corto');
       d.innerHTML=`<h3>Campo <b>${c.campo}</b></h3>`;
       c.jugadores.forEach(j=>{ const b=document.createElement('button'); b.type='button';
-        b.className='jug-chip'+(elegido===j?' sel':'')+(movido&&movido.includes(j)?' mov':'');
-        b.innerHTML=`<span><span class="ord">${j.orden}</span> ${esc(j.nombre)}</span><small>${esc(j.extra)}</small>`;
+        b.className='jug-chip'+(j.nuevo?' nuevo':'')+(elegido===j?' sel':'')+(movido&&movido.includes(j)?' mov':'');
+        b.innerHTML=`<span><span class="ord">${j.orden}</span> ${esc(j.nombre)}</span>${j.nuevo?`<span class="tag-nuevo" title="Nunca jugó en muévete · ${esc(j.extra)}">NUEVO</span>`:`<small>${esc(j.extra)}</small>`}`;
         b.setAttribute('aria-label',`${j.nombre}, posición ${j.orden}`);
         b.onclick=()=>seleccionar(j);
         d.append(b); });
