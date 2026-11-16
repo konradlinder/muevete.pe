@@ -108,9 +108,8 @@ body.mopen{overflow:hidden}
 .hero .ph.dark{border-color:rgba(0,70,184,.35)}
 
 /* ---------- WhatsApp flotante ---------- */
-.wa{position:absolute;right:40px;top:calc(var(--heroH,759px) - 83px - var(--barras) - env(safe-area-inset-bottom,0px));z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
+.wa{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));top:auto;z-index:50;width:53px;height:53px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);overflow:hidden;transition:transform .15s}
 .wa:hover{transform:scale(1.07)}
-body.fijo .wa{position:fixed;top:auto;bottom:calc(30px + env(safe-area-inset-bottom,0px));animation:entraWa .25s ease}
 @keyframes entraWa{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .wa img{width:100%;height:100%;object-fit:cover}
 .wa svg{width:30px;height:30px;fill:#fff}
@@ -229,8 +228,7 @@ footer a:hover{color:var(--amarillo)}
   .f-links > :nth-child(5){order:5}
   .f-admin{grid-column:2;grid-row:2;gap:8px;justify-items:end;text-align:right}
   .f-admin .copy{margin-top:10px}
-  .wa{right:20px;top:calc(var(--heroH,100lvh) - 73px - var(--barras) - env(safe-area-inset-bottom,0px))}
-  body.fijo .wa{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  .wa{right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 }
 
 /* ======== PROPUESTA: estilo de la página de inscripciones ======== */

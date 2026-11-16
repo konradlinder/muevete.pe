@@ -184,6 +184,43 @@ body.cargando main{visibility:hidden}
 .app-ico img{width:100%;height:100%;border-radius:14px;display:block}
 .burger{border-radius:12px!important}
 @media (max-width:980px){.app-ico{width:52px;height:52px;border-radius:12px;left:calc(16px + env(safe-area-inset-left,0px))}.app-ico img{border-radius:12px}}
+
+/* ---------- Perfil reorganizado ---------- */
+.perfil{grid-template-columns:200px 1fr!important;column-gap:32px!important;align-items:start}
+.foto{background:#fff;border-radius:20px;padding:22px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:sticky;top:110px}
+.campos{display:grid!important;grid-template-columns:1fr!important;gap:14px!important}
+.grupo{background:#fff;border-radius:20px;padding:20px 22px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:grid;gap:14px}
+.grupo h2{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7DA6}
+.fila2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.campo{min-width:0}
+.campo label,.campo .lbl{font-size:14px!important;font-weight:600;color:#3A3F47}
+.campo .dato{display:flex;align-items:center;height:44px;padding:0 14px;border-radius:12px;background:#F1F3F7;color:#5B6370!important;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.campo input,.campo select{width:100%}
+.doble{display:flex;gap:8px;min-width:0}
+.doble .codigo{width:108px!important;flex:none}
+.doble input{flex:1;min-width:0}
+.arroba{position:relative}
+.arroba::before{content:"@";position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9AA1AC;font-weight:600;pointer-events:none}
+.arroba input{padding-left:32px!important}
+.acciones{margin-top:18px}
+@media (max-width:980px){
+  main{padding-top:calc(23px + env(safe-area-inset-top,0px))}
+  #vPerfil > h1:first-child{min-height:52px;display:flex;align-items:center;padding-left:64px;padding-right:64px;font-size:clamp(26px,8vw,34px);white-space:nowrap}
+  .perfil{grid-template-columns:1fr!important;row-gap:14px}
+  .foto{position:static;flex-direction:row!important;justify-content:flex-start;gap:18px;padding:14px 16px}
+  .foto .avatar{width:84px!important;height:84px!important}
+}
+@media (max-width:760px){
+  .grupo{padding:16px}
+  .fila2{gap:10px}
+  .doble .codigo{width:92px!important;padding-right:26px!important;background-position:right 8px center!important}
+}
+@media (max-width:440px){
+  .fila2.cel-ig{grid-template-columns:1fr}
+  .fila2.solo{grid-template-columns:1fr}
+  .doble .codigo{width:104px!important}
+  .campo .dato{font-size:14px;padding:0 12px}
+}
 </style>
 </head>
 <body class="cargando">
@@ -226,7 +263,7 @@ body.cargando main{visibility:hidden}
   </section>
 
   <section class="vista" id="vPerfil" hidden>
-  <h1>Tu perfil:</h1>
+  <h1>Tu perfil</h1>
 
   <form class="perfil" id="perfil" autocomplete="on">
     <div class="foto">
@@ -236,16 +273,26 @@ body.cargando main{visibility:hidden}
     </div>
 
     <div class="campos">
-      <div class="campo c1"><span class="lbl">DNI/CE:</span><span class="dato" data-campo="documento">—</span></div>
-      <div class="campo ancho"><span class="lbl">Correo electrónico:</span><span class="dato" data-campo="correo">—</span></div>
-
-      <div class="campo c1"><label for="nombre">Nombre:</label><input id="nombre" name="nombre" autocomplete="given-name"></div>
-      <div class="campo c2"><label for="apellido">Apellido:</label><input id="apellido" name="apellido" autocomplete="family-name"></div>
-
-      <div class="campo c1"><label for="nacimiento">Fecha de nacimiento:</label><input id="nacimiento" name="nacimiento" type="date" autocomplete="bday" min="1920-01-01" data-selector-fecha></div>
-      <div class="campo c2">
-        <label for="celular">Celular:</label>
-        <div class="doble">
+      <section class="grupo">
+        <h2>Datos personales</h2>
+        <div class="fila2">
+          <div class="campo"><label for="nombre">Nombre</label><input id="nombre" name="nombre" autocomplete="given-name"></div>
+          <div class="campo"><label for="apellido">Apellido</label><input id="apellido" name="apellido" autocomplete="family-name"></div>
+        </div>
+        <div class="fila2">
+          <div class="campo"><span class="lbl">DNI/CE</span><span class="dato" data-campo="documento">—</span></div>
+          <div class="campo"><span class="lbl">Correo electrónico</span><span class="dato" data-campo="correo">—</span></div>
+        </div>
+        <div class="fila2 solo">
+          <div class="campo"><label for="nacimiento">Fecha de nacimiento</label><input id="nacimiento" name="nacimiento" type="date" autocomplete="bday" min="1920-01-01" data-selector-fecha></div>
+        </div>
+      </section>
+      <section class="grupo">
+        <h2>Contacto</h2>
+        <div class="fila2 cel-ig">
+          <div class="campo">
+            <label for="celular">Celular</label>
+            <div class="doble">
           <select class="codigo" name="codigo" aria-label="Código de país">
             <option value="+51" selected>PER +51</option>
             <option value="+1">USA +1</option>
@@ -449,16 +496,19 @@ body.cargando main{visibility:hidden}
             <option value="+996">KGZ +996</option>
             <option value="+998">UZB +998</option>
           </select>
-          <input id="celular" name="celular" type="tel" inputmode="tel" autocomplete="tel-national">
+              <input id="celular" name="celular" type="tel" inputmode="tel" autocomplete="tel-national">
+            </div>
+          </div>
+          <div class="campo"><label for="instagram">Instagram</label><div class="arroba"><input id="instagram" name="instagram" autocapitalize="off" spellcheck="false" placeholder="usuario"></div></div>
         </div>
-      </div>
-      <div class="campo c3 ig"><label for="instagram">Instagram:</label><input id="instagram" name="instagram" autocapitalize="off" spellcheck="false"></div>
-
-      <div class="emergencia">
-        <span class="lbl">Contacto de emergencia:</span>
-        <input name="emergencia_nombre" aria-label="Nombre del contacto de emergencia" placeholder="Nombre">
-        <input name="emergencia_celular" type="tel" inputmode="tel" aria-label="Celular del contacto de emergencia" placeholder="Celular">
-      </div>
+      </section>
+      <section class="grupo">
+        <h2>Contacto de emergencia</h2>
+        <div class="fila2">
+          <div class="campo"><label for="emNombre">Nombre</label><input id="emNombre" name="emergencia_nombre" placeholder="Nombre"></div>
+          <div class="campo"><label for="emCelular">Celular</label><input id="emCelular" name="emergencia_celular" type="tel" inputmode="tel" placeholder="Número"></div>
+        </div>
+      </section>
     </div>
   </form>
 

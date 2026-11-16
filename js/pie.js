@@ -84,12 +84,12 @@
     '</div>';
   document.body.appendChild(pie);
 
-  // Botón flotante de WhatsApp (abajo a la derecha), salvo en el panel de admin
+  // Botón flotante de WhatsApp fijo abajo a la derecha, en todas las páginas
   var WA_NUMERO = '51964214852';
   var WA_TEXTO = 'Hola Konrad,\nNecesito ayuda con';
-  if (!/admin\.html$/.test(location.pathname) && !document.getElementById('wa')) {
+  if (!document.getElementById('wa')) {
     var est = document.createElement('style');
-    est.textContent = '.wa-flota{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:transform .15s}' +
+    est.textContent = '.wa-flota{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:60;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:transform .15s}' +
       '.wa-flota:hover{transform:scale(1.06)}.wa-flota svg{width:30px;height:30px}' +
       '@media (max-width:760px){.wa-flota{width:54px;height:54px;right:calc(16px + env(safe-area-inset-right,0px))}}';
     document.head.appendChild(est);
