@@ -586,7 +586,6 @@ async function guardarPerfil(d){
   const limpio=v=>(v||'').trim()||null;
   const cambios={
     nombre:limpio(d.nombre), apellido:limpio(d.apellido),
-    jugador:[d.nombre,d.apellido].map(x=>(x||'').trim()).filter(Boolean).join(' ')||null,
     fecha_nacimiento:d.nacimiento||null,
     country_code:(d.codigo||'').replace(/\D/g,'')||null,
     celular:limpio(d.celular), instagram:limpio((d.instagram||'').replace(/^@/,'')),
