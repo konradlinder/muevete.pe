@@ -44,4 +44,11 @@
     document.addEventListener('DOMContentLoaded', ajustar);
     window.addEventListener('load', ajustar);
   }
+
+  // Si alguien empezó a crear o activar su cuenta y no terminó, lo llevamos a completarla
+  try{
+    if(localStorage.getItem('muevete.pendiente') && localStorage.getItem('muevete.sesion') && !/^\/mi-cuenta(\.html)?\/?$/.test(location.pathname)){
+      location.replace('/mi-cuenta');
+    }
+  }catch(e){}
 })();

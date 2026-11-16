@@ -88,7 +88,7 @@
     },
 
     salir:async function(){
-      var s=leer(); borrar();
+      var s=leer(); borrar(); try{localStorage.removeItem('muevete.pendiente')}catch(e){}
       if(s) try{ await fetch(URL_AUTH+'/logout',{method:'POST',headers:Object.assign(base(),{'Authorization':'Bearer '+s.access_token})}); }catch(e){}
     },
 
