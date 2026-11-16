@@ -269,6 +269,17 @@ input::-webkit-date-and-time-value{text-align:left}
 .pin-res .acc{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .pin-res .acc a,.pin-res .acc button{text-decoration:none}
 .btn-wa{background:#25D366!important;color:#fff!important}
+.fila-adm .acc-u{display:flex;gap:8px;align-items:center}
+.pill.borde-az{background:#fff!important;color:var(--azul-menu)!important;box-shadow:inset 0 0 0 1.5px #C9D6EE}
+.edit-u{grid-column:1 / -1;background:#fff;border-radius:12px;padding:14px;box-shadow:inset 0 0 0 1.5px #E3E8F1;display:grid;gap:12px}
+.edit-u .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit-u .g3{display:grid;grid-template-columns:110px 1fr;gap:8px}
+.edit-u label{display:block;font-size:12.5px;font-weight:600;color:#3A3F47;margin-bottom:5px}
+.edit-u input,.edit-u select{width:100%;min-width:0}
+.edit-u .nota-u{font-size:12px;color:#8A5A00;background:#FFF8E1;border-radius:10px;padding:8px 10px;font-weight:500;line-height:1.45}
+.edit-u .pie-u{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.edit-u .borrar-u{margin-left:auto;background:none;border:0;color:#B91C1C;font:600 13px var(--poppins);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+@media (max-width:640px){.edit-u .g2{grid-template-columns:1fr}.fila-adm .acc-u{grid-column:1 / -1}}
 
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
@@ -885,7 +896,7 @@ const LINKS = {
     const q=$('#uBuscar').value.trim(), box=$('#uLista');
     if(q.length<2){ box.innerHTML='<p class="vacio-adm">Escribe al menos 2 letras o números.</p>'; return; }
     box.innerHTML='<p class="vacio-adm">Buscando…</p>';
-    let r; try{ r=await rpc('admin_usuarios',{p_texto:q}); }catch(e){ fallo(e); return; }
+    let r; try{ r=(await rpc('admin_usuarios',{p_texto:q}))||[]; }catch(e){ fallo(e); return; }
     if(q!==$('#uBuscar').value.trim()) return;
     if(!r.length){ box.innerHTML='<p class="vacio-adm">No se encontró a nadie con ese nombre o DNI.</p>'; return; }
     box.replaceChildren(...r.map(u=>{
@@ -912,9 +923,47 @@ const LINKS = {
         }catch(e){ fallo(e.message==='sin-sesion'?e:new Error(e.message)); b.textContent=u.activa?'restablecer PIN':'activar cuenta'; }
         finally{ b.disabled=false; }
       };
-      d.querySelector('.der').append(b);
+      const ed=document.createElement('button'); ed.type='button'; ed.className='pill chica borde-az'; ed.textContent='editar';
+      ed.onclick=()=>editarUsuario(u,d);
+      const acc=document.createElement('div'); acc.className='acc-u'; acc.append(ed,b);
+      d.querySelector('.der').append(acc);
       return d;
     }));
+  }
+
+  // Formulario para corregir datos (celular, DNI, nombre…) o borrar la cuenta
+  async function editarUsuario(u,fila){
+    const prev=fila.querySelector('.edit-u'); if(prev){ prev.remove(); return; }
+    let x; try{ x=(await rpc('admin_usuario',{p_id:u.id}))[0]; }catch(e){ return fallo(e); }
+    if(!x) return toast('No se encontró el usuario',true);
+    const v=t=>esc(t??'');
+    const caja=document.createElement('form'); caja.className='edit-u'; caja.noValidate=true;
+    caja.innerHTML=`
+      <div class="g2"><div><label>Nombre</label><input name="nombre" value="${v(x.nombre)}"></div><div><label>Apellido</label><input name="apellido" value="${v(x.apellido)}"></div></div>
+      <div class="g2"><div><label>Nombre en ranking e inscripciones</label><input name="jugador" value="${v(x.jugador)}"></div><div><label>DNI/CE</label><input name="dni" value="${v(x.dni)}" inputmode="numeric"></div></div>
+      <div class="g2"><div><label>Fecha de nacimiento</label><input name="fecha_nacimiento" type="date" value="${v(x.fecha_nacimiento)}"></div><div><label>Género</label><select name="genero"><option value="">—</option><option value="F"${x.genero==='F'?' selected':''}>Mujer</option><option value="M"${x.genero==='M'?' selected':''}>Hombre</option></select></div></div>
+      <div class="g2"><div><label>Celular</label><div class="g3"><input name="country_code" value="${v(x.country_code?'+'+x.country_code:'+51')}"><input name="celular" value="${v(x.celular)}" inputmode="tel"></div></div><div><label>Distrito</label><input name="distrito" value="${v(x.distrito)}"></div></div>
+      <div class="g2"><div><label>Contacto de emergencia</label><input name="contacto_emergencia" value="${v(x.contacto_emergencia)}"></div><div><label>Celular de emergencia</label><input name="celular_emergencia" value="${v(x.celular_emergencia)}" inputmode="tel"></div></div>
+      <div class="g2"><div><label>Instagram</label><input name="instagram" value="${v(x.instagram)}"></div><div><label>Máximo nivel jugado</label><input name="nivel_juego" value="${v(x.nivel_juego)}"></div></div>
+      <p class="nota-u">Si corriges el DNI, también se corrige en sus inscripciones y en el ranking, y desde ahí entra con el DNI nuevo y el mismo PIN.</p>
+      <div class="pie-u"><button class="pill chica btn-azul" type="submit">guardar cambios</button><button class="pill chica borde-az" type="button" data-cerrar>cancelar</button>
+        <button class="borrar-u" type="button" data-borrar>${x.de_wix?'quitar cuenta (queda sin activar)':'borrar cuenta'}</button></div>`;
+    caja.querySelector('[data-cerrar]').onclick=()=>caja.remove();
+    caja.onsubmit=async e=>{
+      e.preventDefault();
+      const datos={}; new FormData(caja).forEach((val,k)=>{ const antes=k==='country_code'?(x.country_code?'+'+x.country_code:'+51'):(x[k]??''); if(String(val).trim()!==String(antes)) datos[k]=String(val).trim(); });
+      if(!Object.keys(datos).length) return toast('No hay cambios');
+      const btn=caja.querySelector('[type=submit]'); btn.disabled=true; btn.textContent='guardando…';
+      try{ await AUTH.cuenta({accion:'admin_editar',id:u.id,datos},true); toast('Cambios guardados'); caja.remove(); buscarCuentas(); }
+      catch(err){ fallo(err); btn.disabled=false; btn.textContent='guardar cambios'; }
+    };
+    const br=caja.querySelector('[data-borrar]');
+    br.onclick=async()=>{
+      if(!br.dataset.ok){ br.dataset.ok=1; br.textContent='¿seguro? toca otra vez'; setTimeout(()=>{ delete br.dataset.ok; br.textContent=x.de_wix?'quitar cuenta (queda sin activar)':'borrar cuenta'; },4000); return; }
+      try{ const r=await AUTH.cuenta({accion:'admin_borrar',id:u.id},true); toast(r.perfil_borrado?'Cuenta borrada':'Cuenta quitada: queda sin activar'); buscarCuentas(); }
+      catch(err){ fallo(err); }
+    };
+    fila.append(caja);
   }
 
   /* ---------- arranque ---------- */

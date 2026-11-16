@@ -231,7 +231,7 @@ body.cargando main{visibility:hidden}
 }
 
 /* ---------- Ingreso con DNI + PIN ---------- */
-.login .aviso{margin-bottom:14px}
+.login .aviso{margin:0;text-align:center}
 .paso-a{display:grid;gap:15px}
 .login form.paso-a{margin-top:0}
 .paso-a[hidden]{display:none!important}
@@ -275,6 +275,12 @@ body.cargando main{visibility:hidden}
 .chips[data-grupo="historial"]{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px}
 .chips[data-grupo="historial"] .chip{padding:0 10px;font-size:13.5px;white-space:nowrap}
 .login input:disabled{opacity:.45}
+
+.pin-fila{display:flex;align-items:center;gap:8px}
+.pin-fila .pin{flex:1;min-width:0;gap:6px}
+.ver-pin{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+.ver-pin svg{width:21px;height:21px}
+.ver-pin[aria-pressed="true"]{background:var(--amarillo);color:#000}
 </style>
 </head>
 <body class="cargando">
@@ -764,7 +770,11 @@ async function guardarPerfil(d){
 
   /* ---------- vistas ---------- */
   const vLogin=$('#vLogin'), vPerfil=$('#vPerfil');
-  const aviso=(t,ok)=>{const a=$('#lAviso');a.textContent=t||'';a.classList.toggle('si',!!t);a.classList.toggle('ok',!!ok)};
+  // El aviso va justo debajo del botón principal del paso visible
+  const aviso=(t,ok)=>{const a=$('#lAviso');
+    const paso=[...document.querySelectorAll('.paso-a')].find(e=>!e.hidden), btn=paso&&paso.querySelector('[type=submit], .btn');
+    if(btn&&btn.nextElementSibling!==a) btn.after(a);
+    a.textContent=t||'';a.classList.toggle('si',!!t);a.classList.toggle('ok',!!ok)};
   const WA='51964214852';
   const A={dni:'',info:null,crear:'registrar',cel:'',nac:''};
   const pasoEl=n=>document.querySelector(`.paso-a[data-paso="${n}"]`);
@@ -784,10 +794,18 @@ async function guardarPerfil(d){
   }
 
   // ---------- PIN de 6 casillas ----------
+  const OJO_NO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  const OJO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
   document.querySelectorAll('[data-pin]').forEach(c=>{
     const inp=c.querySelector('input'), cajas=[...c.querySelectorAll('span')];
+    // botón para mostrar/ocultar los números
+    const ver=document.createElement('button'); ver.type='button'; ver.className='ver-pin';
+    const rotulo=()=>{ const v=!!c.dataset.ver; ver.innerHTML=v?OJO_NO:OJO; ver.setAttribute('aria-pressed',v); ver.setAttribute('aria-label',v?'Ocultar PIN':'Mostrar PIN'); ver.title=v?'Ocultar PIN':'Mostrar PIN'; };
+    ver.onclick=()=>{ if(c.dataset.ver) delete c.dataset.ver; else c.dataset.ver='1'; rotulo(); pintar(); };
+    rotulo();
+    const fila=document.createElement('div'); fila.className='pin-fila'; c.before(fila); fila.append(c,ver);
     const pintar=()=>{ inp.value=inp.value.replace(/\D/g,'').slice(0,6); const n=inp.value.length;
-      cajas.forEach((b,k)=>{ b.textContent=k<n?'•':''; b.classList.toggle('f',document.activeElement===inp&&k===Math.min(n,5)); }); };
+      cajas.forEach((b,k)=>{ b.textContent=k<n?(c.dataset.ver?inp.value[k]:'•'):''; b.classList.toggle('f',document.activeElement===inp&&k===Math.min(n,5)); }); };
     inp.addEventListener('input',()=>{ pintar(); if(inp.value.length===6){ const f=inp.form, otros=[...f.querySelectorAll('.pin-in')], k=otros.indexOf(inp); if(otros[k+1]) otros[k+1].focus(); } });
     inp.addEventListener('focus',pintar); inp.addEventListener('blur',pintar); c.pintar=pintar;
   });
