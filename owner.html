@@ -299,7 +299,30 @@ input::-webkit-date-and-time-value{text-align:left}
 .monto-c.vacio input{color:#9CA3AF}
 .est-c{font-weight:700}
 .est-c.asiste{color:#15803D}.est-c.tarde{color:#B45309}.est-c.tardenj{color:#B91C1C}.est-c.no{color:#6B7280}
-@media (max-width:640px){.fila-adm.cob{grid-template-columns:1fr auto;row-gap:0}}
+.chip-f{border:0;font-family:inherit;cursor:pointer}
+.chip-f.on{background:var(--azul-menu);color:#fff}.chip-f.on b{color:#fff!important}
+.fila-adm.cob .der{display:flex;align-items:center;gap:8px}
+.pago-b{height:34px;padding:0 12px;border:0;border-radius:999px;font:700 12px var(--poppins);cursor:pointer;white-space:nowrap}
+.pago-b.revisar{background:#FFDB03;color:#000}
+.pago-b.aprobado{background:#DCFCE7;color:#166534}
+.pago-b.rechazado{background:#FDECEC;color:#B91C1C}
+.pago-b.sin{background:#fff;color:#6B7280;box-shadow:inset 0 0 0 1.5px #D7DEEA}
+.rev-c{grid-column:1 / -1;background:#fff;border-radius:12px;padding:14px;box-shadow:inset 0 0 0 1.5px #E3E8F1;display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:16px;align-items:start}
+.rev-c .img-c{display:block;border-radius:10px;overflow:hidden;background:#F1F3F7;max-height:360px}
+.rev-c .img-c img{display:block;width:100%;height:auto}
+.rev-c .sin-img{display:grid;place-items:center;min-height:120px;border-radius:10px;background:#F1F3F7;color:#6B7280;font-size:13px;font-weight:600;text-align:center;padding:12px}
+.rev-c .info{display:grid;gap:12px;font-size:14px;font-weight:500;color:#3A3F47;line-height:1.45}
+.rev-c .info b.m{font-size:22px;color:#000}
+.rev-c .botones{display:flex;gap:8px;flex-wrap:wrap}
+.pill.verde-p{background:#22A55A!important;color:#fff!important}
+.pill.rojo-b{background:#fff!important;color:#B91C1C!important;box-shadow:inset 0 0 0 1.5px #F3B4B4}
+.motivos{display:flex;flex-wrap:wrap;gap:6px}
+.motivos button{border:0;background:#F1F3F7;border-radius:999px;padding:7px 12px;font:600 12.5px var(--poppins);color:#3A3F47;cursor:pointer}
+.motivos button.on{background:#B91C1C;color:#fff}
+.rev-c .motivo-t{width:100%}
+.rev-c .nota-r{font-size:13px;color:#B91C1C;background:#FDECEC;border-radius:10px;padding:8px 10px}
+.rev-c .link-d{background:none;border:0;padding:0;font:600 13px var(--poppins);color:var(--azul-menu);text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:start}
+@media (max-width:640px){.fila-adm.cob{grid-template-columns:1fr auto;row-gap:8px}.rev-c{grid-template-columns:1fr}.rev-c .img-c{max-height:420px}}
 @media (max-width:640px){.edit-u .g2{grid-template-columns:1fr}.fila-adm .acc-u{grid-column:1 / -1}}
 /* ---------- Menú: ítem seleccionado como pastilla de alto completo ---------- */
 .menu{padding:0;align-items:stretch}
@@ -405,7 +428,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
     <section class="tab" id="t-cobros" hidden>
       <div class="card">
         <h2>Cobros</h2>
-        <p class="desc">Elige un estado y un monto para asignarlo a todos los de esa fecha, o cambia el monto de cada jugador en su fila.</p>
+        <p class="desc">Asigna montos por estado o jugador por jugador, y revisa los comprobantes para aprobar o rechazar cada pago.</p>
         <div class="barra dos-sel"><select id="cPlaya" aria-label="Playa"></select><select id="cFecha" aria-label="Fecha"></select></div>
         <div class="chips" id="cChips"></div>
         <div class="bulk-c">
@@ -489,7 +512,11 @@ const LINKS = {
   /* ---------- COBROS ---------- */
   const ASIS={asiste:['asiste','asiste'],tarde:['tarde','tarde'],'tarde NJ':['tarde NJ','tardenj']};
   const soles=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:2});
-  let cDatos=[], cCargado=false;
+  let cDatos=[], cCargado=false, cFiltro='todos', cAbierto=null;
+  const pagoEst=r=>r.pago_verificado===true?'aprobado':r.pago_verificado===false?'rechazado':r.comprobante?'revisar':'sin';
+  const PAGO_TXT={aprobado:'aprobado',rechazado:'rechazado',revisar:'por revisar',sin:'sin comprobante'};
+  const MOTIVOS=['El monto no coincide','No se ve el comprobante','Comprobante repetido','No es un pago a muévete'];
+  const FILTROS={todos:()=>true,sinmonto:r=>r.asistencia&&r.monto==null,revisar:r=>pagoEst(r)==='revisar',pendiente:r=>r.monto>0&&r.pago_verificado!==true,aprobado:r=>r.pago_verificado===true};
   const cPlaya=()=>$('#cPlaya').value, cFecha=()=>$('#cFecha').value;
   const fFecha=f=>{const d=new Date(f+'T12:00:00');return d.toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).replace('.','');};
   async function cobrosInicio(){
@@ -506,7 +533,7 @@ const LINKS = {
     const prev=$('#cFecha').value;
     const fs=await rpc('owner_fechas',{p_playa:cPlaya()})||[];
     const hoy=new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'});
-    $('#cFecha').innerHTML=fs.length?fs.map(f=>`<option value="${f.fecha}">${fFecha(f.fecha)}${f.sin_monto?' · '+f.sin_monto+' sin monto':''}</option>`).join(''):'<option value="">Sin fechas</option>';
+    $('#cFecha').innerHTML=fs.length?fs.map(f=>`<option value="${f.fecha}">${fFecha(f.fecha)}${f.por_revisar?' · '+f.por_revisar+' por revisar':''}${f.sin_monto?' · '+f.sin_monto+' sin monto':''}</option>`).join(''):'<option value="">Sin fechas</option>';
     if(mantener && fs.some(f=>f.fecha===prev)) $('#cFecha').value=prev;
     else { const pas=fs.find(f=>f.fecha<=hoy); if(pas) $('#cFecha').value=pas.fecha; }
     await cargarCobros();
@@ -521,12 +548,15 @@ const LINKS = {
     pintarCobrosChips();
     $('#cAsignar').disabled=!cDatos.length;
     const q=$('#cBuscar').value.trim().toLowerCase();
-    const filas=cDatos.filter(r=>!q||r.jugador.toLowerCase().includes(q)||String(r.dni||'').includes(q));
-    if(!filas.length){ $('#cLista').innerHTML=`<p class="vacio-adm">${cDatos.length?'Nadie coincide con la búsqueda.':'No hay inscritos en esta fecha.'}</p>`; return; }
+    const filas=cDatos.filter(FILTROS[cFiltro]).filter(r=>!q||r.jugador.toLowerCase().includes(q)||String(r.dni||'').includes(q));
+    if(!filas.length){ $('#cLista').innerHTML=`<p class="vacio-adm">${cDatos.length?'Nadie en esta vista.':'No hay inscritos en esta fecha.'}</p>`; return; }
     $('#cLista').innerHTML=filas.map(r=>{
       const a=ASIS[r.asistencia];
+      const pe=pagoEst(r), verPago=r.monto!=null||r.comprobante||r.pago_verificado!=null;
       return `<div class="fila-adm cob ${a?a[1]:''}" data-id="${r.id}"><div class="nm">${esc(r.jugador)}<small><span class="est-c ${a?a[1]:'no'}">${a?a[0]:'sin asistencia'}</span> · DNI ${esc(r.dni)}</small></div>
-        <label class="monto-c ${r.monto==null?'vacio':''}"><span>S/</span><input type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${r.monto==null?'':Number(r.monto)}" placeholder="—" aria-label="Monto de ${esc(r.jugador)}"></label></div>`;
+        <div class="der">${verPago?`<button class="pago-b ${pe}" type="button" data-pago aria-expanded="${cAbierto===r.id}">${PAGO_TXT[pe]}</button>`:''}
+        <label class="monto-c ${r.monto==null?'vacio':''}"><span>S/</span><input type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${r.monto==null?'':Number(r.monto)}" placeholder="—" aria-label="Monto de ${esc(r.jugador)}"></label></div>
+        ${cAbierto===r.id?panelPago(r):''}</div>`;
     }).join('');
   }
   $('#cLista').addEventListener('change',async e=>{
@@ -537,14 +567,55 @@ const LINKS = {
     try{
       await rpc('owner_cobro',{p_id:id,p_monto:v});
       r.monto=v; const box=i.closest('.monto-c'); box.classList.toggle('vacio',v==null); box.classList.add('ok'); setTimeout(()=>box.classList.remove('ok'),900);
-      pintarCobrosChips();
+      pintarCobrosChips(); actualizarFechaSel();
     }catch(err){ i.value=r.monto??''; fallo(err); }
   });
   $('#cLista').addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.matches('.monto-c input')) e.target.blur(); });
   function pintarCobrosChips(){
-    const con=cDatos.filter(r=>r.monto!=null), sin=cDatos.filter(r=>r.asistencia&&r.monto==null), total=con.reduce((a,r)=>a+Number(r.monto),0);
-    $('#cChips').innerHTML=`<span class="chip">Inscritos <b>${cDatos.length}</b></span><span class="chip verde">Con monto <b>${con.length}</b></span><span class="chip ${sin.length?'naranja':''}">Sin monto <b>${sin.length}</b></span><span class="chip">Total <b>${soles(total)}</b></span>`;
+    const n=f=>cDatos.filter(FILTROS[f]).length;
+    const total=cDatos.reduce((a,r)=>a+Number(r.monto||0),0), cobrado=cDatos.filter(r=>r.pago_verificado===true).reduce((a,r)=>a+Number(r.monto||0),0);
+    const c=(f,t,cl)=>`<button type="button" class="chip chip-f ${cl||''} ${cFiltro===f?'on':''}" data-f="${f}">${t} <b>${n(f)}</b></button>`;
+    $('#cChips').innerHTML=c('todos','Inscritos')+c('sinmonto','Sin monto',n('sinmonto')?'naranja':'')+c('revisar','Por revisar',n('revisar')?'ambar':'')+c('pendiente','Sin pagar')+c('aprobado','Aprobados','verde')
+      +`<span class="chip">Cobrado <b>${soles(cobrado)}</b>&nbsp;de ${soles(total)}</span>`;
   }
+  function panelPago(r){
+    const pe=pagoEst(r), img=r.comprobante;
+    return `<div class="rev-c">
+      ${img?`<a class="img-c" href="${esc(img)}" target="_blank" rel="noopener" title="Abrir en grande"><img src="${esc(img)}" alt="Comprobante de ${esc(r.jugador)}" loading="lazy"></a>`:'<div class="sin-img">Todavía no subió comprobante</div>'}
+      <div class="info">
+        <div>Debe pagar<br><b class="m">${r.monto!=null?soles(Number(r.monto)):'sin monto'}</b></div>
+        ${pe==='rechazado'?`<div class="nota-r">Rechazado: ${esc(r.pago_motivo||'sin motivo')}</div>`:''}
+        ${pe==='aprobado'?'<div>Pago aprobado.</div>':''}
+        ${pe==='revisar'||pe==='sin'?`<div class="botones"><button class="pill verde-p chico" type="button" data-aprobar>${pe==='sin'?'marcar pagado':'aprobar'}</button>${img?'<button class="pill rojo-b chico" type="button" data-rechazar>rechazar</button>':''}</div>
+        <div class="rech" hidden><div class="motivos">${MOTIVOS.map(m=>`<button type="button">${m}</button>`).join('')}</div>
+          <input class="motivo-t" type="text" maxlength="160" placeholder="Motivo que verá el jugador" style="margin-top:8px">
+          <div class="botones" style="margin-top:8px"><button class="pill rojo chico" type="button" data-conf-rech>confirmar rechazo</button></div></div>`
+        :`<button class="link-d" type="button" data-deshacer>volver a "por revisar"</button>`}
+      </div></div>`;
+  }
+  const revisar=async(r,aprobado,motivo)=>{
+    await rpc('owner_revisar_pago',{p_id:r.id,p_aprobado:aprobado,p_motivo:motivo||null});
+    r.pago_verificado=aprobado; r.pago_motivo=aprobado===false?motivo:null;
+  };
+  $('#cChips').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(!b) return; cFiltro=b.dataset.f; cAbierto=null; pintarCobros(); });
+  $('#cLista').addEventListener('click',async e=>{
+    const fila=e.target.closest('.fila-adm'); if(!fila) return; const r=cDatos.find(x=>x.id===fila.dataset.id);
+    if(e.target.closest('[data-pago]')){ cAbierto=cAbierto===r.id?null:r.id; return pintarCobros(); }
+    if(e.target.closest('[data-rechazar]')){ const z=fila.querySelector('.rech'); z.hidden=!z.hidden; if(!z.hidden) z.querySelector('input').focus(); return; }
+    const mb=e.target.closest('.motivos button');
+    if(mb){ fila.querySelectorAll('.motivos button').forEach(x=>x.classList.toggle('on',x===mb)); fila.querySelector('.motivo-t').value=mb.textContent; return; }
+    const accion=e.target.closest('[data-aprobar],[data-conf-rech],[data-deshacer]'); if(!accion) return;
+    accion.disabled=true;
+    try{
+      if(accion.matches('[data-aprobar]')){ await revisar(r,true); toast('Pago aprobado'); cAbierto=null; }
+      else if(accion.matches('[data-conf-rech]')){ const m=fila.querySelector('.motivo-t').value.trim(); if(!m){ accion.disabled=false; return toast('Elige o escribe el motivo.',true); } await revisar(r,false,m); toast('Pago rechazado'); }
+      else { await revisar(r,null); toast('Volvió a "por revisar"'); }
+      pintarCobros(); actualizarFechaSel();
+    }catch(err){ accion.disabled=false; fallo(err); }
+  });
+  function actualizarFechaSel(){ const o=$('#cFecha').selectedOptions[0]; if(!o) return;
+    const pr=cDatos.filter(r=>pagoEst(r)==='revisar').length, sm=cDatos.filter(FILTROS.sinmonto).length;
+    o.textContent=fFecha(o.value)+(pr?' · '+pr+' por revisar':'')+(sm?' · '+sm+' sin monto':''); }
   const DEF={asiste:9,tarde:13,'tarde NJ':13,sin:18}, NOMB={asiste:'asiste',tarde:'tarde','tarde NJ':'tarde NJ',sin:'sin asistencia'};
   const delEstado=e=>cDatos.filter(r=>(r.asistencia||'sin')===e);
   const cerrarConf=()=>{ $('#cConf').hidden=true; };
@@ -567,7 +638,7 @@ const LINKS = {
     }catch(err){ fallo(err); } finally{ b.disabled=false; }
   };
   $('#cPlaya').onchange=()=>{ try{ sessionStorage.setItem('owner.playa',cPlaya()); }catch(e){} cerrarConf(); cargarFechas().catch(fallo); };
-  $('#cFecha').onchange=()=>{ cerrarConf(); cargarCobros(); };
+  $('#cFecha').onchange=()=>{ cerrarConf(); cAbierto=null; cargarCobros(); };
   $('#cBuscar').addEventListener('input',pintarCobros);
   /* ---------- USUARIOS (activar cuenta / restablecer PIN) ---------- */
   let tUs;

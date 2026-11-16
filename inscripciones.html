@@ -119,6 +119,24 @@ h1{font-size:48px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 /* inscrito */
 .ok-ic{width:64px;height:64px;border-radius:50%;background:var(--amarillo);display:grid;place-items:center;margin:0 auto 12px}
 .ok-ic svg{width:34px;height:34px}
+.quien{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border-radius:14px;padding:10px 14px;margin-bottom:18px}
+.quien img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;background:#fff}
+.quien small{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#C9D8F5}
+.quien b{font-size:17px;font-weight:600}
+.nota-pago{display:flex;align-items:flex-start;gap:10px;background:rgba(255,219,3,.14);border:1.5px solid rgba(255,219,3,.45);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14.5px;font-weight:500;line-height:1.45}
+.nota-pago svg{width:20px;height:20px;flex:none;color:var(--amarillo);margin-top:1px}
+.nota-pago b{color:var(--amarillo)}
+.espera-ic b{font-size:30px;font-weight:700;color:#000}
+.txt b.amar{color:var(--amarillo)}
+.deudas{margin-top:14px;background:#fff;color:#000;border-radius:14px;padding:6px 16px}
+.deuda{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;font-size:15px;font-weight:500;border-bottom:1px solid #ECEFF4}
+.deuda small{display:block;font-size:12.5px;color:#6B7280;font-weight:500}
+.deuda b{font-size:16px;white-space:nowrap}
+.deuda.cab{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6B7280;padding:12px 0 6px}
+.deuda.total{border-bottom:0;font-weight:700}
+.deuda.total b{font-size:19px}
+.alerta.rechazo{background:#FDECEC;color:#7F1D1D}
+.alerta.rechazo svg{stroke:#B91C1C}
 .reglas{margin-top:22px;background:rgba(255,255,255,.1);border-radius:16px;padding:18px 20px}
 .reglas p{font-size:15px;font-weight:500;color:#E3EBFB;line-height:1.5}
 .reglas ul{list-style:none;display:grid;gap:10px;margin-top:12px}
@@ -296,7 +314,10 @@ html{scrollbar-gutter:stable}
     <b>Vista previa:</b>
     <button data-e="abiertas">Abiertas</button>
     <button data-e="inscrito">Inscrito</button>
-    <button data-e="multa">Multa</button>
+    <button data-e="revision">Pago en revisión</button>
+    <button data-e="espera">Lista de espera</button>
+    <button data-e="multa">Pago pendiente</button>
+    <button data-e="rechazado">Pago rechazado</button>
     <button data-e="cerradas">Cerradas</button>
     <button data-e="llenas">Cupos agotados</button>
     <button data-e="mantenimiento">Mantenimiento</button>
@@ -310,13 +331,10 @@ html{scrollbar-gutter:stable}
     <div class="estado" data-estado="abiertas">
       <div class="tit">Inscripciones abiertas</div>
       <form id="fInsc" class="pasos" novalidate>
+        <div class="nota-pago" id="notaPago" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span>Tu pago de <b id="npMonto">S/ 22</b> está en revisión. Puedes inscribirte mientras lo revisamos.</span></div>
+        <div class="quien"><img src="/img/avatar.png" alt=""><div><small>Te inscribes como</small><b id="quienNom">Ana Pérez</b></div></div>
         <div class="paso">
-          <label class="lbl" for="dni"><span class="n">1</span>Digite su DNI/CE:</label>
-          <input id="dni" type="text" inputmode="numeric" autocomplete="off" placeholder="00000000" maxlength="12">
-          <div class="ayuda">Debe ser el mismo DNI/CE de tu cuenta.</div>
-        </div>
-        <div class="paso">
-          <span class="lbl" style="display:block;font-size:16px;font-weight:600;margin-bottom:9px"><span class="n">2</span>Confirme el horario:</span>
+          <span class="lbl" style="display:block;font-size:16px;font-weight:600;margin-bottom:9px"><span class="n">1</span>Confirme el horario:</span>
           <label class="check"><input type="checkbox" id="confHora"> <span>Asistiré en el horario de <b id="hConf"></b> en <span id="sConf"></span></span></label>
         </div>
         <div class="error" id="errInsc"></div>
@@ -353,14 +371,27 @@ html{scrollbar-gutter:stable}
       </div>
     </div>
 
-    <!-- 3. MULTA PENDIENTE -->
+    <!-- 2b. LISTA DE ESPERA -->
+    <div class="estado" data-estado="espera">
+      <div class="ok-ic espera-ic"><b id="esperaPos">3</b></div>
+      <div class="tit">Estás en lista de espera</div>
+      <p class="txt">Eres el <b class="amar">puesto 3</b> de la lista de espera. Si alguien cancela, subes automáticamente y te avisamos por WhatsApp.</p>
+      <div class="acciones-c">
+        <a class="pill verde chico" data-comunidad target="_blank" rel="noopener">comunidad <svg viewBox="0 0 32 32" fill="currentColor"><use href="#ic-wa"/></svg></a>
+      </div>
+      <div class="separa"></div>
+      <div class="acciones-c" style="margin-top:0"><button class="pill rojo chico" type="button" data-demo-ir="abiertas">salir de la lista</button></div>
+    </div>
+
+    <!-- 3. PAGO PENDIENTE / RECHAZADO -->
     <div class="estado" data-estado="multa">
-      <div class="alerta"><svg viewBox="0 0 24 24" fill="none" stroke="#B07D00" stroke-width="2" stroke-linecap="round"><path d="M12 3.5 22 20.5H2z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.5v.1"/></svg><span id="txtMulta"></span></div>
-      <div class="sub-t" style="margin-top:22px;text-align:left">Para participar:</div>
+      <div class="alerta" id="alertaPago"><svg viewBox="0 0 24 24" fill="none" stroke="#B07D00" stroke-width="2" stroke-linecap="round"><path d="M12 3.5 22 20.5H2z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.5v.1"/></svg><span id="txtMulta"></span></div>
+      <div class="deudas" id="deudas"></div>
+      <div class="sub-t" style="margin-top:22px;text-align:left">Para inscribirte:</div>
       <div class="pasos" style="margin-top:0">
         <div class="paso">
-          <span class="lbl" style="display:block;font-size:16px;font-weight:600;margin-bottom:9px"><span class="n">1</span>Realiza tu pago por Yape</span>
-          <div class="yape"><div><small>Yape</small><span class="num" id="yapeNum"></span></div>
+          <span class="lbl" style="display:block;font-size:16px;font-weight:600;margin-bottom:9px"><span class="n">1</span>Paga <span id="pagoTotal">S/ 22</span> por Yape o Plin</span>
+          <div class="yape"><div><small>Yape · Plin</small><span class="num" id="yapeNum"></span></div>
             <button class="pill amarillo chico" type="button" id="btnCopiar">copiar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg></button></div>
         </div>
@@ -492,7 +523,9 @@ const LINKS = {
     evento: "Uma Arena: competencia vóley playa individual",
     comunidad: "https://chat.whatsapp.com/BYnHJ9Fttr3IpxusHlgLrD",   // comunidad de WhatsApp
     yape: "906233577",
-    multaPendiente: 20,       // S/ (estado "Multa")
+    participacion: 9,         // S/ de participación; lo que pase de esto es recargo
+    // DEMO: el cobro pendiente de la fecha anterior (vendrá de inscripciones.penalidad)
+    pendiente: {fecha:'2026-11-14', estado:'tarde', monto:13},
     reglas: [
       ["S/ 18", "de multa por inasistencia al torneo sin comunicar antes del viernes a las 12 horas"],
       ["S/ 13", "de multa por llegar después de las 6:30 a. m. al registro en mesa"]
@@ -519,14 +552,34 @@ const LINKS = {
   $('#hConf').textContent=TORNEO.hora; $('#sConf').textContent=TORNEO.sede;
     $('#txtInscrito').textContent=`Te esperamos el ${['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(+y,m-1,+d).getDay()]} ${+d}/${+m} en el horario de ${TORNEO.hora} en ${TORNEO.sede}.`; };
   $('#reglas').innerHTML=TORNEO.reglas.map(([a,b])=>`<li><b>${a}</b><span>${b}</span></li>`).join('');
-  $('#txtMulta').textContent=`¡Tienes una multa de S/ ${TORNEO.multaPendiente} pendiente por inasistencia sin notificar!`;
+  const DIAS=['dom','lun','mar','mié','jue','vie','sáb'];
+  const fCorta=f=>{const [y,m,d]=f.split('-');return `${DIAS[new Date(+y,m-1,+d).getDay()]} ${+d}/${+m}`;};
+  const S=n=>'S/ '+n;
+  const pend=TORNEO.pendiente;
+  const lineas=(()=>{ // participación + recargo, o la multa completa si no asistió
+    if(!pend.estado||pend.estado==='sin') return [['Inasistencia sin avisar',pend.monto]];
+    const base=Math.min(TORNEO.participacion,pend.monto), extra=pend.monto-base;
+    const L=[['Participación',base]];
+    if(extra>0) L.push(['Recargo por llegar tarde',extra]);
+    return L; })();
+  $('#deudas').innerHTML=`<div class="deuda cab"><span>Fecha del ${fCorta(pend.fecha)}</span></div>`
+    +lineas.map(([t,n])=>`<div class="deuda"><span>${t}</span><b>${S(n)}</b></div>`).join('')
+    +`<div class="deuda total"><span>Total</span><b>${S(pend.monto)}</b></div>`;
+  $('#pagoTotal').textContent=S(pend.monto); $('#npMonto').textContent=S(pend.monto);
+  const textoPago=rech=>{ const al=$('#alertaPago'); al.classList.toggle('rechazo',rech);
+    $('#txtMulta').innerHTML=rech
+      ? 'Revisamos tu comprobante y no pudimos validarlo: <b>el monto no coincide</b>. Vuelve a enviarlo.'
+      : `Tienes un pago pendiente del ${fCorta(pend.fecha)}.`; };
+  textoPago(false);
   $('#yapeNum').textContent=TORNEO.yape.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3');
   document.querySelectorAll('[data-comunidad]').forEach(a=>{ if(TORNEO.comunidad) a.href=TORNEO.comunidad; else a.addEventListener('click',e=>{e.preventDefault();aviso('Falta el link de la comunidad de WhatsApp')}); });
 
   // ----- estados -----
   let estado=TORNEO.estadoInicial;
-  const mostrar=e=>{ estado=e;
-    document.querySelectorAll('.estado').forEach(x=>x.classList.toggle('on',x.dataset.estado===e));
+  const ALIAS={revision:'abiertas',rechazado:'multa'};
+  const mostrar=e=>{ estado=ALIAS[e]||e;
+    $('#notaPago').hidden=e!=='revision'; textoPago(e==='rechazado');
+    document.querySelectorAll('.estado').forEach(x=>x.classList.toggle('on',x.dataset.estado===(ALIAS[e]||e)));
     document.querySelectorAll('#demo button').forEach(b=>b.classList.toggle('on',b.dataset.e===e));
     ponerListas();
     $('#confCancelar').classList.remove('on');
@@ -601,18 +654,17 @@ const LINKS = {
   })();
 
   // ----- formulario -----
-  const dni=$('#dni'), conf=$('#confHora'), btn=$('#btnInsc'), err=$('#errInsc');
-  const valido=()=>/^\d{8,12}$/.test(dni.value.trim());
-  const revisar=()=>{ btn.disabled=!(valido()&&conf.checked); err.classList.remove('on'); };
-  dni.addEventListener('input',()=>{dni.value=dni.value.replace(/\D/g,'');revisar()}); conf.addEventListener('change',revisar);
+  const conf=$('#confHora'), btn=$('#btnInsc'), err=$('#errInsc');
+  const revisar=()=>{ btn.disabled=!conf.checked; err.classList.remove('on'); };
+  conf.addEventListener('change',revisar);
   $('#fInsc').addEventListener('submit',e=>{e.preventDefault();
-    if(!valido()){err.textContent='Ingresa un DNI/CE válido (8 a 12 dígitos).';err.classList.add('on');return}
-    // DEMO: aquí se registrará la inscripción en la base de datos
-    yo={nombre:'Tu nombre',foto:'',yo:true}; pintarListas(); mostrar('inscrito'); aviso('¡Inscripción registrada! (vista previa)');
+    // DEMO: aquí se registrará la inscripción en la base de datos (con la sesión, sin pedir DNI)
+    yo={nombre:$('#quienNom').textContent,foto:'',yo:true}; pintarListas(); mostrar('inscrito'); aviso('¡Inscripción registrada! (vista previa)');
   });
+  document.querySelectorAll('[data-demo-ir]').forEach(b=>b.onclick=()=>{ mostrar(b.dataset.demoIr); aviso('Saliste de la lista de espera (vista previa)'); });
   $('#btnCancelar').onclick=()=>$('#confCancelar').classList.add('on');
   $('#noCancelar').onclick=()=>$('#confCancelar').classList.remove('on');
-  $('#siCancelar').onclick=()=>{ yo=null; pintarListas(); dni.value=''; conf.checked=false; revisar(); mostrar('abiertas'); aviso('Inscripción cancelada (vista previa)'); };
+  $('#siCancelar').onclick=()=>{ yo=null; pintarListas(); conf.checked=false; revisar(); mostrar('abiertas'); aviso('Inscripción cancelada (vista previa)'); };
 
   // ----- multa: copiar Yape y comprobante -----
   $('#btnCopiar').onclick=async()=>{ try{ await navigator.clipboard.writeText(TORNEO.yape); aviso('Número copiado'); }catch(e){ aviso('Copia manual: '+TORNEO.yape); } };
@@ -622,7 +674,7 @@ const LINKS = {
     $('#nomArchivo').textContent=f.name;
     if(!f.type.startsWith('image/')){ errA.classList.add('on'); return; }
     prev.src=URL.createObjectURL(f); prev.classList.add('on'); env.disabled=false; });
-  env.onclick=()=>{ aviso('Comprobante enviado (vista previa)'); env.disabled=true; };
+  env.onclick=()=>{ aviso('Comprobante enviado (vista previa)'); env.disabled=true; mostrar('revision'); };
 
   mostrar(estado);
 
