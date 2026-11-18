@@ -261,7 +261,7 @@ input::-webkit-date-and-time-value{text-align:left}
 @media (max-width:640px){.res-barra .pill{padding:0 14px}.tabla-res table{font-size:13px}.tabla-res td.jug{max-width:150px}}
 
 /* ---------- FOTOS DE WIX ---------- */
-#fotosWix{margin-top:18px}
+.copia-wix{margin-top:18px}
 .barra-f{height:10px;border-radius:999px;background:#E6ECF5;overflow:hidden;margin:4px 0 10px}
 .barra-f i{display:block;height:100%;width:0;background:var(--azul-menu);border-radius:999px;transition:width .3s}
 .nota-f{margin:0 0 12px;font-size:13.5px;font-weight:500;color:#3A3F47}
@@ -318,6 +318,7 @@ input::-webkit-date-and-time-value{text-align:left}
 .rev-c{grid-column:1 / -1;background:#fff;border-radius:12px;padding:14px;box-shadow:inset 0 0 0 1.5px #E3E8F1;display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:16px;align-items:start}
 .rev-c .img-c{display:block;border-radius:10px;overflow:hidden;background:#F1F3F7;max-height:360px}
 .rev-c .img-c img{display:block;width:100%;height:auto}
+.rev-c .img-c img:not([src]){display:none}
 .rev-c .sin-img{display:grid;place-items:center;min-height:120px;border-radius:10px;background:#F1F3F7;color:#6B7280;font-size:13px;font-weight:600;text-align:center;padding:12px}
 .rev-c .info{display:grid;gap:12px;font-size:14px;font-weight:500;color:#3A3F47;line-height:1.45}
 .rev-c .info b.m{font-size:22px;color:#000}
@@ -450,6 +451,19 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <div class="barra"><div class="buscar"><input id="cBuscar" type="text" placeholder="Buscar jugador" autocomplete="off"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
         <div class="lista-adm" id="cLista"></div>
       </div>
+      <div class="card copia-wix" id="compWix">
+        <h2>Comprobantes de Wix</h2>
+        <p class="desc">Copia los comprobantes de pago de Wix a Supabase, comprimidos y en un espacio privado: solo se ven desde aquí. Prueba primero con 5 para ver cuánto espacio ocupan. Se puede detener y seguir después.</p>
+        <div class="chips" id="kResumen"><span class="chip">Cargando…</span></div>
+        <div class="barra-f" id="kBarra" hidden><i></i></div>
+        <p class="nota-f" id="kEstado" hidden></p>
+        <div class="f-acc">
+          <button class="pill borde-az" type="button" id="kProbar">probar con 5</button>
+          <button class="pill btn-azul" type="button" id="kCopiar">copiar todos</button>
+          <button class="pill borde-az" type="button" id="kReintentar" hidden>reintentar los que fallaron</button>
+        </div>
+        <div class="lista-adm" id="kErrores"></div>
+      </div>
     </section>
     <!-- USUARIOS -->
     <section class="tab" id="t-usuarios" hidden>
@@ -459,13 +473,13 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <div class="barra"><div class="buscar"><input id="uBuscar" type="text" placeholder="Nombre o DNI" autocomplete="off" enterkeyhint="search"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
         <div class="lista-adm" id="uLista"><p class="vacio-adm">Escribe al menos 2 letras o números.</p></div>
       </div>
-      <div class="card" id="fotosWix">
+      <div class="card copia-wix" id="fotosWix">
         <h2>Fotos de Wix</h2>
         <p class="desc">Copia las fotos de perfil de Wix a Supabase, comprimidas, y las asigna a cada jugador (en su cuenta, el ranking y las inscripciones). Prueba primero con 5 para ver cuánto espacio ocupan. Se puede detener y seguir después.</p>
         <div class="chips" id="fResumen"><span class="chip">Cargando…</span></div>
         <div class="barra-f" id="fBarra" hidden><i></i></div>
         <p class="nota-f" id="fEstado" hidden></p>
-        <div class="bulk-c f-acc">
+        <div class="f-acc">
           <button class="pill borde-az" type="button" id="fProbar">probar con 5</button>
           <button class="pill btn-azul" type="button" id="fCopiar">copiar todas</button>
           <button class="pill borde-az" type="button" id="fReintentar" hidden>reintentar las que fallaron</button>
@@ -527,49 +541,54 @@ const LINKS = {
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
     document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='t-'+t);
     try{ sessionStorage.setItem('owner.tab',t); }catch(e){}
-    if(t==='cobros') cobrosInicio();
+    if(t==='cobros'){ cobrosInicio(); compInicio(); }
     if(t==='usuarios') fotosInicio();
   };
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
-  /* ---------- FOTOS DE WIX ---------- */
-  let fCorriendo=false, fParar=false, fCargado=false;
-  async function fotosResumen(){
-    const r=(await rpc('fotos_wix_resumen'))?.[0]||{pendientes:0,copiadas:0,con_error:0};
-    const tot=Number(r.pendientes)+Number(r.copiadas)+Number(r.con_error);
-    $('#fResumen').innerHTML=`<span class="chip verde">Copiadas <b>${r.copiadas}</b></span><span class="chip ${r.pendientes?'naranja':''}">Por copiar <b>${r.pendientes}</b></span><span class="chip ${r.con_error?'rojo':''}">Con error <b>${r.con_error}</b></span>`;
-    $('#fBarra').hidden=!tot; $('#fBarra i').style.width=(tot?Math.round(100*r.copiadas/tot):0)+'%';
-    if(!fCorriendo){ $('#fCopiar').hidden=$('#fProbar').hidden=!Number(r.pendientes); $('#fReintentar').hidden=!Number(r.con_error); }
-    if(!Number(r.pendientes)&&!Number(r.con_error)&&tot&&!fCorriendo){ $('#fEstado').hidden=false; $('#fEstado').textContent='Todas las fotos de Wix ya están en Supabase.'; }
-    return r;
-  }
+  /* ---------- COPIAR DE WIX (fotos y comprobantes) ---------- */
   const kb=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(n/1024))+' KB';
-  async function copiarFotos(reintentar,prueba){
-    if(fCorriendo){ fParar=true; $('#fCopiar').textContent='deteniendo…'; return; }
-    fCorriendo=true; fParar=false; $('#fReintentar').hidden=true; $('#fProbar').hidden=true; $('#fErrores').innerHTML='';
-    $('#fCopiar').hidden=false; $('#fCopiar').textContent='detener';
-    let hechas=0, bytes=0, errores=[];
-    $('#fEstado').hidden=false; $('#fEstado').textContent='Copiando fotos… no cierres esta página.';
-    try{
-      for(let vuelta=0; vuelta<200 && !fParar; vuelta++){
-        const r=await AUTH.cuenta({accion:'admin_fotos_wix',limite:prueba?5:10,reintentar:!!reintentar},true);
-        hechas+=r.hechas; bytes+=r.bytes||0; errores=errores.concat(r.fallidas||[]);
-        await fotosResumen();
-        $('#fEstado').textContent=`Copiando fotos… ${hechas} copiadas${errores.length?' · '+errores.length+' con error':''}. No cierres esta página.`;
-        if(prueba || !r.procesadas || reintentar && !r.hechas) break;
-      }
-      const res=await fotosResumen(), resto=Number(res.pendientes);
-      if(prueba && hechas && !bytes){ $('#fEstado').innerHTML='Se copiaron '+hechas+' fotos, pero no se pudo medir el espacio: la función <b>cuenta</b> de Supabase no está actualizada. Vuelve a desplegarla con el último index.ts.'; }
-      else if(prueba){ $('#fEstado').innerHTML=hechas?`Prueba lista: ${hechas} fotos ocupan <b>${kb(bytes)}</b> (${kb(bytes/hechas)} cada una). Las ${resto} que faltan ocuparían unos <b>${kb(bytes/hechas*resto)}</b> de tu 1 GB.`:'La prueba no pudo copiar ninguna foto.'; }
-      else $('#fEstado').textContent=fParar?`Detenido. ${hechas} fotos copiadas; puedes seguir cuando quieras.`:`Listo: ${hechas} fotos copiadas (${kb(bytes)})${errores.length?' · '+errores.length+' con error':''}.`;
-    }catch(e){ fallo(e); $('#fEstado').textContent=`Se interrumpió después de ${hechas} fotos. Vuelve a tocar "copiar todas" para seguir.`; }
-    fCorriendo=false; $('#fCopiar').textContent='copiar todas';
-    $('#fErrores').innerHTML=errores.slice(0,30).map(x=>`<div class="fila-adm err-f"><div class="nm">${esc(x.nombre)}<small>${esc(x.error)}</small></div></div>`).join('');
-    await fotosResumen();
+  function copiaWix(pre,cfg){
+    const el=k=>$('#'+pre+k);
+    let corriendo=false, parar=false, cargado=false;
+    async function resumen(){
+      const r=(await rpc(cfg.resumen))?.[0]||{pendientes:0,copiadas:0,con_error:0};
+      const tot=Number(r.pendientes)+Number(r.copiadas)+Number(r.con_error);
+      el('Resumen').innerHTML=`<span class="chip verde">Copiados <b>${r.copiadas}</b></span><span class="chip ${r.pendientes?'naranja':''}">Por copiar <b>${r.pendientes}</b></span><span class="chip ${r.con_error?'rojo':''}">Con error <b>${r.con_error}</b></span>`;
+      el('Barra').hidden=!tot; el('Barra').querySelector('i').style.width=(tot?Math.round(100*r.copiadas/tot):0)+'%';
+      if(!corriendo){ el('Copiar').hidden=el('Probar').hidden=!Number(r.pendientes); el('Reintentar').hidden=!Number(r.con_error); }
+      if(!Number(r.pendientes)&&!Number(r.con_error)&&tot&&!corriendo){ el('Estado').hidden=false; el('Estado').textContent=`Todos ${cfg.los} de Wix ya están en Supabase.`; }
+      return r;
+    }
+    async function copiar(reintentar,prueba){
+      if(corriendo){ parar=true; el('Copiar').textContent='deteniendo…'; return; }
+      corriendo=true; parar=false; el('Reintentar').hidden=true; el('Probar').hidden=true; el('Errores').innerHTML='';
+      el('Copiar').hidden=false; el('Copiar').textContent='detener';
+      let hechas=0, bytes=0, errores=[];
+      el('Estado').hidden=false; el('Estado').textContent='Copiando… no cierres esta página.';
+      try{
+        for(let vuelta=0; vuelta<300 && !parar; vuelta++){
+          const r=await AUTH.cuenta({accion:cfg.accion,limite:prueba?5:10,reintentar:!!reintentar},true);
+          hechas+=r.hechas; bytes+=r.bytes||0; errores=errores.concat(r.fallidas||[]);
+          await resumen();
+          el('Estado').textContent=`Copiando… ${hechas} copiados${errores.length?' · '+errores.length+' con error':''}. No cierres esta página.`;
+          if(prueba || !r.procesadas || reintentar && !r.hechas) break;
+        }
+        const res=await resumen(), resto=Number(res.pendientes);
+        if(prueba && hechas && !bytes) el('Estado').innerHTML='Se copiaron '+hechas+', pero no se pudo medir el espacio: la función <b>cuenta</b> de Supabase no está actualizada. Vuelve a desplegarla con el último index.ts.';
+        else if(prueba) el('Estado').innerHTML=hechas?`Prueba lista: ${hechas} ${cfg.unidad} ocupan <b>${kb(bytes)}</b> (${kb(bytes/hechas)} cada uno).`+(resto?` Los ${resto} que faltan ocuparían unos <b>${kb(bytes/hechas*resto)}</b> de tu 1 GB.`:''):'La prueba no pudo copiar ninguno.';
+        else el('Estado').textContent=parar?`Detenido. ${hechas} copiados; puedes seguir cuando quieras.`:`Listo: ${hechas} copiados (${kb(bytes)})${errores.length?' · '+errores.length+' con error':''}.`;
+      }catch(e){ fallo(e); el('Estado').textContent=`Se interrumpió después de ${hechas}. Vuelve a tocar el botón para seguir.`; }
+      corriendo=false; el('Copiar').textContent=cfg.boton;
+      el('Errores').innerHTML=errores.slice(0,30).map(x=>`<div class="fila-adm err-f"><div class="nm">${esc(x.nombre)}<small>${esc(x.error)}</small></div></div>`).join('');
+      await resumen();
+    }
+    el('Copiar').onclick=()=>copiar(false);
+    el('Probar').onclick=()=>copiar(false,true);
+    el('Reintentar').onclick=()=>copiar(true);
+    return ()=>{ if(cargado) return; cargado=true; resumen().catch(e=>{ cargado=false; fallo(e); }); };
   }
-  $('#fCopiar').onclick=()=>copiarFotos(false);
-  $('#fProbar').onclick=()=>copiarFotos(false,true);
-  $('#fReintentar').onclick=()=>copiarFotos(true);
-  function fotosInicio(){ if(fCargado) return; fCargado=true; fotosResumen().catch(e=>{ fCargado=false; fallo(e); }); }
+  const fotosInicio=copiaWix('f',{resumen:'fotos_wix_resumen',accion:'admin_fotos_wix',unidad:'fotos',los:'las fotos',boton:'copiar todas'});
+  const compInicio=copiaWix('k',{resumen:'comprobantes_wix_resumen',accion:'admin_comprobantes_wix',unidad:'comprobantes',los:'los comprobantes',boton:'copiar todos'});
   /* ---------- COBROS ---------- */
   const ASIS={asiste:['asiste','asiste'],tarde:['tarde','tarde'],'tarde NJ':['tarde NJ','tardenj']};
   const soles=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:2});
@@ -619,6 +638,7 @@ const LINKS = {
         <label class="monto-c ${r.monto==null?'vacio':''}"><span>S/</span><input type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${r.monto==null?'':Number(r.monto)}" placeholder="—" aria-label="Monto de ${esc(r.jugador)}"></label></div>
         ${cAbierto===r.id?panelPago(r):''}</div>`;
     }).join('');
+    firmarComprobantes();
   }
   $('#cLista').addEventListener('change',async e=>{
     const i=e.target.closest('.monto-c input'); if(!i) return;
@@ -639,10 +659,24 @@ const LINKS = {
     $('#cChips').innerHTML=c('todos','Inscritos')+c('sinmonto','Sin monto',n('sinmonto')?'naranja':'')+c('revisar','Por revisar',n('revisar')?'ambar':'')+c('pendiente','Sin pagar')+c('aprobado','Aprobados','verde')
       +`<span class="chip">Cobrado <b>${soles(cobrado)}</b>&nbsp;de ${soles(total)}</span>`;
   }
+  // Comprobantes guardados en el bucket privado: se piden enlaces temporales (1 hora) a la función
+  const FIRMAS={};
+  async function firmarComprobantes(){
+    const as=[...document.querySelectorAll('#cLista [data-ruta]')];
+    const faltan=[...new Set(as.map(a=>a.dataset.ruta).filter(r=>!FIRMAS[r]||FIRMAS[r].hasta<Date.now()))];
+    if(faltan.length){
+      try{ const j=await AUTH.cuenta({accion:'admin_firmar_comprobantes',rutas:faltan},true);
+        Object.entries(j.urls||{}).forEach(([k,u])=>FIRMAS[k]={u,hasta:Date.now()+50*60000}); }
+      catch(e){ as.forEach(a=>{ const s=a.querySelector('.sin-img'); if(s) s.textContent='No se pudo cargar el comprobante'; }); return; }
+    }
+    document.querySelectorAll('#cLista [data-ruta]').forEach(a=>{ const f=FIRMAS[a.dataset.ruta]; if(!f) return;
+      a.href=f.u; const im=a.querySelector('img'); if(!im.src){ im.src=f.u; im.onload=()=>a.querySelector('.sin-img')?.remove(); } });
+  }
   function panelPago(r){
     const pe=pagoEst(r), img=r.comprobante;
     return `<div class="rev-c">
-      ${img?`<a class="img-c" href="${esc(img)}" target="_blank" rel="noopener" title="Abrir en grande"><img src="${esc(img)}" alt="Comprobante de ${esc(r.jugador)}" loading="lazy"></a>`:'<div class="sin-img">Todavía no subió comprobante</div>'}
+      ${img?(/^https?:/.test(img)?`<a class="img-c" href="${esc(img)}" target="_blank" rel="noopener" title="Abrir en grande"><img src="${esc(img)}" alt="Comprobante de ${esc(r.jugador)}" loading="lazy"></a>`
+        :`<a class="img-c" data-ruta="${esc(img)}" target="_blank" rel="noopener" title="Abrir en grande"><img alt="Comprobante de ${esc(r.jugador)}"><span class="sin-img">Cargando comprobante…</span></a>`):'<div class="sin-img">Todavía no subió comprobante</div>'}
       <div class="info">
         <div>Debe pagar<br><b class="m">${r.monto!=null?soles(Number(r.monto)):'sin monto'}</b></div>
         ${pe==='rechazado'?`<div class="nota-r">Rechazado: ${esc(r.pago_motivo||'sin motivo')}</div>`:''}
