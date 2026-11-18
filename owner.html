@@ -260,6 +260,14 @@ input::-webkit-date-and-time-value{text-align:left}
 .tabla-res .campo-n{display:inline-block;min-width:26px;text-align:center;background:#EEF2F9;color:var(--azul-menu);border-radius:6px;padding:1px 6px;font-weight:700;font-size:13px}
 @media (max-width:640px){.res-barra .pill{padding:0 14px}.tabla-res table{font-size:13px}.tabla-res td.jug{max-width:150px}}
 
+/* ---------- FOTOS DE WIX ---------- */
+#fotosWix{margin-top:18px}
+.barra-f{height:10px;border-radius:999px;background:#E6ECF5;overflow:hidden;margin:4px 0 10px}
+.barra-f i{display:block;height:100%;width:0;background:var(--azul-menu);border-radius:999px;transition:width .3s}
+.nota-f{margin:0 0 12px;font-size:13.5px;font-weight:500;color:#3A3F47}
+.f-acc{display:flex;gap:10px;flex-wrap:wrap}
+.fila-adm.err-f{grid-template-columns:1fr}
+.fila-adm.err-f small{color:#B91C1C}
 /* ---------- USUARIOS ---------- */
 .badge.activa{background:#DCFCE7;color:#166534}
 .badge.sin{background:#FFEDD5;color:#9A3412}
@@ -451,6 +459,19 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
         <div class="barra"><div class="buscar"><input id="uBuscar" type="text" placeholder="Nombre o DNI" autocomplete="off" enterkeyhint="search"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
         <div class="lista-adm" id="uLista"><p class="vacio-adm">Escribe al menos 2 letras o números.</p></div>
       </div>
+      <div class="card" id="fotosWix">
+        <h2>Fotos de Wix</h2>
+        <p class="desc">Copia las fotos de perfil de Wix a Supabase, comprimidas, y las asigna a cada jugador (en su cuenta, el ranking y las inscripciones). Prueba primero con 5 para ver cuánto espacio ocupan. Se puede detener y seguir después.</p>
+        <div class="chips" id="fResumen"><span class="chip">Cargando…</span></div>
+        <div class="barra-f" id="fBarra" hidden><i></i></div>
+        <p class="nota-f" id="fEstado" hidden></p>
+        <div class="bulk-c f-acc">
+          <button class="pill borde-az" type="button" id="fProbar">probar con 5</button>
+          <button class="pill btn-azul" type="button" id="fCopiar">copiar todas</button>
+          <button class="pill borde-az" type="button" id="fReintentar" hidden>reintentar las que fallaron</button>
+        </div>
+        <div class="lista-adm" id="fErrores"></div>
+      </div>
     </section>
 
   </div>
@@ -507,8 +528,47 @@ const LINKS = {
     document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='t-'+t);
     try{ sessionStorage.setItem('owner.tab',t); }catch(e){}
     if(t==='cobros') cobrosInicio();
+    if(t==='usuarios') fotosInicio();
   };
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
+  /* ---------- FOTOS DE WIX ---------- */
+  let fCorriendo=false, fParar=false, fCargado=false;
+  async function fotosResumen(){
+    const r=(await rpc('fotos_wix_resumen'))?.[0]||{pendientes:0,copiadas:0,con_error:0};
+    const tot=Number(r.pendientes)+Number(r.copiadas)+Number(r.con_error);
+    $('#fResumen').innerHTML=`<span class="chip verde">Copiadas <b>${r.copiadas}</b></span><span class="chip ${r.pendientes?'naranja':''}">Por copiar <b>${r.pendientes}</b></span><span class="chip ${r.con_error?'rojo':''}">Con error <b>${r.con_error}</b></span>`;
+    $('#fBarra').hidden=!tot; $('#fBarra i').style.width=(tot?Math.round(100*r.copiadas/tot):0)+'%';
+    if(!fCorriendo){ $('#fCopiar').hidden=$('#fProbar').hidden=!Number(r.pendientes); $('#fReintentar').hidden=!Number(r.con_error); }
+    if(!Number(r.pendientes)&&!Number(r.con_error)&&tot&&!fCorriendo){ $('#fEstado').hidden=false; $('#fEstado').textContent='Todas las fotos de Wix ya están en Supabase.'; }
+    return r;
+  }
+  const kb=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(n/1024))+' KB';
+  async function copiarFotos(reintentar,prueba){
+    if(fCorriendo){ fParar=true; $('#fCopiar').textContent='deteniendo…'; return; }
+    fCorriendo=true; fParar=false; $('#fReintentar').hidden=true; $('#fProbar').hidden=true; $('#fErrores').innerHTML='';
+    $('#fCopiar').hidden=false; $('#fCopiar').textContent='detener';
+    let hechas=0, bytes=0, errores=[];
+    $('#fEstado').hidden=false; $('#fEstado').textContent='Copiando fotos… no cierres esta página.';
+    try{
+      for(let vuelta=0; vuelta<200 && !fParar; vuelta++){
+        const r=await AUTH.cuenta({accion:'admin_fotos_wix',limite:prueba?5:10,reintentar:!!reintentar},true);
+        hechas+=r.hechas; bytes+=r.bytes||0; errores=errores.concat(r.fallidas||[]);
+        await fotosResumen();
+        $('#fEstado').textContent=`Copiando fotos… ${hechas} copiadas${errores.length?' · '+errores.length+' con error':''}. No cierres esta página.`;
+        if(prueba || !r.procesadas || reintentar && !r.hechas) break;
+      }
+      const res=await fotosResumen(), resto=Number(res.pendientes);
+      if(prueba){ $('#fEstado').innerHTML=hechas?`Prueba lista: ${hechas} fotos ocupan <b>${kb(bytes)}</b> (${kb(bytes/hechas)} cada una). Las ${resto} que faltan ocuparían unos <b>${kb(bytes/hechas*resto)}</b> de tu 1 GB.`:'La prueba no pudo copiar ninguna foto.'; }
+      else $('#fEstado').textContent=fParar?`Detenido. ${hechas} fotos copiadas; puedes seguir cuando quieras.`:`Listo: ${hechas} fotos copiadas (${kb(bytes)})${errores.length?' · '+errores.length+' con error':''}.`;
+    }catch(e){ fallo(e); $('#fEstado').textContent=`Se interrumpió después de ${hechas} fotos. Vuelve a tocar "copiar todas" para seguir.`; }
+    fCorriendo=false; $('#fCopiar').textContent='copiar todas';
+    $('#fErrores').innerHTML=errores.slice(0,30).map(x=>`<div class="fila-adm err-f"><div class="nm">${esc(x.nombre)}<small>${esc(x.error)}</small></div></div>`).join('');
+    await fotosResumen();
+  }
+  $('#fCopiar').onclick=()=>copiarFotos(false);
+  $('#fProbar').onclick=()=>copiarFotos(false,true);
+  $('#fReintentar').onclick=()=>copiarFotos(true);
+  function fotosInicio(){ if(fCargado) return; fCargado=true; fotosResumen().catch(e=>{ fCargado=false; fallo(e); }); }
   /* ---------- COBROS ---------- */
   const ASIS={asiste:['asiste','asiste'],tarde:['tarde','tarde'],'tarde NJ':['tarde NJ','tardenj']};
   const soles=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:2});

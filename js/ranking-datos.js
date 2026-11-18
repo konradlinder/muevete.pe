@@ -7,7 +7,11 @@
     let m = /^wix:image:\/\/v1\/([^/#]+)/.exec(url);
     let id = m ? m[1] : null;
     if (!id){ m = /^https:\/\/static\.wixstatic\.com\/media\/([^/?#]+)$/.exec(url); id = m ? m[1] : null; }
-    if (!id) return url;
+    if (!id){
+      // fotos copiadas de Wix a Supabase Storage: usar la miniatura de 200 px
+      if (px <= 200 && /\/storage\/v1\/object\/public\/fotos\/wix\/[^/]+\.(jpg|webp)$/.test(url) && !/_mini\.(jpg|webp)$/.test(url)) return url.replace(/\.(jpg|webp)$/, '_mini.$1');
+      return url;
+    }
     const ext = (/\.(png|webp|gif)$/i.exec(id) || [,'jpg'])[1];
     return `https://static.wixstatic.com/media/${id}/v1/fill/w_${px},h_${px},al_c,q_80,enc_auto/foto.${ext}`;
   };
