@@ -566,7 +566,7 @@ const LINKS = {
       let hechas=0, bytes=0, errores=[];
       el('Estado').hidden=false; el('Estado').textContent='Copiando… no cierres esta página.';
       try{
-        for(let vuelta=0; vuelta<300 && !parar; vuelta++){
+        for(let vuelta=0; vuelta<1000 && !parar; vuelta++){
           const r=await AUTH.cuenta({accion:cfg.accion,limite:prueba?5:10,reintentar:!!reintentar},true);
           hechas+=r.hechas; bytes+=r.bytes||0; errores=errores.concat(r.fallidas||[]);
           await resumen();
