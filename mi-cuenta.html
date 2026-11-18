@@ -76,6 +76,9 @@ h1{font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
 .foto{display:flex;flex-direction:column;align-items:center}
 .avatar{width:178px;height:178px;border-radius:50%;overflow:hidden;background:#A9AAAC;box-shadow:0 0 0 4px #fff,0 4px 14px rgba(0,0,0,.12)}
 .avatar img{width:100%;height:100%;object-fit:cover}
+label.ocupado{opacity:.6;pointer-events:none}
+label.ocupado svg{animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;font-size:14px;font-weight:600;height:36px;padding:0 20px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:filter .15s}
 .btn:hover{filter:brightness(1.1)}
 .btn svg{width:15px;height:15px;flex:none}
@@ -1103,10 +1106,49 @@ async function guardarPerfil(d){
     verLogin();
   };
 
-  // vista previa de la foto
-  $('#subirFoto').addEventListener('change',e=>{
-    const f=e.target.files[0]; if(!f) return;
-    $('#fotoPerfil').src=URL.createObjectURL(f);
+  /* ---------- foto de perfil: se comprime en el celular y se sube ---------- */
+  // grande: hasta 600 px (para el perfil) · mini: 200 × 200 recortada al centro (para listas)
+  async function cargarImagen(f){
+    try{ return await createImageBitmap(f,{imageOrientation:'from-image'}); }
+    catch(e){
+      const u=URL.createObjectURL(f);
+      try{ return await new Promise((ok,mal)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=mal; i.src=u; }); }
+      finally{ setTimeout(()=>URL.revokeObjectURL(u),2000); }
+    }
+  }
+  function aDataUrl(img,ancho,alto,cuadrado,calidad){
+    const w=img.width,h=img.height;
+    const c=document.createElement('canvas'); c.width=ancho; c.height=alto;
+    const x=c.getContext('2d'); x.imageSmoothingQuality='high';
+    if(cuadrado){ const l=Math.min(w,h); x.drawImage(img,(w-l)/2,(h-l)/2,l,l,0,0,ancho,alto); }
+    else x.drawImage(img,0,0,ancho,alto);
+    let d=c.toDataURL('image/webp',calidad);
+    if(!d.startsWith('data:image/webp')) d=c.toDataURL('image/jpeg',calidad);   // Safari antiguo no genera WebP
+    return d;
+  }
+  async function comprimirFoto(f){
+    const img=await cargarImagen(f);
+    if(!img.width||!img.height) throw new Error('imagen');
+    const k=Math.min(1,600/Math.max(img.width,img.height));
+    return { grande:aDataUrl(img,Math.round(img.width*k),Math.round(img.height*k),false,.8),
+             mini:aDataUrl(img,200,200,true,.8) };
+  }
+  $('#subirFoto').addEventListener('change',async e=>{
+    const f=e.target.files[0]; e.target.value=''; if(!f) return;
+    if(!/^image\//.test(f.type)&&!/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name)){ toast('Elige una imagen.',true); return; }
+    const img=$('#fotoPerfil'), antes=img.src, boton=document.querySelector('label[for="subirFoto"]');
+    let datos;
+    try{ datos=await comprimirFoto(f); }catch(err){ toast('No se pudo leer esa imagen. Prueba con otra.',true); return; }
+    img.src=datos.grande; boton.classList.add('ocupado'); boton.setAttribute('aria-busy','true');
+    try{
+      const r=await AUTH.cuenta({accion:'subir_foto',grande:datos.grande,mini:datos.mini},true);
+      if(PERFIL) PERFIL.foto=r.foto;
+      img.src=r.foto; toast('Foto actualizada ✓');
+    }catch(err){
+      img.src=antes;
+      if(err.message==='sin-sesion'||err.status===401){ toast('Tu sesión venció. Vuelve a ingresar.',true); verLogin(); }
+      else toast(err.message||'No se pudo subir la foto.',true);
+    }finally{ boton.classList.remove('ocupado'); boton.removeAttribute('aria-busy'); }
   });
 
   // menú celular

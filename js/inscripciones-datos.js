@@ -8,7 +8,7 @@
     if (!id){ m = /^https:\/\/static\.wixstatic\.com\/media\/([^/?#]+)$/.exec(url); id = m ? m[1] : null; }
     if (!id){
       // fotos copiadas de Wix a Supabase Storage: usar la miniatura de 200 px
-      if (px <= 200 && /\/storage\/v1\/object\/public\/fotos\/wix\/[^/]+\.(jpg|webp)$/.test(url) && !/_mini\.(jpg|webp)$/.test(url)) return url.replace(/\.(jpg|webp)$/, '_mini.$1');
+      if (px <= 200 && /\/storage\/v1\/object\/public\/fotos\/(wix|perfil)\/[^/]+\.(jpg|webp)$/.test(url) && !/_mini\.(jpg|webp)$/.test(url)) return url.replace(/\.(jpg|webp)$/, '_mini.$1');
       return url;
     }
     const ext = (/\.(png|webp|gif)$/i.exec(id) || [,'jpg'])[1];
