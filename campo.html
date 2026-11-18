@@ -115,7 +115,9 @@ h1{font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
 .p-top{display:flex;align-items:center;justify-content:space-between;min-height:24px}
 .p-top h3{font-size:16px;font-weight:700}
 .p-top h3 b{color:var(--amarillo);margin-left:4px}
-.marcador{display:grid;gap:8px;margin:14px 0 2px}
+.marcador{display:grid;gap:12px;margin:14px 0 2px;position:relative}
+/* "VS" entre los dos equipos */
+.marcador::after{content:"VS";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:var(--amarillo);color:#000;display:grid;place-items:center;font:italic 800 14px var(--poppins);letter-spacing:-.02em;box-shadow:0 0 0 4px var(--azul-menu),0 4px 10px rgba(0,0,0,.25);z-index:1;pointer-events:none}
 .lado{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;background:rgba(255,255,255,.07);border-radius:14px;padding:8px 8px 8px 14px}
 .equipo{display:grid;gap:1px;font-size:15px;font-weight:600;line-height:1.3;min-width:0}
 .equipo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
