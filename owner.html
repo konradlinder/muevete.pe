@@ -558,7 +558,8 @@ const LINKS = {
         if(prueba || !r.procesadas || reintentar && !r.hechas) break;
       }
       const res=await fotosResumen(), resto=Number(res.pendientes);
-      if(prueba){ $('#fEstado').innerHTML=hechas?`Prueba lista: ${hechas} fotos ocupan <b>${kb(bytes)}</b> (${kb(bytes/hechas)} cada una). Las ${resto} que faltan ocuparían unos <b>${kb(bytes/hechas*resto)}</b> de tu 1 GB.`:'La prueba no pudo copiar ninguna foto.'; }
+      if(prueba && hechas && !bytes){ $('#fEstado').innerHTML='Se copiaron '+hechas+' fotos, pero no se pudo medir el espacio: la función <b>cuenta</b> de Supabase no está actualizada. Vuelve a desplegarla con el último index.ts.'; }
+      else if(prueba){ $('#fEstado').innerHTML=hechas?`Prueba lista: ${hechas} fotos ocupan <b>${kb(bytes)}</b> (${kb(bytes/hechas)} cada una). Las ${resto} que faltan ocuparían unos <b>${kb(bytes/hechas*resto)}</b> de tu 1 GB.`:'La prueba no pudo copiar ninguna foto.'; }
       else $('#fEstado').textContent=fParar?`Detenido. ${hechas} fotos copiadas; puedes seguir cuando quieras.`:`Listo: ${hechas} fotos copiadas (${kb(bytes)})${errores.length?' · '+errores.length+' con error':''}.`;
     }catch(e){ fallo(e); $('#fEstado').textContent=`Se interrumpió después de ${hechas} fotos. Vuelve a tocar "copiar todas" para seguir.`; }
     fCorriendo=false; $('#fCopiar').textContent='copiar todas';
