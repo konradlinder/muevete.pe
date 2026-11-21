@@ -260,6 +260,17 @@ input::-webkit-date-and-time-value{text-align:left}
 .tabla-res .campo-n{display:inline-block;min-width:26px;text-align:center;background:#EEF2F9;color:var(--azul-menu);border-radius:6px;padding:1px 6px;font-weight:700;font-size:13px}
 @media (max-width:640px){.res-barra .pill{padding:0 14px}.tabla-res table{font-size:13px}.tabla-res td.jug{max-width:150px}}
 
+/* ---------- ADMINS ---------- */
+.fila-adm.adm{grid-template-columns:1fr auto;align-items:center}
+.rol-t{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:6px;background:#FFF3C4;color:#7A5B00;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
+.conf-q{grid-column:1 / -1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;font-weight:500;color:#7F1D1D}
+.nuevo-admin{display:grid;gap:12px;margin-top:14px;background:#F6F8FC;border-radius:14px;padding:14px}
+.nuevo-admin label{display:grid;gap:6px;font-size:13px;font-weight:600;color:#3A3F47}
+.nuevo-admin .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nuevo-admin .opc{font-weight:500;color:#8A919C}
+.nuevo-admin .elegido{margin:0;font-weight:700;font-size:15px}
+.nuevo-admin .nota-f{margin:0}
+@media (max-width:640px){.nuevo-admin .g2{grid-template-columns:1fr}}
 /* ---------- FOTOS DE WIX ---------- */
 .copia-wix{margin-top:18px}
 .barra-f{height:10px;border-radius:999px;background:#E6ECF5;overflow:hidden;margin:4px 0 10px}
@@ -418,7 +429,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
   <div class="adm-cab">
     <p class="eyebrow">Panel del owner</p>
     <h1>muévete.pe</h1>
-    <p class="sub">Todas las playas: usuarios y cobros.</p>
+    <p class="sub">Todas las playas: usuarios, cobros y admins.</p>
   </div>
 
   <section class="gate" id="gate" hidden>
@@ -430,6 +441,7 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
     <nav class="tabs" role="tablist" aria-label="Secciones">
       <button role="tab" data-tab="usuarios" class="on">Usuarios</button>
       <button role="tab" data-tab="cobros">Cobros</button>
+      <button role="tab" data-tab="admins">Admins</button>
     </nav>
 
 
@@ -488,6 +500,31 @@ select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:38px
       </div>
     </section>
 
+    <!-- ADMINS -->
+    <section class="tab" id="t-admins" hidden>
+      <div class="card">
+        <h2>Admins</h2>
+        <p class="desc">Los admins entran al panel de su playa (evento, inscripciones, asistencia, puntajes, rondas y resultados). No pueden entrar a esta página.</p>
+        <div class="lista-adm" id="aLista"><p class="vacio-adm">Cargando…</p></div>
+      </div>
+      <div class="card copia-wix">
+        <h2>Agregar admin</h2>
+        <p class="desc">Busca al jugador. Tiene que haber activado su cuenta con su DNI al menos una vez.</p>
+        <div class="barra"><div class="buscar"><input id="aBuscar" type="text" placeholder="Nombre o DNI" autocomplete="off"><button class="limpiar" type="button" aria-label="Borrar búsqueda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+        <div class="lista-adm" id="aRes"></div>
+        <form class="nuevo-admin" id="aForm" hidden novalidate>
+          <p class="elegido" id="aElegido"></p>
+          <div class="g2">
+            <label>Nombre en la lista<input id="aNombre" maxlength="60"></label>
+            <label>Correo para entrar <span class="opc">· opcional</span><input id="aCorreo" type="email" autocomplete="off" placeholder="si lo dejas vacío, entra con DNI y PIN"></label>
+          </div>
+          <label>Contraseña <span class="opc">· opcional</span><input id="aClave" type="text" autocomplete="off" placeholder="vacío = sigue con su PIN de siempre"></label>
+          <p class="nota-f">Si le pones una contraseña de letras, solo podrá entrar con el correo. Con 6 números le sirve para correo y para DNI.</p>
+          <div class="f-acc"><button class="pill btn-azul" type="submit" id="aGuardar">hacer admin</button><button class="pill borde-az" type="button" id="aCancelar">cancelar</button></div>
+        </form>
+      </div>
+    </section>
+
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </main>
@@ -543,8 +580,64 @@ const LINKS = {
     try{ sessionStorage.setItem('owner.tab',t); }catch(e){}
     if(t==='cobros'){ cobrosInicio(); compInicio(); }
     if(t==='usuarios') fotosInicio();
+    if(t==='admins') adminsInicio();
   };
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>abrir(b.dataset.tab));
+  /* ---------- ADMINS ---------- */
+  let aDatos=[], aQuitar=null, aSel=null, aCargado=false;
+  async function cargarAdmins(){
+    try{ aDatos=await rpc('owner_admins')||[]; }catch(e){ aDatos=[]; fallo(e); }
+    pintarAdmins();
+  }
+  function pintarAdmins(){
+    if(!aDatos.length){ $('#aLista').innerHTML='<p class="vacio-adm">Todavía no hay admins.</p>'; return; }
+    $('#aLista').innerHTML=aDatos.map(a=>{
+      const owner=a.rol==='owner';
+      return `<div class="fila-adm adm" data-u="${a.user_id}"><div class="nm">${esc(a.nombre||a.jugador||'(sin nombre)')}${owner?'<span class="rol-t">owner</span>':''}<small>${a.correo?esc(a.correo):'entra con DNI y PIN'}${a.jugador&&a.nombre&&a.jugador!==a.nombre?' · '+esc(a.jugador):''}</small></div>
+        ${owner?'':`<button class="pill rojo-b chico" type="button" data-quitar>quitar</button>`}
+        ${aQuitar===a.user_id?`<div class="conf-q">¿Quitarle el acceso de admin? Seguirá teniendo su cuenta de jugador. <button class="pill rojo chico" type="button" data-si>quitar acceso</button><button class="pill borde-az chico" type="button" data-no>cancelar</button></div>`:''}</div>`;
+    }).join('');
+  }
+  $('#aLista').addEventListener('click',async e=>{
+    const f=e.target.closest('.fila-adm'); if(!f) return;
+    if(e.target.closest('[data-quitar]')){ aQuitar=f.dataset.u; return pintarAdmins(); }
+    if(e.target.closest('[data-no]')){ aQuitar=null; return pintarAdmins(); }
+    const si=e.target.closest('[data-si]'); if(!si) return;
+    si.disabled=true;
+    try{ await rpc('owner_quitar_admin',{p_user_id:f.dataset.u}); toast('Acceso de admin quitado'); aQuitar=null; await cargarAdmins(); }
+    catch(err){ si.disabled=false; fallo(err); }
+  });
+  let aT;
+  $('#aBuscar').addEventListener('input',()=>{ clearTimeout(aT); aT=setTimeout(buscarParaAdmin,250); });
+  async function buscarParaAdmin(){
+    const q=$('#aBuscar').value.trim();
+    if(q.length<2){ $('#aRes').innerHTML=''; return; }
+    let r=[]; try{ r=await rpc('admin_usuarios',{p_texto:q})||[]; }catch(e){ return fallo(e); }
+    const ya=new Set(aDatos.map(a=>a.jugador));
+    $('#aRes').innerHTML=r.length?r.slice(0,10).map(u=>`<div class="fila-adm adm" data-id="${u.id}" data-act="${u.activa?1:0}"><div class="nm">${esc(u.jugador||'(sin nombre)')}<small>DNI ${esc(u.dni||'—')} · ${u.activa?'cuenta activa':'<span style="color:#B45309">no activó su cuenta</span>'}</small></div>
+      ${u.activa?'<button class="pill btn-azul chico" type="button" data-elegir>elegir</button>':''}</div>`).join(''):'<p class="vacio-adm">No se encontró a nadie.</p>';
+  }
+  $('#aRes').addEventListener('click',async e=>{
+    const b=e.target.closest('[data-elegir]'); if(!b) return;
+    const f=b.closest('.fila-adm'); aSel=f.dataset.id;
+    const nom=f.querySelector('.nm').firstChild.textContent.trim();
+    $('#aElegido').textContent=nom; $('#aNombre').value=nom; $('#aClave').value='';
+    $('#aCorreo').value='';
+    try{ const d=(await rpc('admin_usuario',{p_id:aSel}))?.[0]; if(d&&d.correo&&!/@dni\.muevete\.pe$/.test(d.correo)) $('#aCorreo').value=d.correo; }catch(err){}
+    $('#aRes').innerHTML=''; $('#aBuscar').value=''; $('#aForm').hidden=false; $('#aNombre').focus();
+  });
+  $('#aCancelar').onclick=()=>{ $('#aForm').hidden=true; aSel=null; };
+  $('#aForm').addEventListener('submit',async e=>{
+    e.preventDefault(); if(!aSel) return;
+    const b=$('#aGuardar'); b.disabled=true;
+    try{
+      const r=await AUTH.cuenta({accion:'owner_hacer_admin',usuario_id:aSel,nombre:$('#aNombre').value.trim(),correo:$('#aCorreo').value.trim(),clave:$('#aClave').value},true);
+      toast(`${r.nombre} ahora es admin`); $('#aForm').hidden=true; aSel=null; $('#aClave').value='';
+      await cargarAdmins();
+    }catch(err){ fallo(err); }
+    finally{ b.disabled=false; }
+  });
+  function adminsInicio(){ if(aCargado) return; aCargado=true; cargarAdmins(); }
   /* ---------- COPIAR DE WIX (fotos y comprobantes) ---------- */
   const kb=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(n/1024))+' KB';
   function copiaWix(pre,cfg){
@@ -819,8 +912,8 @@ const LINKS = {
     const gate=t=>{ $('#gateTxt').textContent=t; $('#gate').hidden=false; };
     let ses=null; try{ ses=await AUTH.sesion(); }catch(e){}
     if(!ses) return gate('Inicia sesión con una cuenta de owner para entrar.');
-    let ok=false; try{ ok=await rpc('es_admin'); }catch(e){}
-    if(!ok) return gate('Tu cuenta no tiene permisos para esta página.');
+    let ok=false; try{ ok=await rpc('es_owner'); }catch(e){}
+    if(!ok) return gate('Esta página es solo para el owner. Si eres admin de playa, entra al panel de admin de tu playa.');
     $('#app').hidden=false;
     let t='usuarios'; try{ t=sessionStorage.getItem('owner.tab')||'usuarios'; }catch(e){}
     abrir(document.getElementById('t-'+t)?t:'usuarios');
